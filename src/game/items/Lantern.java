@@ -2,8 +2,11 @@ package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
+import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.capabilities.Infectable;
+import game.statuses.LanternInfectedStatus;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
 import game.grounds.Fire;
@@ -19,13 +22,31 @@ import java.util.Random;
  *
  * @author Jax
  */
-public class Lantern extends Item {
+public class Lantern extends Item implements Infectable {
 
     private static final int INITIAL_OIL = 10;
     private static final int LEAK_CHANCE_PERCENT = 5;
 
     private int oilFuel;
     private final Random random;
+
+    /**
+     * Returns the current oil fuel level.
+     *
+     * @return the remaining oil units
+     */
+    public int getOilFuel() {
+        return oilFuel;
+    }
+
+    /**
+     * Drains the specified amount of oil fuel. Oil cannot go below zero.
+     *
+     * @param amount the amount of oil to drain
+     */
+    public void drainOil(int amount) {
+        this.oilFuel = Math.max(0, this.oilFuel - amount);
+    }
 
     /**
      * Constructor.
@@ -36,6 +57,17 @@ public class Lantern extends Item {
         this.random = new Random();
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(7));
         this.makePortable();
+    }
+
+    /**
+     * Applies an infection status to this lantern, draining 1 oil per turn.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.addStatus(new LanternInfectedStatus(this));
     }
 
     /**

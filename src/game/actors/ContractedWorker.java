@@ -9,6 +9,8 @@ import edu.monash.fit2099.engine.displays.Menu;
 import edu.monash.fit2099.engine.items.Inventory;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.capabilities.Ability;
+import game.capabilities.Infectable;
+import game.statuses.WorkerInfectedStatus;
 
 /**
  * This brave soul is capable of performing complex tasks such as picking up trash
@@ -23,7 +25,7 @@ import game.capabilities.Ability;
  *
  * @author Jax
  */
-public class ContractedWorker extends Actor {
+public class ContractedWorker extends Actor implements Infectable {
 
     /**
      * Constructor.
@@ -36,6 +38,18 @@ public class ContractedWorker extends Actor {
     public ContractedWorker(String name, char displayChar, int hitPoints, Inventory inventory) {
         super(name, displayChar, hitPoints, inventory);
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
+    }
+
+    /**
+     * Applies an infection status to this worker when infected by a Parasite.
+     * The worker takes 1 damage per turn and spawns Parasites every 5 turns.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.addStatus(new WorkerInfectedStatus());
     }
 
     /**

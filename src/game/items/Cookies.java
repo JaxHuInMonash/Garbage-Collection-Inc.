@@ -11,6 +11,8 @@ import game.ItemStatistics;
 import game.actions.ConsumeAction;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
+import game.capabilities.Infectable;
+import game.statuses.CookieInfectedStatus;
 
 /**
  * A packet of cookies found on the moon's facility. Weighs 2 units and
@@ -22,7 +24,7 @@ import game.capabilities.Consumable;
  *
  * @author Jax
  */
-public class Cookies extends Item implements Consumable {
+public class Cookies extends Item implements Consumable, Infectable {
 
     private static final int MAX_COOKIES = 5;
     private int remainingCookies;
@@ -44,6 +46,28 @@ public class Cookies extends Item implements Consumable {
      */
     public int getRemainingCookies() {
         return remainingCookies;
+    }
+
+    /**
+     * Reduces the remaining cookies by the specified amount.
+     * Cookies cannot go below zero.
+     *
+     * @param amount the number of cookies to remove
+     */
+    public void reduceCookies(int amount) {
+        this.remainingCookies = Math.max(0, this.remainingCookies - amount);
+    }
+
+    /**
+     * Applies an infection status to these cookies. Each turn, one cookie
+     * is consumed and a Parasite is spawned nearby.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.addStatus(new CookieInfectedStatus(this));
     }
 
     /**

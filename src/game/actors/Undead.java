@@ -13,6 +13,7 @@ import game.alarm.AlarmManager;
 import game.behaviours.AttackBehaviour;
 import game.behaviours.FollowBehaviour;
 import game.behaviours.WanderBehaviour;
+import game.capabilities.Infectable;
 import game.weapons.UndeadFist;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.List;
  *
  * @author Jax
  */
-public class Undead extends Actor implements AlarmListener {
+public class Undead extends Actor implements AlarmListener, Infectable {
 
     /** Prioritised list of behaviours this Undead can perform. */
     private final List<Behaviour<Actor, Action>> behaviours = new ArrayList<>();
@@ -63,6 +64,18 @@ public class Undead extends Actor implements AlarmListener {
     @Override
     public void onAlarmTriggered(Actor triggeringWorker, GameMap map) {
         this.behaviours.add(1, new FollowBehaviour(triggeringWorker));
+    }
+
+    /**
+     * Handles infection by a Parasite. Alien biology severely rejects the
+     * reanimated dead — the Undead immediately blows up and is killed.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.unconscious(map);
     }
 
     /**
