@@ -5,20 +5,24 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actors.Slime;
-import game.actors.Undead;
+import game.spawning.SpawnEffectManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * A mysterious hole in the moon's facility that periodically spawns creatures.
- * Displays as {@code o}.
+ * Displays as {@code O}.
  * <p>
- * Every 20 game turns, the hole spawns either an {@link Undead} or a
- * {@link Slime} (equal probability) on a random adjacent empty tile.
- * If no adjacent tile is available, the spawn is skipped for that cycle.
+ * Every 20 game turns, the hole spawns a creature (chosen randomly from a
+ * configurable list of suppliers) on a random adjacent empty tile. If no
+ * adjacent tile is available, the spawn is skipped for that cycle.
+ * <p>
+ * Each turn, there is also a 1% chance the hole expands by converting a
+ * random adjacent non-hole tile into a new Hole with the same creature
+ * supplier configuration.
  * <p>
  * Actors cannot enter the hole tile itself.
  *
@@ -27,17 +31,23 @@ import java.util.Random;
 public class Hole extends Ground {
 
     private static final int SPAWN_INTERVAL = 20;
+    private static final int EXPANSION_CHANCE_PERCENT = 1;
 
     private int turnCounter;
     private final Random random;
+    private final List<Supplier<Actor>> creatureSuppliers;
 
     /**
      * Constructor.
+     *
+     * @param creatureSuppliers list of suppliers, each producing a creature type
+     *                          that this hole can spawn (chosen uniformly at random)
      */
-    public Hole() {
-        super('o', "Hole");
+    public Hole(List<Supplier<Actor>> creatureSuppliers) {
+        super('O', "Hole");
         this.turnCounter = 0;
         this.random = new Random();
+        this.creatureSuppliers = new ArrayList<>(creatureSuppliers);
     }
 
     /**
@@ -53,46 +63,83 @@ public class Hole extends Ground {
 
     /**
      * Each turn, increments the counter. Every 20 turns, attempts to spawn
-     * a creature on a random adjacent empty tile.
+     * a creature on a random adjacent empty tile. Each turn, there is also
+     * a 1% chance the hole expands to an adjacent tile.
      *
      * @param location the location of this hole
      */
     @Override
     public void tick(Location location) {
         turnCounter++;
+
         if (turnCounter >= SPAWN_INTERVAL) {
             turnCounter = 0;
-            spawnCreature(location);
+            boolean spawned = spawnCreature(location);
+
+            // Expansion only occurs after a successful spawn
+            if (spawned && random.nextInt(100) < EXPANSION_CHANCE_PERCENT) {
+                expand(location);
+            }
         }
     }
 
     /**
      * Attempts to spawn a random creature on an adjacent empty tile.
-     * If no valid tile is available, the spawn is skipped.
+     * After successful placement, notifies the {@link SpawnEffectManager}.
      *
      * @param location the location of this hole
+     * @return true if a creature was successfully spawned
      */
-    private void spawnCreature(Location location) {
-        // Collect adjacent locations that are empty and passable
+    private boolean spawnCreature(Location location) {
+        if (creatureSuppliers.isEmpty()) {
+            return false;
+        }
+
         List<Location> validLocations = new ArrayList<>();
         for (Exit exit : location.getExits()) {
             Location destination = exit.getDestination();
-            if (!destination.containsAnActor() && destination.getGround().canActorEnter(null)) {
+            Actor testActor = creatureSuppliers.get(0).get();
+            if (destination.canActorEnter(testActor)) {
                 validLocations.add(destination);
             }
         }
 
         if (validLocations.isEmpty()) {
-            return;
+            return false;
         }
 
         Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
-        Actor creature = random.nextBoolean() ? new Undead() : new Slime();
+        Supplier<Actor> supplier = creatureSuppliers.get(random.nextInt(creatureSuppliers.size()));
+        Actor creature = supplier.get();
 
         try {
             spawnLocation.addActor(creature);
+            SpawnEffectManager.getInstance().onCreatureSpawned(creature, spawnLocation);
+            return true;
         } catch (GameEngineException e) {
             // Spawn failed; silently skip this spawn cycle.
+            return false;
+        }
+    }
+
+    /**
+     * Attempts to expand this hole by converting a random adjacent non-hole
+     * tile into a new Hole with the same creature supplier configuration.
+     *
+     * @param location the location of this hole
+     */
+    private void expand(Location location) {
+        List<Location> expandable = new ArrayList<>();
+        for (Exit exit : location.getExits()) {
+            Location adjacent = exit.getDestination();
+            if (!(adjacent.getGround() instanceof Hole)) {
+                expandable.add(adjacent);
+            }
+        }
+
+        if (!expandable.isEmpty()) {
+            Location target = expandable.get(random.nextInt(expandable.size()));
+            target.setGround(new Hole(creatureSuppliers));
         }
     }
 }

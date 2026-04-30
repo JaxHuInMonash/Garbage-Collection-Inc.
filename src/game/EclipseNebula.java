@@ -6,11 +6,14 @@ import edu.monash.fit2099.engine.positions.DefaultGroundCreator;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
-import game.actors.ContractedWorker;
-import game.actors.SecurityDrone;
+import game.actors.*;
 import game.alarm.AlarmManager;
 import game.grounds.*;
 import game.items.*;
+import game.spawning.ParasiteSpawnEffect;
+import game.spawning.SlimeSpawnEffect;
+import game.spawning.SpawnEffectManager;
+import game.spawning.UndeadSpawnEffect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,8 +46,14 @@ public class EclipseNebula extends World {
      * @throws Exception in case if anything goes wrong
      */
     public void initialise() throws Exception {
-        // Reset alarm state for a fresh game
+        // Reset singletons for a fresh game
         AlarmManager.resetInstance();
+        SpawnEffectManager.resetInstance();
+
+        // Register spawn effects for each creature type
+        SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
+        SpawnEffectManager.getInstance().registerEffect(Slime.class, new SlimeSpawnEffect());
+        SpawnEffectManager.getInstance().registerEffect(Parasite.class, new ParasiteSpawnEffect());
 
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
@@ -52,18 +61,19 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('~', Puddle::new);
         groundCreator.registerGround('_', Floor::new);
         groundCreator.registerGround('=', Door::new);
-        groundCreator.registerGround('o', Hole::new);
+        groundCreator.registerGround('O', () -> new Hole(List.of(Undead::new, Slime::new)));
+        groundCreator.registerGround('V', Vent::new);
         groundCreator.registerGround('a', AlarmFloor::new);
 
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
-                "...#######..........#__________________#___________________#",
+                "...#######..........#______V___________#___________________#",
                 "...#_____#..........=__________________=___________________#",
                 "...#_____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
                 "...#######.~~~~.....#______#_#_________#___#___________#___#",
                 ".........~~~~.......#______#_#_________#####___________#####",
-                "....................#______=_#_________#________o__________#",
+                "....................#______=_#_________#________O__________#",
                 "......~.............#______#_#_________#___________________#",
                 ".....~~~............#______#_###########___#############___#",
                 ".....~..............#______#_____a_____#___#___________#___#",
@@ -73,8 +83,8 @@ public class EclipseNebula extends World {
                 "........~~~~~~......#______#_____a_____=___________________#",
                 ".........~~~~.......#______#___________#___________________#",
                 "....................#______#############___#############___#",
-                "....................#______#___________#___#_____o_____#___#",
-                "..~.................#______=___________=___=___________=___#",
+                "....................#______#___________#___#_____O_____#___#",
+                "..~.................#______=___________=___=_____V_____=___#",
                 "....................########################################"
         );
 
