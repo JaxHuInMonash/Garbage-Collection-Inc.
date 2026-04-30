@@ -16,7 +16,7 @@ import java.util.Random;
  * regardless of whether the roll succeeds, so growth is attempted at turns
  * 20, 40, 60, etc.
  * <p>
- * Actors cannot enter the sapling tile itself.
+ * Actors cannot enter the sapling tile itself
  *
  * @author Ethan
  */
