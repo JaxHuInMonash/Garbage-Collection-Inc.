@@ -9,4 +9,6 @@ package game;
  */
 public enum ItemStatistics {
     WEIGHT,
+    VALUE,
+    QUANTITY
 }

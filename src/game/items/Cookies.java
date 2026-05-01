@@ -11,6 +11,7 @@ import game.ItemStatistics;
 import game.actions.ConsumeAction;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
+import game.capabilities.Sellable;
 
 /**
  * A packet of cookies found on the moon's facility. Weighs 2 units and
@@ -22,28 +23,29 @@ import game.capabilities.Consumable;
  *
  * @author Jax
  */
-public class Cookies extends Item implements Consumable {
-
-    private static final int MAX_COOKIES = 5;
-    private int remainingCookies;
+public class Cookies extends Item implements Consumable, Sellable {
+    private static final int VALUE_PER_COOKIE = 1;
 
     /**
      * Constructor.
      */
     public Cookies() {
         super("Cookies", '◍');
-        this.remainingCookies = MAX_COOKIES;
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(2));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(5));
+        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(this.getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE));
         this.makePortable();
     }
 
-    /**
-     * Returns the number of cookies remaining.
-     *
-     * @return remaining cookie count
-     */
-    public int getRemainingCookies() {
-        return remainingCookies;
+    @Override
+    public String sell(Actor actor, GameMap map) {
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.getInventory().remove(this);
+
+        // Reduce 1 HP per cookie remaining
+        actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.DECREASE, getStatistic(ItemStatistics.QUANTITY));
+
+        return this + "were sold for " + getStatistic(ItemStatistics.VALUE) + " credits";
     }
 
     /**
@@ -57,7 +59,8 @@ public class Cookies extends Item implements Consumable {
      */
     @Override
     public String consumedBy(Actor actor, GameMap map) {
-        remainingCookies--;
+        modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
+        modifyStatistic(ItemStatistics.VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE);
 
         String result;
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
@@ -68,11 +71,11 @@ public class Cookies extends Item implements Consumable {
             result = actor + " eats a toxic cookie. Maximum HP decreased by 1!";
         }
 
-        if (remainingCookies <= 0) {
+        if (getStatistic(ItemStatistics.QUANTITY) <= 0) {
             actor.getInventory().remove(this);
             result += " The cookie packet is now empty and discarded.";
         } else {
-            result += " (" + remainingCookies + " cookies remaining)";
+            result += " (" + getStatistic(ItemStatistics.QUANTITY) + " cookies remaining)";
         }
 
         return result;
@@ -80,7 +83,13 @@ public class Cookies extends Item implements Consumable {
 
     @Override
     public String getConsumeMenuDescription(Actor actor) {
-        return actor + " eats a cookie (" + remainingCookies + " remaining)";
+        return actor + " eats a cookie (" + getStatistic(ItemStatistics.QUANTITY) + " remaining)";
+    }
+
+    @Override
+    public String toString() {
+        int quantity = getStatistic(ItemStatistics.QUANTITY);
+        return quantity + " Cookie" + (quantity == 1 ? "" : "s");
     }
 
     /**
@@ -93,9 +102,10 @@ public class Cookies extends Item implements Consumable {
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {
         ActionList actions = new ActionList();
-        if (remainingCookies > 0) {
+        if (getStatistic(ItemStatistics.QUANTITY) > 0) {
             actions.add(new ConsumeAction(this));
         }
         return actions;
     }
+
 }

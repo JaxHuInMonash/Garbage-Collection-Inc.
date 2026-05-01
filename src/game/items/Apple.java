@@ -5,10 +5,12 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
+import game.capabilities.Sellable;
 import game.statuses.PoisonStatus;
 
 /**
@@ -20,7 +22,7 @@ import game.statuses.PoisonStatus;
  *
  * @author Jax
  */
-public class Apple extends Item implements Consumable {
+public class Apple extends Item implements Consumable, Sellable {
 
     /**
      * Constructor.
@@ -28,7 +30,21 @@ public class Apple extends Item implements Consumable {
     public Apple() {
         super("Apple", 'ó');
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
+        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(1));
         this.makePortable();
+    }
+
+    @Override
+    public String sell(Actor actor, GameMap map) {
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.getInventory().remove(this);
+
+        if (actor.hasAbility(Ability.HAS_STERILISATION)) {
+            return actor + " sells a sterilised Apple - Neutralising its poisonous effects.";
+        } else {
+            actor.addStatus(new PoisonStatus(2, 2));
+            return actor + " sells a toxic Apple and is poisoned! (2 dmg/turn for 2 turns)";
+        }
     }
 
     /**

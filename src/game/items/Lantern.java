@@ -2,11 +2,16 @@ package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
+import edu.monash.fit2099.engine.positions.Exit;
+import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
+import game.capabilities.Sellable;
 import game.grounds.Fire;
+import game.statuses.BurnStatus;
 
 import java.util.Random;
 
@@ -19,12 +24,15 @@ import java.util.Random;
  *
  * @author Jax
  */
-public class Lantern extends Item {
-
-    private static final int INITIAL_OIL = 10;
+public class Lantern extends Item implements Sellable {
+    private static final int BURN_ON_SELL_PERCENTAGE_CHANCE = 50;
+    private static final int EXPLODE_ON_SELL_PERCENTAGE_CHANCE = 25;
     private static final int LEAK_CHANCE_PERCENT = 5;
 
-    private int oilFuel;
+    private static final int VALUE_PER_OIL = 5;
+    private static final int BURN_DAMAGE = 1;
+    private static final int BURN_DURATION = 5;
+
     private final Random random;
 
     /**
@@ -32,10 +40,35 @@ public class Lantern extends Item {
      */
     public Lantern() {
         super("Lantern", '&');
-        this.oilFuel = INITIAL_OIL;
         this.random = new Random();
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(7));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(10)); // Oil Fuel
+        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(getStatistic(ItemStatistics.QUANTITY) * 5));
         this.makePortable();
+    }
+
+    @Override
+    public String sell(Actor actor, GameMap map) {
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.getInventory().remove(this);
+
+        if (random.nextInt(100) < BURN_ON_SELL_PERCENTAGE_CHANCE) {
+            actor.addStatus(new BurnStatus(BURN_DAMAGE, BURN_DURATION));
+        }
+
+        if (random.nextInt(100) < EXPLODE_ON_SELL_PERCENTAGE_CHANCE) {
+            // Set surroundings on fire
+            for (Exit exit : map.locationOf(actor).getExits()) {
+                Location location = exit.getDestination();
+                Ground ground = location.getGround();
+
+                if (!(ground instanceof Fire)) {
+                    location.setGround(new Fire(ground));
+                }
+            }
+        }
+
+        return this + " was sold for " + getStatistic(ItemStatistics.VALUE) + " credits";
     }
 
     /**
@@ -46,7 +79,7 @@ public class Lantern extends Item {
      */
     @Override
     public String toString() {
-        return "Lantern (oil: " + oilFuel + "/" + INITIAL_OIL + ")";
+        return "Lantern (oil: " + getStatistic(ItemStatistics.QUANTITY) + "/" + getMaximumStatistic(ItemStatistics.QUANTITY) + ")";
     }
 
     /**
@@ -59,8 +92,9 @@ public class Lantern extends Item {
      */
     @Override
     public void tick(Location currentLocation, Actor actor) {
-        if (oilFuel > 0 && random.nextInt(100) < LEAK_CHANCE_PERCENT) {
-            oilFuel--;
+        if (getStatistic(ItemStatistics.QUANTITY) > 0 && random.nextInt(100) < LEAK_CHANCE_PERCENT) {
+            modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
+            modifyStatistic(ItemStatistics.VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_OIL);
             Ground currentGround = currentLocation.getGround();
             // Only spawn fire if the ground isn't already on fire
             if (!(currentGround instanceof Fire)) {
