@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
 import game.capabilities.Consumable;
@@ -20,28 +21,15 @@ import game.capabilities.Consumable;
  * @author Jax
  */
 public class Flask extends Item implements Consumable {
-
-    private static final int MAX_USES = 5;
-    private int remainingUses;
-
     /**
      * Constructor.
      * Creates a Flask with weight 3, made portable, and 5 uses available.
      */
     public Flask() {
         super("Flask", 'u');
-        this.remainingUses = MAX_USES;
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(3));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(5)); // Uses
         this.makePortable();
-    }
-
-    /**
-     * Returns the number of remaining uses for this flask.
-     *
-     * @return the number of remaining uses
-     */
-    public int getRemainingUses() {
-        return remainingUses;
     }
 
     /**
@@ -54,18 +42,12 @@ public class Flask extends Item implements Consumable {
      */
     @Override
     public String consumedBy(Actor actor, GameMap map) {
-        if (remainingUses > 0) {
-            remainingUses--;
+        if (getStatistic(ItemStatistics.QUANTITY) > 0) {
+            modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
             actor.heal(1);
-            return actor + " drinks from the Flask, healing 1 point. ("
-                    + remainingUses + " uses remaining)";
+            return actor + " drinks from the Flask, healing 1 point. (" + getStatistic(ItemStatistics.QUANTITY) + " uses remaining)";
         }
         return actor + "'s Flask is empty.";
-    }
-
-    @Override
-    public String getConsumeMenuDescription(Actor actor) {
-        return actor + " drinks from Flask (" + remainingUses + " uses remaining)";
     }
 
     /**
@@ -78,7 +60,7 @@ public class Flask extends Item implements Consumable {
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {
         ActionList actions = new ActionList();
-        if (remainingUses > 0) {
+        if (getStatistic(ItemStatistics.QUANTITY) > 0) {
             actions.add(new ConsumeAction(this));
         }
         return actions;

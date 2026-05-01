@@ -88,8 +88,7 @@ public class Cookies extends Item implements Consumable, Sellable {
 
     @Override
     public String toString() {
-        int quantity = getStatistic(ItemStatistics.QUANTITY);
-        return quantity + " Cookie" + (quantity == 1 ? "" : "s");
+        return "Cookie" + (getStatistic(ItemStatistics.QUANTITY) == 1 ? "" : "s");
     }
 
     /**

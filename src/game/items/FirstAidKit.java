@@ -2,12 +2,16 @@ package game.items;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
-import game.actions.UseFirstAidKitAction;
+import game.actions.ConsumeAction;
+import game.capabilities.Buyable;
+import game.capabilities.Consumable;
 
 /**
  * A super useful first aid kit weighing 25 units. It can be used to permanently
@@ -20,10 +24,8 @@ import game.actions.UseFirstAidKitAction;
  *
  * @author Jax
  */
-public class FirstAidKit extends Item {
-
-    private static final int COOLDOWN_TURNS = 20;
-    private int cooldownRemaining;
+public class FirstAidKit extends Item implements Consumable, Buyable {
+    private final BaseStatistic cooldown = new BaseStatistic(20);
 
     /**
      * Constructor.
@@ -31,34 +33,26 @@ public class FirstAidKit extends Item {
      */
     public FirstAidKit() {
         super("First Aid Kit", '+');
-        this.cooldownRemaining = 0;
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(25));
         this.makePortable();
     }
 
-    /**
-     * Checks whether the kit is ready to use (cooldown has expired).
-     *
-     * @return true if the kit can be used, false if on cooldown
-     */
-    public boolean isReady() {
-        return cooldownRemaining <= 0;
+    @Override
+    public String buy(Actor actor, GameMap map) {
+        return "";
     }
 
-    /**
-     * Returns the number of turns remaining on the cooldown.
-     *
-     * @return the cooldown turns remaining
-     */
-    public int getCooldownRemaining() {
-        return cooldownRemaining;
-    }
+    @Override
+    public String consumedBy(Actor actor, GameMap map) {
+        // Increase maximum health by 1
+        actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.INCREASE, 1);
 
-    /**
-     * Starts the cooldown timer after the kit has been used.
-     */
-    public void startCooldown() {
-        this.cooldownRemaining = COOLDOWN_TURNS;
+        // Start cooldown
+        cooldown.update(cooldown.getMaximum());
+
+        return actor + " uses the First Aid Kit. Maximum health increased by 1 and health restored to full! ("
+                + actor.getStatistic(ActorStatistics.HEALTH) + "/"
+                + actor.getMaximumStatistic(ActorStatistics.HEALTH) + ")";
     }
 
     /**
@@ -70,8 +64,8 @@ public class FirstAidKit extends Item {
      */
     @Override
     public void tick(Location currentLocation, Actor actor) {
-        if (cooldownRemaining > 0) {
-            cooldownRemaining--;
+        if (cooldown.get() > 0) {
+            cooldown.decrease(1);
         }
     }
 
@@ -85,8 +79,8 @@ public class FirstAidKit extends Item {
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {
         ActionList actions = new ActionList();
-        if (isReady()) {
-            actions.add(new UseFirstAidKitAction(this));
+        if (cooldown.get() <= 0) {
+            actions.add(new ConsumeAction(this));
         }
         return actions;
     }

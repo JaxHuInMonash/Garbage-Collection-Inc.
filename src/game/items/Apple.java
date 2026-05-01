@@ -69,11 +69,6 @@ public class Apple extends Item implements Consumable, Sellable {
         }
     }
 
-    @Override
-    public String getConsumeMenuDescription(Actor actor) {
-        return actor + " eats Apple";
-    }
-
     /**
      * Offers the consume action while the apple is being carried.
      *
