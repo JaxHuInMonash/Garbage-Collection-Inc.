@@ -101,8 +101,10 @@ public class FleshyTreeMature extends Ground {
         }
 
         Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
+        Undead undead = new Undead();
         try {
-            spawnLocation.addActor(new Undead());
+            spawnLocation.addActor(undead);
+            SpawnEffectManager.getInstance().onCreatureSpawned(undead, spawnLocation);
         } catch (GameEngineException e) {
         }
     }
