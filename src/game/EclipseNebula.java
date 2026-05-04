@@ -52,6 +52,9 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('~', Puddle::new);
         groundCreator.registerGround('_', Floor::new);
         groundCreator.registerGround('=', AluminiumDoor::new);
+        groundCreator.registerGround('N', IronDoor::new);
+        groundCreator.registerGround('M', TitaniumDoor::new);
+        groundCreator.registerGround('≡', Supercomputer::new);
         groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
 
@@ -80,6 +83,8 @@ public class EclipseNebula extends World {
 
         GameMap moon99DeprecatedMap = new GameMap("99-Deprecated", groundCreator, moon99Deprecated);
         this.addGameMap(moon99DeprecatedMap);
+
+
 
         // Place the three unique ship items (only instantiated once)
         moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());

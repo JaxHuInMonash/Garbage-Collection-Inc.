@@ -82,11 +82,6 @@ public class Cookies extends Item implements Consumable, Sellable {
     }
 
     @Override
-    public String getConsumeMenuDescription(Actor actor) {
-        return actor + " eats a cookie (" + getStatistic(ItemStatistics.QUANTITY) + " remaining)";
-    }
-
-    @Override
     public String toString() {
         return "Cookie" + (getStatistic(ItemStatistics.QUANTITY) == 1 ? "" : "s");
     }

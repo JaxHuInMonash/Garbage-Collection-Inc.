@@ -24,6 +24,6 @@ public class BuyAction extends Action {
 
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " buys " + buyable + " for " + buyable.getValue() + " credits.";
+        return actor + " buys " + buyable;
     }
 }
