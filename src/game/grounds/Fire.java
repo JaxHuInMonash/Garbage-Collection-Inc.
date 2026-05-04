@@ -3,6 +3,7 @@ package game.grounds;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.capabilities.Ability;
 import game.statuses.BurnStatus;
 
 /**
@@ -32,6 +33,7 @@ public class Fire extends Ground {
         super('^', "Fire");
         this.originalGround = originalGround;
         this.remainingTurns = FIRE_DURATION;
+        this.enableAbility(Ability.ON_FIRE);
     }
 
     /**

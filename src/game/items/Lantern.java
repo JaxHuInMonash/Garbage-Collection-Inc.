@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.capabilities.Ability;
 import game.capabilities.Infectable;
 import game.statuses.LanternInfectedStatus;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
@@ -95,7 +96,7 @@ public class Lantern extends Item implements Infectable {
             oilFuel--;
             Ground currentGround = currentLocation.getGround();
             // Only spawn fire if the ground isn't already on fire
-            if (!(currentGround instanceof Fire)) {
+            if (!currentGround.hasAbility(Ability.ON_FIRE)) {
                 currentLocation.setGround(new Fire(currentGround));
             }
         }

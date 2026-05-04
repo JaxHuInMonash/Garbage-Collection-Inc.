@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.capabilities.Ability;
 import game.spawning.SpawnEffectManager;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class Hole extends Ground {
         this.turnCounter = 0;
         this.random = new Random();
         this.creatureSuppliers = new ArrayList<>(creatureSuppliers);
+        this.enableAbility(Ability.IS_HOLE);
     }
 
     /**
@@ -132,7 +134,7 @@ public class Hole extends Ground {
         List<Location> expandable = new ArrayList<>();
         for (Exit exit : location.getExits()) {
             Location adjacent = exit.getDestination();
-            if (!(adjacent.getGround() instanceof Hole)) {
+            if (!adjacent.getGround().hasAbility(Ability.IS_HOLE)) {
                 expandable.add(adjacent);
             }
         }

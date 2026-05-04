@@ -64,6 +64,11 @@ public class Flask extends Item implements Consumable {
     }
 
     @Override
+    public Item asItem() {
+        return this;
+    }
+
+    @Override
     public String getConsumeMenuDescription(Actor actor) {
         return actor + " drinks from Flask (" + remainingUses + " uses remaining)";
     }

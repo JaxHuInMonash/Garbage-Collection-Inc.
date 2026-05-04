@@ -103,6 +103,11 @@ public class Cookies extends Item implements Consumable, Infectable {
     }
 
     @Override
+    public Item asItem() {
+        return this;
+    }
+
+    @Override
     public String getConsumeMenuDescription(Actor actor) {
         return actor + " eats a cookie (" + remainingCookies + " remaining)";
     }

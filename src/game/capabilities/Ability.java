@@ -25,4 +25,16 @@ public enum Ability {
      * targets without depending on concrete worker classes.
      */
     ATTACKABLE_BY_CREATURES,
+
+    /**
+     * Marks a ground tile as being on fire. Used to check whether fire
+     * should be spawned without relying on instanceof checks.
+     */
+    ON_FIRE,
+
+    /**
+     * Marks a ground tile as a hole. Used by hole expansion logic to
+     * avoid converting existing holes.
+     */
+    IS_HOLE,
 }

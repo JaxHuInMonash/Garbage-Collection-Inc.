@@ -1,6 +1,7 @@
 package game.capabilities;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 
 /**
@@ -33,4 +34,13 @@ public interface Consumable {
      * @return a string to display in the action menu
      */
     String getConsumeMenuDescription(Actor actor);
+
+    /**
+     * Returns this consumable as an {@link Item}. All consumables in the game
+     * are items, so this provides a safe way to obtain the Item reference
+     * without using instanceof checks.
+     *
+     * @return this consumable as an Item
+     */
+    Item asItem();
 }
