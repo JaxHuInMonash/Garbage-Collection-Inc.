@@ -51,15 +51,29 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('#', Wall::new);
         groundCreator.registerGround('~', Puddle::new);
         groundCreator.registerGround('_', Floor::new);
-        groundCreator.registerGround('=', Door::new);
+        groundCreator.registerGround('=', AluminiumDoor::new);
         groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
+        groundCreator.registerGround('Φ', Floor::new);
+        DefaultGroundCreator groundCreator20 = new DefaultGroundCreator();
+        groundCreator20.registerGround('.', Dirt::new);
+        groundCreator20.registerGround('#', Wall::new);
+        groundCreator20.registerGround('_', Floor::new);
+        groundCreator20.registerGround('=', AluminiumDoor::new);
+        groundCreator20.registerGround('N', IronDoor::new);
+        groundCreator20.registerGround('M', TitaniumDoor::new);
+        groundCreator20.registerGround('o', Hole::new);
+        groundCreator20.registerGround('≈', ToxicWaste::new);
+        groundCreator20.registerGround('◎', MagicCircle::new);
+        groundCreator20.registerGround('Φ', Floor::new);
+        groundCreator20.registerGround('◈', Floor::new);
+        groundCreator20.registerGround('≡', Floor::new);
 
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
                 "...#######..........#__________________#___________________#",
                 "...#_____#..........=__________________=___________________#",
-                "...#_____=...~......#__________________#___________________#",
+                "...#__Φ__=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
                 "...#######.~~~~.....#______#_#_________#___#___________#___#",
                 ".........~~~~.......#______#_#_________#####___________#####",
@@ -80,11 +94,44 @@ public class EclipseNebula extends World {
 
         GameMap moon99DeprecatedMap = new GameMap("99-Deprecated", groundCreator, moon99Deprecated);
         this.addGameMap(moon99DeprecatedMap);
+        List<String> moon20Overflow = Arrays.asList(
+                ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                "...#######...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈##################≈≈≈≈≈≈≈",
+                "...#≡____#...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
+                "...#__Φ__=...........≈≈≈≈≈≈≈≈#######_______◈________#≈≈≈≈≈≈≈",
+                "...#_____#...........≈≈≈≈≈≈≈≈#_____N________________#≈≈≈≈≈≈≈",
+                "...#######...≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_◎___###########=######≈≈≈≈≈≈≈",
+                ".............≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_____#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#########=#####≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#_____________#≈≈≈≈≈≈≈≈≈#___◎__#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#______o______#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#______o______#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                ".............≈≈≈≈≈≈≈≈######=########≈≈≈≈≈≈≈≈≈####=###≈≈≈≈≈≈≈",
+                "...≈≈≈≈≈≈≈≈≈.≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈≈≈≈≈",
+                "...≈≈≈≈≈≈≈≈≈.≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈###############_#######≈≈≈",
+                ".............≈≈≈≈≈≈≈≈≈≈≈≈≈#_____________________________#≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈≈≈≈≈≈#_______M__________◈__≈≈≈≈____#≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈≈≈≈≈≈#___◎___#_____________≈≈≈≈≈≈__≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈≈≈≈≈≈######################≈≈≈≈≈≈≈≈≈≈≈≈",
+                ".............≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
+        );
 
+        GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator20, moon20Overflow);
+        this.addGameMap(moon20OverflowMap);
+        TeleportationTube tube99 = new TeleportationTube();
+        tube99.addDestination(moon20OverflowMap, 5, 3, "20-Overflow");
+
+        TeleportationTube tube20 = new TeleportationTube();
+        tube20.addDestination(moon99DeprecatedMap, 4, 2, "99-Deprecated");
+
+        moon99DeprecatedMap.at(4, 3).addItem(new TeleportationTube());
+        moon20OverflowMap.at(5, 3).addItem(tube20);
         // Place the three unique ship items (only instantiated once)
-        moon99DeprecatedMap.at(5, 2).addItem(new AccessCard());
-        moon99DeprecatedMap.at(31, 10).addItem(new AccessCard());
-        moon99DeprecatedMap.at(51, 10).addItem(new AccessCard());
+        moon99DeprecatedMap.at(5, 2).addItem(new AccessCard(1));
+        moon99DeprecatedMap.at(31, 10).addItem(new AccessCard(1));
+        moon99DeprecatedMap.at(51, 10).addItem(new AccessCard(1));
         moon99DeprecatedMap.at(6, 2).addItem(new FirstAidKit());
         moon99DeprecatedMap.at(7, 2).addItem(new SterilisationBox());
 
@@ -94,6 +141,13 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(33, 17).addItem(new Lantern());
         moon99DeprecatedMap.at(57, 17).addItem(new FloppyDisk());
         moon99DeprecatedMap.at(25, 7).addItem(new CRTMonitor());
+
+        moon20OverflowMap.at(15, 3).addItem(new AlienCube());
+        moon20OverflowMap.at(11, 15).addItem(new AlienCube());
+
+
+        moon20OverflowMap.at(20, 8).addItem(new AccessCard(2));
+        moon20OverflowMap.at(40, 14).addItem(new AccessCard(3));
 
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);

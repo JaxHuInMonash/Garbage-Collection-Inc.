@@ -28,10 +28,14 @@ public class Fire extends Ground {
      *
      * @param originalGround the ground type that was here before the fire started
      */
+
     public Fire(Ground originalGround) {
+        this(originalGround, FIRE_DURATION);
+    }
+    public Fire(Ground originalGround, int duration) {
         super('^', "Fire");
         this.originalGround = originalGround;
-        this.remainingTurns = FIRE_DURATION;
+        this.remainingTurns = duration;
     }
 
     /**
