@@ -30,13 +30,13 @@ public class Apple extends Item implements Consumable, Sellable {
     public Apple() {
         super("Apple", 'ó');
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
-        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(1));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(1));
         this.makePortable();
     }
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {

@@ -43,13 +43,13 @@ public class Lantern extends Item implements Sellable {
         this.random = new Random();
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(7));
         this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(10)); // Oil Fuel
-        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(getStatistic(ItemStatistics.QUANTITY) * 5));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(getStatistic(ItemStatistics.QUANTITY) * 5));
         this.makePortable();
     }
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         if (random.nextInt(100) < BURN_ON_SELL_PERCENTAGE_CHANCE) {
@@ -68,7 +68,7 @@ public class Lantern extends Item implements Sellable {
             }
         }
 
-        return this + " was sold for " + getStatistic(ItemStatistics.VALUE) + " credits";
+        return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
     }
 
     /**
@@ -94,7 +94,7 @@ public class Lantern extends Item implements Sellable {
     public void tick(Location currentLocation, Actor actor) {
         if (getStatistic(ItemStatistics.QUANTITY) > 0 && random.nextInt(100) < LEAK_CHANCE_PERCENT) {
             modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
-            modifyStatistic(ItemStatistics.VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_OIL);
+            modifyStatistic(ItemStatistics.SELL_VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_OIL);
             Ground currentGround = currentLocation.getGround();
             // Only spawn fire if the ground isn't already on fire
             if (!(currentGround instanceof Fire)) {

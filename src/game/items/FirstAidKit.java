@@ -34,12 +34,21 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
     public FirstAidKit() {
         super("First Aid Kit", '+');
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(25));
+        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(1000));
         this.makePortable();
     }
 
     @Override
     public String buy(Actor actor, GameMap map) {
-        return "";
+        if (actor.getStatistic(game.ActorStatistics.CREDITS) < getStatistic(ItemStatistics.BUY_VALUE)) {
+            actor.hurt(actor.getMaximumStatistic(ActorStatistics.HEALTH)); // KILL PLAYER
+
+            return actor + " attempted to buy " + this + " but couldn't afford it - " + actor + " was killed on the spot.";
+        }
+
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.BUY_VALUE));
+
+        return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
     }
 
     @Override

@@ -33,19 +33,19 @@ public class Cookies extends Item implements Consumable, Sellable {
         super("Cookies", '◍');
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(2));
         this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(5));
-        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(this.getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(this.getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE));
         this.makePortable();
     }
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         // Reduce 1 HP per cookie remaining
         actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.DECREASE, getStatistic(ItemStatistics.QUANTITY));
 
-        return this + "were sold for " + getStatistic(ItemStatistics.VALUE) + " credits";
+        return this + "were sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
     }
 
     /**
@@ -60,7 +60,7 @@ public class Cookies extends Item implements Consumable, Sellable {
     @Override
     public String consumedBy(Actor actor, GameMap map) {
         modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
-        modifyStatistic(ItemStatistics.VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE);
+        modifyStatistic(ItemStatistics.SELL_VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE);
 
         String result;
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {

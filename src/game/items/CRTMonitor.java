@@ -34,13 +34,13 @@ public class CRTMonitor extends Item implements Sellable {
     public CRTMonitor() {
         super("CRT Monitor", '◙');
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(30));
-        this.addNewStatistic(ItemStatistics.VALUE, new BaseStatistic(25));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(25));
         this.makePortable();
     }
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.VALUE));
+        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.INCREASE, HEALTH_ON_SELL);
@@ -59,6 +59,6 @@ public class CRTMonitor extends Item implements Sellable {
             }
         }
 
-        return this + " was sold for " + getStatistic(ItemStatistics.VALUE) + " credits";
+        return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
     }
 }

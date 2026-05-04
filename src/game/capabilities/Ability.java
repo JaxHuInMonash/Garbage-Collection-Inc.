@@ -9,9 +9,20 @@ package game.capabilities;
  */
 public enum Ability {
     /**
-     * Allows an actor (or an item granting this ability) to unlock doors.
+     * Allows an actor (or an item granting this ability) to unlock level 1 doors.
      */
-    CAN_UNLOCK_DOORS,
+    ACCESS_LEVEL_1,
+
+    /**
+     * Allows an actor (or an item granting this ability) to unlock level 2 doors.
+     */
+    ACCESS_LEVEL_2,
+
+    /**
+     * Allows an actor (or an item granting this ability) to unlock level 3 doors.
+     */
+    ACCESS_LEVEL_3,
+
 
     /**
      * Indicates the carrier has a SterilisationBox, which purifies consumables
