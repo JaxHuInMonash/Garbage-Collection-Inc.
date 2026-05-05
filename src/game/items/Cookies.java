@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
@@ -103,8 +104,8 @@ public class Cookies extends Item implements Consumable, Infectable {
     }
 
     @Override
-    public Item asItem() {
-        return this;
+    public void removeFromGround(Location location) {
+        location.removeItem(this);
     }
 
     @Override

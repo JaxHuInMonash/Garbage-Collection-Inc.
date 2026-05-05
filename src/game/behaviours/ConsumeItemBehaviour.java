@@ -40,8 +40,8 @@ public class ConsumeItemBehaviour implements Behaviour<Actor, Action> {
 
         if (!consumables.isEmpty()) {
             Consumable consumable = consumables.get(0);
-            // Remove the item from the ground before consuming
-            location.removeItem(consumable.asItem());
+            // The consumable removes itself
+            consumable.removeFromGround(location);
             return new ConsumeAction(consumable);
         }
 

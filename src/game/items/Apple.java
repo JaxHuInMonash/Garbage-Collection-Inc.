@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
@@ -54,8 +55,8 @@ public class Apple extends Item implements Consumable {
     }
 
     @Override
-    public Item asItem() {
-        return this;
+    public void removeFromGround(Location location) {
+        location.removeItem(this);
     }
 
     @Override
