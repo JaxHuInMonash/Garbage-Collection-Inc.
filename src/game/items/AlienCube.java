@@ -6,11 +6,11 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
-import game.actions.SellAlienCubeAction;
 import game.actions.UseAlienCubeAction;
-import game.capabilities.Tradeable;
+import game.capabilities.Sellable;
+import game.actions.SellAction;
 
-public class AlienCube extends Item implements Tradeable {
+public class AlienCube extends Item implements Sellable {
 
     private static final int CREDIT_VALUE = 25;
 
@@ -21,12 +21,7 @@ public class AlienCube extends Item implements Tradeable {
     }
 
     @Override
-    public int getCreditValue() {
-        return CREDIT_VALUE;
-    }
-
-    @Override
-    public String soldBy(Actor actor, GameMap map) {
+    public String sell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
         return actor + " sold the Alien Cube for " + CREDIT_VALUE + " credits — an Undead materialises nearby!";
     }
@@ -37,7 +32,7 @@ public class AlienCube extends Item implements Tradeable {
         actions.add(new UseAlienCubeAction(this, 0));
         actions.add(new UseAlienCubeAction(this, 1));
         actions.add(new UseAlienCubeAction(this, 2));
-        actions.add(new SellAlienCubeAction(this));
+        actions.add(new SellAction(this));
         return actions;
     }
 }
