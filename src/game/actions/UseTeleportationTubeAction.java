@@ -38,7 +38,9 @@ public class UseTeleportationTubeAction extends Action {
         } else {
             destLocation = destMap.at(chosen.x(), chosen.y());
         }
-
+        if (destLocation.containsAnActor()) {
+            destLocation = getRandomPassableLocation(destMap);
+        }
         burnSurroundings(destLocation);
         map.moveActor(actor, destLocation);
 
@@ -75,7 +77,7 @@ public class UseTeleportationTubeAction extends Action {
             int y = destMap.getYRange().min() + random.nextInt(height);
             candidate = destMap.at(x, y);
             attempts++;
-        } while (candidate.getGround() instanceof Wall && attempts < 100);
+        } while ((candidate.getGround() instanceof Wall || candidate.containsAnActor()) && attempts < 100);
         return candidate;
     }
 }

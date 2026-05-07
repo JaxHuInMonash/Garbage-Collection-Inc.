@@ -73,7 +73,7 @@ public class EclipseNebula extends World {
                 "....................########################################",
                 "...#######..........#__________________#___________________#",
                 "...#_____#..........=__________________=___________________#",
-                "...#__Φ__=...~......#__________________#___________________#",
+                "...#Φ____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
                 "...#######.~~~~.....#______#_#_________#___#___________#___#",
                 ".........~~~~.......#______#_#_________#####___________#####",
@@ -124,9 +124,9 @@ public class EclipseNebula extends World {
         tube99.addDestination(moon20OverflowMap, 5, 3, "20-Overflow");
 
         TeleportationTube tube20 = new TeleportationTube();
-        tube20.addDestination(moon99DeprecatedMap, 4, 2, "99-Deprecated");
+        tube20.addDestination(moon99DeprecatedMap, 5, 2, "99-Deprecated");
 
-        moon99DeprecatedMap.at(4, 3).addItem(new TeleportationTube());
+        moon99DeprecatedMap.at(4, 3).addItem(tube99);
         moon20OverflowMap.at(5, 3).addItem(tube20);
         // Place the three unique ship items (only instantiated once)
         moon99DeprecatedMap.at(5, 2).addItem(new AccessCard(1));
