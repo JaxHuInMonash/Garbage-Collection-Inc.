@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.behaviours.Behaviour;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import game.BasicInventory;
 import game.alarm.AlarmListener;
 import game.alarm.AlarmManager;
@@ -69,6 +70,7 @@ public class Undead extends Actor implements AlarmListener, Infectable {
     /**
      * Handles infection by a Parasite. Alien biology severely rejects the
      * reanimated dead — the Undead immediately blows up and is killed.
+     * No status is added since the effect is instantaneous.
      *
      * @param infector the Parasite that caused the infection
      * @param map      the current game map
@@ -76,6 +78,27 @@ public class Undead extends Actor implements AlarmListener, Infectable {
     @Override
     public void onInfected(Actor infector, GameMap map) {
         this.unconscious(map);
+    }
+
+    /**
+     * No-op: the Undead dies instantly on infection, so this is never called.
+     *
+     * @param location the current location (unused)
+     */
+    @Override
+    public void onInfectionTick(Location location) {
+        // Instant death — no per-turn infection behaviour
+    }
+
+    /**
+     * Always false: the Undead dies instantly on infection, so no ongoing
+     * infection status is needed.
+     *
+     * @return false always
+     */
+    @Override
+    public boolean isInfectionActive() {
+        return false;
     }
 
     /**

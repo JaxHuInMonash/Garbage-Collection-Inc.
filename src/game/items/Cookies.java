@@ -1,19 +1,23 @@
 package game.items;
 
+import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
+import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
+import game.actors.Parasite;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
 import game.capabilities.Infectable;
-import game.statuses.CookieInfectedStatus;
+import game.spawning.SpawnEffectManager;
+import game.statuses.InfectedStatus;
 
 /**
  * A packet of cookies found on the moon's facility. Weighs 2 units and
@@ -50,25 +54,58 @@ public class Cookies extends Item implements Consumable, Infectable {
     }
 
     /**
-     * Reduces the remaining cookies by the specified amount.
-     * Cookies cannot go below zero.
-     *
-     * @param amount the number of cookies to remove
-     */
-    public void reduceCookies(int amount) {
-        this.remainingCookies = Math.max(0, this.remainingCookies - amount);
-    }
-
-    /**
-     * Applies an infection status to these cookies. Each turn, one cookie
-     * is consumed and a Parasite is spawned nearby.
+     * Called when these cookies are infected by a Parasite. Adds the generic
+     * {@link InfectedStatus} which delegates per-turn logic back to this class.
      *
      * @param infector the Parasite that caused the infection
      * @param map      the current game map
      */
     @Override
     public void onInfected(Actor infector, GameMap map) {
-        this.addStatus(new CookieInfectedStatus(this));
+        this.addStatus(new InfectedStatus(this));
+    }
+
+    /**
+     * Per-turn infection logic: reduces cookies by 1 and spawns a Parasite
+     * on an adjacent empty tile each turn.
+     *
+     * @param location the current location of these cookies
+     */
+    @Override
+    public void onInfectionTick(Location location) {
+        this.remainingCookies = Math.max(0, this.remainingCookies - 1);
+        spawnParasiteAdjacent(location);
+    }
+
+    /**
+     * The infection remains active while cookies remain.
+     *
+     * @return true if there are cookies remaining
+     */
+    @Override
+    public boolean isInfectionActive() {
+        return remainingCookies > 0;
+    }
+
+    /**
+     * Attempts to spawn a Parasite on an adjacent empty tile.
+     *
+     * @param location the location around which to spawn
+     */
+    private void spawnParasiteAdjacent(Location location) {
+        for (Exit exit : location.getExits()) {
+            Location adjacent = exit.getDestination();
+            Parasite parasite = new Parasite();
+            if (adjacent.canActorEnter(parasite)) {
+                try {
+                    adjacent.addActor(parasite);
+                    SpawnEffectManager.getInstance().onCreatureSpawned(parasite, adjacent);
+                } catch (GameEngineException e) {
+                    // Tile became occupied between check and placement — skip
+                }
+                return;
+            }
+        }
     }
 
     /**

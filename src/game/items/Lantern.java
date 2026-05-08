@@ -5,12 +5,12 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.capabilities.Ability;
-import game.capabilities.Infectable;
-import game.statuses.LanternInfectedStatus;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
+import game.capabilities.Ability;
+import game.capabilities.Infectable;
 import game.grounds.Fire;
+import game.statuses.InfectedStatus;
 
 import java.util.Random;
 
@@ -32,24 +32,6 @@ public class Lantern extends Item implements Infectable {
     private final Random random;
 
     /**
-     * Returns the current oil fuel level.
-     *
-     * @return the remaining oil units
-     */
-    public int getOilFuel() {
-        return oilFuel;
-    }
-
-    /**
-     * Drains the specified amount of oil fuel. Oil cannot go below zero.
-     *
-     * @param amount the amount of oil to drain
-     */
-    public void drainOil(int amount) {
-        this.oilFuel = Math.max(0, this.oilFuel - amount);
-    }
-
-    /**
      * Constructor.
      */
     public Lantern() {
@@ -61,14 +43,35 @@ public class Lantern extends Item implements Infectable {
     }
 
     /**
-     * Applies an infection status to this lantern, draining 1 oil per turn.
+     * Called when this lantern is infected by a Parasite. Adds the generic
+     * {@link InfectedStatus} which delegates per-turn logic back to this class.
      *
      * @param infector the Parasite that caused the infection
      * @param map      the current game map
      */
     @Override
     public void onInfected(Actor infector, GameMap map) {
-        this.addStatus(new LanternInfectedStatus(this));
+        this.addStatus(new InfectedStatus(this));
+    }
+
+    /**
+     * Per-turn infection logic: drains 1 unit of oil each turn.
+     *
+     * @param location the current location of this lantern
+     */
+    @Override
+    public void onInfectionTick(Location location) {
+        this.oilFuel = Math.max(0, this.oilFuel - 1);
+    }
+
+    /**
+     * The infection remains active while the lantern still has oil.
+     *
+     * @return true if oil remains, false otherwise
+     */
+    @Override
+    public boolean isInfectionActive() {
+        return oilFuel > 0;
     }
 
     /**
