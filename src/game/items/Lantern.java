@@ -52,7 +52,6 @@ public class Lantern extends Item implements Sellable {
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         if (random.nextInt(100) < BURN_ON_SELL_PERCENTAGE_CHANCE) {
@@ -72,6 +71,11 @@ public class Lantern extends Item implements Sellable {
         }
 
         return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
+    }
+
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
     }
 
     /**
@@ -98,6 +102,7 @@ public class Lantern extends Item implements Sellable {
         if (getStatistic(ItemStatistics.QUANTITY) > 0 && random.nextInt(100) < LEAK_CHANCE_PERCENT) {
             modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
             modifyStatistic(ItemStatistics.SELL_VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_OIL);
+
             Ground currentGround = currentLocation.getGround();
             // Only spawn fire if the ground isn't already on fire
             if (!(currentGround instanceof Fire)) {

@@ -26,6 +26,13 @@ public class Apple extends Item implements Consumable, Sellable {
     private static final int WEIGHT = 1;
     private static final int SELL_VALUE = 1;
 
+    private static final int SELL_POISON_DAMAGE_PER_TURN = 2;
+    private static final int SELL_POISON_DURATION = 2;
+
+    private static final int CONSUME_STERILISATION_HEAL = 3;
+    private static final int CONSUME_POISON_DAMAGE_PER_TURN = 1;
+    private static final int CONSUME_POISON_DURATION = 5;
+
     /**
      * Constructor.
      */
@@ -38,15 +45,19 @@ public class Apple extends Item implements Consumable, Sellable {
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
             return actor + " sells a sterilised Apple - Neutralising its poisonous effects.";
         } else {
-            actor.addStatus(new PoisonStatus(2, 2));
+            actor.addStatus(new PoisonStatus(SELL_POISON_DAMAGE_PER_TURN, SELL_POISON_DURATION));
             return actor + " sells a toxic Apple and is poisoned! (2 dmg/turn for 2 turns)";
         }
+    }
+
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
     }
 
     /**
@@ -63,10 +74,10 @@ public class Apple extends Item implements Consumable, Sellable {
         actor.getInventory().remove(this);
 
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
-            actor.heal(3);
-            return actor + " eats a sterilised Apple and heals 3 HP.";
+            actor.heal(CONSUME_STERILISATION_HEAL);
+            return actor + " eats a sterilised Apple and heals " + CONSUME_STERILISATION_HEAL + " HP.";
         } else {
-            actor.addStatus(new PoisonStatus(1, 5));
+            actor.addStatus(new PoisonStatus(CONSUME_POISON_DAMAGE_PER_TURN, CONSUME_POISON_DURATION));
             return actor + " eats a toxic Apple and is poisoned! (1 dmg/turn for 5 turns)";
         }
     }

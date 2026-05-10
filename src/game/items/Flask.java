@@ -22,7 +22,9 @@ import game.capabilities.Consumable;
  */
 public class Flask extends Item implements Consumable {
     private static final int WEIGHT = 3;
-    private static final int INITIAL_QUANTITY = 5 ;
+    private static final int INITIAL_QUANTITY = 5;
+
+    private static final int CONSUME_HEAL = 1;
 
     /**
      * Constructor.
@@ -47,8 +49,8 @@ public class Flask extends Item implements Consumable {
     public String consumedBy(Actor actor, GameMap map) {
         if (getStatistic(ItemStatistics.QUANTITY) > 0) {
             modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
-            actor.heal(1);
-            return actor + " drinks from the Flask, healing 1 point. (" + getStatistic(ItemStatistics.QUANTITY) + " uses remaining)";
+            actor.heal(CONSUME_HEAL);
+            return actor + " drinks from the Flask, healing " + CONSUME_HEAL + " point. (" + getStatistic(ItemStatistics.QUANTITY) + " uses remaining)";
         }
         return actor + "'s Flask is empty.";
     }

@@ -44,19 +44,19 @@ public class AccessCardLevel3 extends Item implements Buyable {
 
     @Override
     public String buy(Actor actor, GameMap map) {
-        if (actor.getStatistic(ActorStatistics.CREDITS) < getStatistic(ItemStatistics.BUY_VALUE)) {
-            return actor + " cannot afford this " + this + ". ("
-                    + actor.getStatistic(ActorStatistics.CREDITS) + "/"
-                    + getStatistic(ItemStatistics.BUY_VALUE) + ")";
-        }
-
-        actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, getStatistic(ItemStatistics.BUY_VALUE));
-
+        String returnMessage = actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits";
         actor.getInventory().add(this);
 
-        if (random.nextInt(100) < HIDDEN_FEE_PERCENTAGE_CHANCE)
+        if (random.nextInt(100) < HIDDEN_FEE_PERCENTAGE_CHANCE) {
             actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, HIDDEN_FEE);
+            return returnMessage + " - " + actor + " was also hit by a hidden fee of " + HIDDEN_FEE + " credits!!";
+        }
 
-        return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
+        return returnMessage + ".";
+    }
+
+    @Override
+    public int getBuyValue() {
+        return getStatistic(ItemStatistics.BUY_VALUE);
     }
 }

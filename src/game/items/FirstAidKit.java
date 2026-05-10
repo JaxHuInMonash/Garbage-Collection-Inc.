@@ -28,7 +28,8 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
     private static final int WEIGHT = 25;
     private static final int BUY_VALUE = 1000;
 
-    private final BaseStatistic cooldown = new BaseStatistic(20);
+    private static final int MAX_COOLDOWN_TURNS = 20;
+    private final BaseStatistic cooldown = new BaseStatistic(MAX_COOLDOWN_TURNS);
 
     /**
      * Constructor.
@@ -43,15 +44,21 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
 
     @Override
     public String buy(Actor actor, GameMap map) {
-        if (actor.getStatistic(game.ActorStatistics.CREDITS) < getStatistic(ItemStatistics.BUY_VALUE)) {
-            actor.hurt(actor.getMaximumStatistic(ActorStatistics.HEALTH)); // KILL PLAYER
-
-            return actor + " attempted to buy " + this + " but couldn't afford it - " + actor + " was killed on the spot.";
-        }
-
         actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.BUY_VALUE));
 
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
+    }
+
+    @Override
+    public int getBuyValue() {
+        return getStatistic(ItemStatistics.BUY_VALUE);
+    }
+
+    @Override
+    public String onInsufficientCredits(Actor actor, GameMap map) {
+        actor.hurt(actor.getMaximumStatistic(ActorStatistics.HEALTH)); // KILL PLAYER
+
+        return " - " + actor + " was killed on the spot.";
     }
 
     @Override

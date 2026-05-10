@@ -29,6 +29,11 @@ public class Cookies extends Item implements Consumable, Sellable {
     private static final int INITIAL_QUANTITY = 5;
     private static final int VALUE_PER_COOKIE = 1;
 
+    private static final int SELL_DAMAGE_PER_COOKIE = 1;
+
+    private static final int CONSUME_STERILISED_HEAL = 1;
+    private static final int CONSUME_UNSTERILISED_DAMAGE = 1;
+
     /**
      * Constructor.
      */
@@ -42,13 +47,16 @@ public class Cookies extends Item implements Consumable, Sellable {
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
-        // Reduce 1 HP per cookie remaining
-        actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.DECREASE, getStatistic(ItemStatistics.QUANTITY));
+        actor.hurt(SELL_DAMAGE_PER_COOKIE * getStatistic(ItemStatistics.QUANTITY));
 
-        return this + "were sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
+        return this + " were sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits, harming the player " + SELL_DAMAGE_PER_COOKIE + " for each cookie.";
+    }
+
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
     }
 
     /**
@@ -67,10 +75,10 @@ public class Cookies extends Item implements Consumable, Sellable {
 
         String result;
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
-            actor.heal(1);
+            actor.heal(CONSUME_STERILISED_HEAL);
             result = actor + " eats a sterilised cookie and heals 1 HP.";
         } else {
-            actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.DECREASE, 1);
+            actor.hurt(CONSUME_UNSTERILISED_DAMAGE);
             result = actor + " eats a toxic cookie. Maximum HP decreased by 1!";
         }
 

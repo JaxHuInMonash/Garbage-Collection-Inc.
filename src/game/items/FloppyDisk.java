@@ -35,7 +35,6 @@ public class FloppyDisk extends Item implements Sellable {
 
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         if (random.nextInt(100) < GLITCH_PERCENTAGE_CHANCE) {
@@ -43,5 +42,10 @@ public class FloppyDisk extends Item implements Sellable {
         }
 
         return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
+    }
+
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
     }
 }

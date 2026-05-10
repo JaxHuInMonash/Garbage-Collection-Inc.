@@ -64,4 +64,9 @@ public class CRTMonitor extends Item implements Sellable {
 
         return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
     }
+
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
+    }
 }

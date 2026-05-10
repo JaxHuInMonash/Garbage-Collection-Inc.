@@ -6,8 +6,10 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.ActorStatistics;
 import game.actions.BuyAction;
+import game.actions.SellAction;
 import game.capabilities.Ability;
 import game.capabilities.Buyable;
+import game.capabilities.Sellable;
 import game.items.*;
 
 import java.util.ArrayList;
@@ -41,9 +43,14 @@ public class Supercomputer extends Ground {
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actionList = new ActionList();
 
-        if (actor.hasStatistic(ActorStatistics.CREDITS))
+        if (actor.hasStatistic(ActorStatistics.CREDITS)) {
             for (Supplier<Buyable> supplier : buyables)
                 actionList.add(new BuyAction(supplier.get()));
+
+            for (Sellable sellable : actor.getInventory().getItemsAs(Sellable.class))
+                actionList.add(new SellAction(sellable));
+
+        }
 
         return actionList;
     }

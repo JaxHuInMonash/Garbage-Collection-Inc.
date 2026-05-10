@@ -42,19 +42,18 @@ public class SterilisationBox extends Item implements Buyable {
 
     @Override
     public String buy(Actor actor, GameMap map) {
-        if (actor.getStatistic(ActorStatistics.CREDITS) < getStatistic(ItemStatistics.BUY_VALUE)) {
-            return actor + " cannot afford this " + this + ". ("
-                    + actor.getStatistic(ActorStatistics.CREDITS) + "/"
-                    + getStatistic(ItemStatistics.BUY_VALUE) + ")";
-        }
+        actor.getInventory().add(this);
 
         List<Item> items = actor.getInventory().getItems();
         Item randomItem = items.get(random.nextInt(items.size()));
 
         actor.getInventory().remove(randomItem);
-        actor.getInventory().add(this);
 
-        return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits." +
-                "- However due to radiation, " + randomItem + " was destroyed." ;
+        return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits - " + randomItem + " was destroyed due to radiation." ;
+    }
+
+    @Override
+    public int getBuyValue() {
+        return getStatistic(ItemStatistics.BUY_VALUE);
     }
 }

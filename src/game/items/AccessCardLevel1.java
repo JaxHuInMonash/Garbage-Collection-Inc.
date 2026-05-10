@@ -36,17 +36,13 @@ public class AccessCardLevel1 extends Item implements Buyable {
 
     @Override
     public String buy(Actor actor, GameMap map) {
-        if (actor.getStatistic(ActorStatistics.CREDITS) < getStatistic(ItemStatistics.BUY_VALUE)) {
-            return actor + " cannot afford this " + this + ". ("
-                    + actor.getStatistic(ActorStatistics.CREDITS) + "/"
-                    + getStatistic(ItemStatistics.BUY_VALUE) + ")";
-        }
-
-        actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, getStatistic(ItemStatistics.BUY_VALUE));
-
-
         actor.getInventory().add(this);
 
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
+    }
+
+    @Override
+    public int getBuyValue() {
+        return getStatistic(ItemStatistics.BUY_VALUE);
     }
 }
