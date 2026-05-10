@@ -27,6 +27,8 @@ import game.capabilities.Ability;
  * @author Jax
  */
 public class ContractedWorker extends Actor {
+    private static final int MAX_CREDITS = 1000;
+    private static final int INITIAL_CREDITS = 0;
 
     /**
      * Constructor.
@@ -40,9 +42,8 @@ public class ContractedWorker extends Actor {
         super(name, displayChar, hitPoints, inventory);
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
 
-        // Max credits of 1000 but starts with 0
-        this.addNewStatistic(ActorStatistics.CREDITS, new BaseStatistic(1000));
-        this.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.UPDATE, 0);
+        this.addNewStatistic(ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
+        this.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
     }
 
     /**
