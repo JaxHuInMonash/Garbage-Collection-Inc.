@@ -16,13 +16,14 @@ import game.statuses.BurnStatus;
 import java.util.Random;
 
 /**
- * An unstable light source weighing 7 units. Starts with 10 units of oil fuel.
+ * An unstable light source weighing {@value WEIGHT} units. Starts with {@value INITIAL_OIL_QUANTITY} units of oil fuel.
  * <p>
- * While being carried, it has a 5% chance each turn to leak and ignite the
+ * While being carried, it has a {@value LEAK_CHANCE_PERCENT}% chance each turn to leak and ignite the
  * ground beneath the actor, spawning a {@link Fire} on that tile and consuming
  * 1 unit of oil fuel.
  *
  * @author Jax
+ * @author Tommy
  */
 public class Lantern extends Item implements Sellable {
     private static final int WEIGHT = 7;
@@ -50,6 +51,19 @@ public class Lantern extends Item implements Sellable {
         this.makePortable();
     }
 
+    /**
+     * Defines what happens when a Lantern is sold.
+     * Removes the Lantern from the actor's inventory.
+     * There is a {@value BURN_ON_SELL_PERCENTAGE_CHANCE}
+     * percentage chance for the Actor to be burnt when sold.
+     * Additionally, there is a separate {@value EXPLODE_ON_SELL_PERCENTAGE_CHANCE}
+     * percentage chance for the Lantern to explode, igniting
+     * the tiles surrounding the actor with {@link Fire}.
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String sell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
@@ -73,6 +87,10 @@ public class Lantern extends Item implements Sellable {
         return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
     }
 
+    /**
+     * Provides the value of the item when sold
+     * @return current sell value of the item
+     */
     @Override
     public int getSellValue() {
         return getStatistic(ItemStatistics.SELL_VALUE);

@@ -15,7 +15,7 @@ import game.capabilities.Buyable;
  * over your ability to walk through doors. Its primary function is to beep
  * happily when the player has clearance, and beep angrily when they don't
  *
- * @author Jax
+ * @author Tommy
  */
 public class AccessCardLevel1 extends Item implements Buyable {
     private static final int WEIGHT = 1;
@@ -23,8 +23,9 @@ public class AccessCardLevel1 extends Item implements Buyable {
 
     /**
      * Constructor.
-     * Creates an AccessCard with weight 1, made portable so it can be
-     * picked up and dropped, and grants the CAN_UNLOCK_DOORS ability.
+     * <p>
+     * Creates an AccessCard, makes it portable so it can be
+     * picked up and dropped, and grants the ability ACCESS_LEVEL_1.
      */
     public AccessCardLevel1() {
         super("Access Card (Level 1)", '▤');
@@ -34,6 +35,14 @@ public class AccessCardLevel1 extends Item implements Buyable {
         this.enableAbility(Ability.ACCESS_LEVEL_1);
     }
 
+    /**
+     * Defines what happens when a AccessCardLevel1 is bought.
+     * Adds the card to the actor's inventory
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String buy(Actor actor, GameMap map) {
         actor.getInventory().add(this);
@@ -41,6 +50,10 @@ public class AccessCardLevel1 extends Item implements Buyable {
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
     }
 
+    /**
+     * Provides the value of the item when bought
+     * @return current buy value of the item
+     */
     @Override
     public int getBuyValue() {
         return getStatistic(ItemStatistics.BUY_VALUE);

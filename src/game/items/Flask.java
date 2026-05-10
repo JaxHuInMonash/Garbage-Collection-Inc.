@@ -19,6 +19,7 @@ import game.capabilities.Consumable;
  * Once depleted, the empty flask remains in the worker's inventory.
  *
  * @author Jax
+ * @author Tommy
  */
 public class Flask extends Item implements Consumable {
     private static final int WEIGHT = 3;

@@ -14,13 +14,17 @@ import game.capabilities.Unlockable;
  * contracted workers until they can produce the correct rectangular
  * piece of plastic.
  * <p>
- * A door starts locked and can be unlocked by an actor carrying an AccessCard.
+ * A door starts locked and can be unlocked by an actor with ACCESS_LEVEL_1.
  *
  * @author Jax
+ * @author Tommy
  */
 public class AluminiumDoor extends Ground implements Unlockable {
     private boolean isUnlocked = false;
 
+    /**
+     * Constructor.
+     */
     public AluminiumDoor() {
         super('=', "Aluminium Door");
     }

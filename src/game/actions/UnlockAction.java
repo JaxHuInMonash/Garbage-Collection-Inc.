@@ -10,6 +10,7 @@ import game.capabilities.Unlockable;
  * This action unlocks a specific door at a known location.
  *
  * @author Jax
+ * @author Tommy
  */
 public class UnlockAction extends Action {
     private final Unlockable unlockable;
@@ -33,6 +34,12 @@ public class UnlockAction extends Action {
         return unlockable.unlock(actor, map);
     }
 
+    /**
+     * Provides the description of what the Unlock Action does
+     *
+     * @param actor The actor performing the action.
+     * @return what the Unlock action performs
+     */
     @Override
     public String menuDescription(Actor actor) {
         return actor + " unlocks " + unlockable;

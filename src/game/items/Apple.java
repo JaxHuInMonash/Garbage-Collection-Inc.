@@ -21,6 +21,7 @@ import game.statuses.PoisonStatus;
  * The apple disappears from the inventory once consumed.
  *
  * @author Jax
+ * @author Tommy
  */
 public class Apple extends Item implements Consumable, Sellable {
     private static final int WEIGHT = 1;
@@ -43,6 +44,17 @@ public class Apple extends Item implements Consumable, Sellable {
         this.makePortable();
     }
 
+    /**
+     * Defines what happens when an Apple is sold.
+     * Removes the apple from the actor's inventory.
+     * if the player does not have the ability to sterilise,
+     * they will take {@value SELL_POISON_DAMAGE_PER_TURN} damage
+     * for {@value SELL_POISON_DURATION} turns.
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String sell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
@@ -51,10 +63,14 @@ public class Apple extends Item implements Consumable, Sellable {
             return actor + " sells a sterilised Apple - Neutralising its poisonous effects.";
         } else {
             actor.addStatus(new PoisonStatus(SELL_POISON_DAMAGE_PER_TURN, SELL_POISON_DURATION));
-            return actor + " sells a toxic Apple and is poisoned! (2 dmg/turn for 2 turns)";
+            return actor + " sells a toxic Apple and is poisoned! (" + SELL_POISON_DAMAGE_PER_TURN + " dmg/turn for " + SELL_POISON_DURATION + " turns)";
         }
     }
 
+    /**
+     * provides the value of the item when sold
+     * @return sell value of the item
+     */
     @Override
     public int getSellValue() {
         return getStatistic(ItemStatistics.SELL_VALUE);

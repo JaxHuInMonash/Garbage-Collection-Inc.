@@ -21,6 +21,7 @@ import java.util.Random;
  * the carrier, which purifies toxic consumables and environmental hazards.
  *
  * @author Jax
+ * @author Tommy
  */
 public class SterilisationBox extends Item implements Buyable {
     private static final int WEIGHT = 7;
@@ -40,6 +41,16 @@ public class SterilisationBox extends Item implements Buyable {
         this.enableAbility(Ability.HAS_STERILISATION);
     }
 
+    /**
+     * Defines what happens when a Sterilisation Box is bought.
+     * Adds the Sterilisation Box to the actor's inventory.
+     * But right after purchasing, due to the Sterilisation Box's
+     * radiation, one random item, including the Box will be removed.
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String buy(Actor actor, GameMap map) {
         actor.getInventory().add(this);
@@ -52,6 +63,10 @@ public class SterilisationBox extends Item implements Buyable {
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits - " + randomItem + " was destroyed due to radiation." ;
     }
 
+    /**
+     * Provides the value of the item when bought
+     * @return current buy value of the item
+     */
     @Override
     public int getBuyValue() {
         return getStatistic(ItemStatistics.BUY_VALUE);

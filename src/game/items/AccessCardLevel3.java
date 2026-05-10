@@ -17,7 +17,7 @@ import java.util.Random;
  * over your ability to walk through doors. Its primary function is to beep
  * happily when the player has clearance, and beep angrily when they don't
  *
- * @author Jax
+ * @author Tommy
  */
 public class AccessCardLevel3 extends Item implements Buyable {
     private static final int WEIGHT = 1;
@@ -27,10 +27,12 @@ public class AccessCardLevel3 extends Item implements Buyable {
     private static final int HIDDEN_FEE = 50;
 
     private Random random = new Random();
+
     /**
      * Constructor.
-     * Creates an AccessCard with weight 1, made portable so it can be
-     * picked up and dropped, and grants the CAN_UNLOCK_DOORS ability.
+     * <p>
+     * Creates an AccessCard, makes it portable so it can be
+     * picked up and dropped, and grants the ability ACCESS_LEVEL_3.
      */
     public AccessCardLevel3() {
         super("Access Card (Level 3)", '◐');
@@ -42,6 +44,16 @@ public class AccessCardLevel3 extends Item implements Buyable {
         this.enableAbility(Ability.ACCESS_LEVEL_3);
     }
 
+    /**
+     * Defines what happens when a AccessCardLevel3 is bought.
+     * Adds the card to the actor's inventory,
+     * however there is a percentage chance of {@value HIDDEN_FEE_PERCENTAGE_CHANCE}
+     * to deduct {@value HIDDEN_FEE} from the actor
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String buy(Actor actor, GameMap map) {
         String returnMessage = actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits";
@@ -55,6 +67,10 @@ public class AccessCardLevel3 extends Item implements Buyable {
         return returnMessage + ".";
     }
 
+    /**
+     * Provides the value of the item when bought
+     * @return current buy value of the item
+     */
     @Override
     public int getBuyValue() {
         return getStatistic(ItemStatistics.BUY_VALUE);

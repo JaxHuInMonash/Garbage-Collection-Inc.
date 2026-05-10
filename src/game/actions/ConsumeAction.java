@@ -14,9 +14,9 @@ import game.capabilities.Consumable;
  * following the DRY principle.
  *
  * @author Jax
+ * @author Tommy
  */
 public class ConsumeAction extends Action {
-
     private final Consumable consumable;
 
     /**
@@ -28,11 +28,24 @@ public class ConsumeAction extends Action {
         this.consumable = consumable;
     }
 
+    /**
+     * Executes the consumeBy sequence of the Consumable
+     *
+     * @param actor The actor performing the action.
+     * @param map The map the actor is on.
+     * @return result of consuming the Consumable
+     */
     @Override
     public String execute(Actor actor, GameMap map) {
         return consumable.consumedBy(actor, map);
     }
 
+    /**
+     * Provides the explanation of what this action does
+     *
+     * @param actor The actor performing the action.
+     * @return the description of what this action does
+     */
     @Override
     public String menuDescription(Actor actor) {
         return actor + " consumes " + consumable;

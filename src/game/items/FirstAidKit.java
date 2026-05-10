@@ -22,12 +22,13 @@ import game.capabilities.Consumable;
  * only progresses while the kit is actively being carried by a worker; if it is
  * left on the floor, the cooldown timer stops.
  *
- * @author Jax
+ * @author Tommy
  */
 public class FirstAidKit extends Item implements Consumable, Buyable {
     private static final int WEIGHT = 25;
     private static final int BUY_VALUE = 1000;
 
+    private static final int HEALTH_INCREASE_ON_CONSUME = 1;
     private static final int MAX_COOLDOWN_TURNS = 20;
     private final BaseStatistic cooldown = new BaseStatistic(MAX_COOLDOWN_TURNS);
 
@@ -42,18 +43,37 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
         this.makePortable();
     }
 
+    /**
+     * Defines what happens when an First Aid Kit is bought.
+     * adds a First Aid Kit to the actor's inventory.
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String buy(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.BUY_VALUE));
+        actor.getInventory().add(this);
 
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
     }
 
+    /**
+     * Provides the value of the item when bought
+     * @return current buy value of the item
+     */
     @Override
     public int getBuyValue() {
         return getStatistic(ItemStatistics.BUY_VALUE);
     }
 
+    /**
+     * Kills the actor immediately for having insufficient credits when attempting to purchase
+     *
+     * @param actor actor that attempted to buy item with insufficient credits
+     * @param map map the actor is on
+     * @return the result of having insufficient credits
+     */
     @Override
     public String onInsufficientCredits(Actor actor, GameMap map) {
         actor.hurt(actor.getMaximumStatistic(ActorStatistics.HEALTH)); // KILL PLAYER
@@ -61,10 +81,19 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
         return " - " + actor + " was killed on the spot.";
     }
 
+    /**
+     * Defines what happens when the First Aid Kit is consumed.
+     * Permanently adding {@value HEALTH_INCREASE_ON_CONSUME} max
+     * health to the actor, with a cooldown of {@value MAX_COOLDOWN_TURNS} turns.
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String consumedBy(Actor actor, GameMap map) {
         // Increase maximum health by 1
-        actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.INCREASE, 1);
+        actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.INCREASE, HEALTH_INCREASE_ON_CONSUME);
 
         // Start cooldown
         cooldown.update(cooldown.getMaximum());

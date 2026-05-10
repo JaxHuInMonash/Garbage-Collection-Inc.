@@ -20,6 +20,7 @@ import java.util.Random;
  * of weight in the worker's inventory.
  *
  * @author Jax
+ * @author Tommy
  */
 public class CRTMonitor extends Item implements Sellable {
     private static final int WEIGHT = 30;
@@ -41,9 +42,20 @@ public class CRTMonitor extends Item implements Sellable {
         this.makePortable();
     }
 
+    /**
+     * Defines what happens when an CRT Monitor is sold.
+     * Removes the CRT Monitor from the actor's inventory.
+     * There is an additional chance of {@value SHORT_PERCENTAGE_CHANCE}
+     * for the CRT Monitor to short out and damage the actor
+     * {@value DAMAGE_ON_SHORT} damage and surround the CRT
+     * Monitor with fire
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String sell(Actor actor, GameMap map) {
-        actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
         actor.heal(HEALTH_ON_SELL);
@@ -51,7 +63,7 @@ public class CRTMonitor extends Item implements Sellable {
         if (random.nextInt(100) < SHORT_PERCENTAGE_CHANCE) {
             actor.hurt(DAMAGE_ON_SHORT);
 
-            // Set surroundings on fire
+            // PLEASE CHANGE!!! (Using old implementation)
             for (Exit exit : map.locationOf(actor).getExits()) {
                 Location location = exit.getDestination();
                 Ground ground = location.getGround();
@@ -65,6 +77,10 @@ public class CRTMonitor extends Item implements Sellable {
         return this + " was sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits";
     }
 
+    /**
+     * Provides the value of the item when sold
+     * @return current sell value of the item
+     */
     @Override
     public int getSellValue() {
         return getStatistic(ItemStatistics.SELL_VALUE);

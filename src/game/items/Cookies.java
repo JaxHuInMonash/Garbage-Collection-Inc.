@@ -22,6 +22,7 @@ import game.capabilities.Sellable;
  * The item disappears from the inventory only after all 5 cookies are eaten.
  *
  * @author Jax
+ * @author Tommy
  */
 public class Cookies extends Item implements Consumable, Sellable {
     private static final int WEIGHT = 2;
@@ -45,6 +46,15 @@ public class Cookies extends Item implements Consumable, Sellable {
         this.makePortable();
     }
 
+    /**
+     * Defines what happens when a cookie is sold.
+     * Removes the Cookies from the actor's inventory
+     * and damages them by {@value SELL_DAMAGE_PER_COOKIE} per cookie
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
     @Override
     public String sell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
@@ -54,6 +64,10 @@ public class Cookies extends Item implements Consumable, Sellable {
         return this + " were sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits, harming the player " + SELL_DAMAGE_PER_COOKIE + " for each cookie.";
     }
 
+    /**
+     * Provides the value of the item when sold
+     * @return current sell value of the item
+     */
     @Override
     public int getSellValue() {
         return getStatistic(ItemStatistics.SELL_VALUE);
@@ -92,6 +106,10 @@ public class Cookies extends Item implements Consumable, Sellable {
         return result;
     }
 
+    /**
+     * Provides the correct name when displaying the name
+     * @return Singular or plural depending on quantity
+     */
     @Override
     public String toString() {
         return "Cookie" + (getStatistic(ItemStatistics.QUANTITY) == 1 ? "" : "s");

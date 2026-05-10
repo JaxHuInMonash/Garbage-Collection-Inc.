@@ -17,15 +17,18 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * While other classes get to be security doors, mysterious flasks, or highly
- * stressed contracted workers, this class humbly accepts its role as
- * the thing everyone walks all over.
+ * The ground which an Actor can interact with to buy Buyables
+ * and sell Sellables
  *
- * @author Adrian Kristanto
+ * @author Tommy
  */
 public class Supercomputer extends Ground {
     List<Supplier<Buyable>> buyables = new ArrayList<>();
 
+    /**
+     * Constructor, initiates the buyables Arraylist with some default Buyables
+     * for actors to purchase later in the future
+     */
     public Supercomputer() {
         super('≡', "Supercomputer");
 
@@ -36,9 +39,25 @@ public class Supercomputer extends Ground {
         buyables.add(AccessCardLevel3::new);
     }
 
+    /**
+     * The supercomputer cannot be stepped on,
+     * so it doesn't allow actors to enter
+     *
+     * @param actor the Actor to check
+     * @return false always
+     */
     @Override
     public boolean canActorEnter(Actor actor) {return false;}
 
+    /**
+     * If the player is near the Supercomputer, they are given the option
+     * to purchase all the preset Buyables and sell any Sellables in their inventory
+     *
+     * @param actor     the Actor standing nearby
+     * @param location  the location of this Supercomputer
+     * @param direction the direction of the Supercomputer from the actor
+     * @return a list of allowable actions for this Supercomputer
+     */
     @Override
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actionList = new ActionList();
@@ -49,7 +68,6 @@ public class Supercomputer extends Ground {
 
             for (Sellable sellable : actor.getInventory().getItemsAs(Sellable.class))
                 actionList.add(new SellAction(sellable));
-
         }
 
         return actionList;
