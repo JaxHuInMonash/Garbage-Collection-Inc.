@@ -24,6 +24,9 @@ import game.capabilities.Sellable;
  * @author Jax
  */
 public class Cookies extends Item implements Consumable, Sellable {
+    private static final int WEIGHT = 2;
+
+    private static final int INITIAL_QUANTITY = 5;
     private static final int VALUE_PER_COOKIE = 1;
 
     /**
@@ -31,8 +34,8 @@ public class Cookies extends Item implements Consumable, Sellable {
      */
     public Cookies() {
         super("Cookies", '◍');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(2));
-        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(5));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_QUANTITY * VALUE_PER_COOKIE));
         this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(this.getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE));
         this.makePortable();
     }

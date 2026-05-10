@@ -16,6 +16,9 @@ import java.util.Random;
  * @author Jax
  */
 public class FloppyDisk extends Item implements Sellable {
+    private static final int WEIGHT = 1;
+    private static final int SELL_VALUE = 1;
+
     private static final int GLITCH_PERCENTAGE_CHANCE = 50;
     private static final int GLITCH_VALUE = 50;
     Random random = new Random();
@@ -25,8 +28,8 @@ public class FloppyDisk extends Item implements Sellable {
      */
     public FloppyDisk() {
         super("Floppy Disk", '⊟');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
-        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(1));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(SELL_VALUE));
         this.makePortable();
     }
 

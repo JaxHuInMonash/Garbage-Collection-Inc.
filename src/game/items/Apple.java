@@ -23,14 +23,16 @@ import game.statuses.PoisonStatus;
  * @author Jax
  */
 public class Apple extends Item implements Consumable, Sellable {
+    private static final int WEIGHT = 1;
+    private static final int SELL_VALUE = 1;
 
     /**
      * Constructor.
      */
     public Apple() {
         super("Apple", 'ó');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
-        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(1));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(SELL_VALUE));
         this.makePortable();
     }
 

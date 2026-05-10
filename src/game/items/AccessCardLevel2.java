@@ -18,6 +18,9 @@ import game.capabilities.Buyable;
  * @author Jax
  */
 public class AccessCardLevel2 extends Item implements Buyable {
+    private static final int WEIGHT = 1;
+    private static final int BUY_VALUE = 100;
+
     /**
      * Constructor.
      * Creates an AccessCard with weight 1, made portable so it can be
@@ -25,8 +28,8 @@ public class AccessCardLevel2 extends Item implements Buyable {
      */
     public AccessCardLevel2() {
         super("Access Card (Level 2)", 'α');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
-        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(100));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
         this.makePortable();
         this.enableAbility(Ability.ACCESS_LEVEL_1);
         this.enableAbility(Ability.ACCESS_LEVEL_2);

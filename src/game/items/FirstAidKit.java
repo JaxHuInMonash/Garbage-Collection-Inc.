@@ -25,6 +25,9 @@ import game.capabilities.Consumable;
  * @author Jax
  */
 public class FirstAidKit extends Item implements Consumable, Buyable {
+    private static final int WEIGHT = 25;
+    private static final int BUY_VALUE = 1000;
+
     private final BaseStatistic cooldown = new BaseStatistic(20);
 
     /**
@@ -33,8 +36,8 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
      */
     public FirstAidKit() {
         super("First Aid Kit", '+');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(25));
-        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(1000));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
         this.makePortable();
     }
 

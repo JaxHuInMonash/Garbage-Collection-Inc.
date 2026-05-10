@@ -21,14 +21,17 @@ import game.capabilities.Consumable;
  * @author Jax
  */
 public class Flask extends Item implements Consumable {
+    private static final int WEIGHT = 3;
+    private static final int INITIAL_QUANTITY = 5 ;
+
     /**
      * Constructor.
      * Creates a Flask with weight 3, made portable, and 5 uses available.
      */
     public Flask() {
         super("Flask", 'u');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(3));
-        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(5)); // Uses
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_QUANTITY)); // Uses
         this.makePortable();
     }
 

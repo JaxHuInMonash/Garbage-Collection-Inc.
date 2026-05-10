@@ -23,6 +23,9 @@ import java.util.Random;
  * @author Jax
  */
 public class SterilisationBox extends Item implements Buyable {
+    private static final int WEIGHT = 7;
+    private static final int BUY_VALUE = 750;
+
     private final Random random = new Random();
     /**
      * Constructor.
@@ -31,8 +34,8 @@ public class SterilisationBox extends Item implements Buyable {
      */
     public SterilisationBox() {
         super("Sterilisation Box", '▣');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(7));
-        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(750));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
         this.makePortable();
         this.enableAbility(Ability.HAS_STERILISATION);
     }
@@ -49,7 +52,6 @@ public class SterilisationBox extends Item implements Buyable {
         Item randomItem = items.get(random.nextInt(items.size()));
 
         actor.getInventory().remove(randomItem);
-
         actor.getInventory().add(this);
 
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits." +

@@ -25,10 +25,13 @@ import java.util.Random;
  * @author Jax
  */
 public class Lantern extends Item implements Sellable {
+    private static final int WEIGHT = 7;
+
     private static final int BURN_ON_SELL_PERCENTAGE_CHANCE = 50;
     private static final int EXPLODE_ON_SELL_PERCENTAGE_CHANCE = 25;
     private static final int LEAK_CHANCE_PERCENT = 5;
 
+    private static final int INITIAL_OIL_QUANTITY = 10;
     private static final int VALUE_PER_OIL = 5;
     private static final int BURN_DAMAGE = 1;
     private static final int BURN_DURATION = 5;
@@ -41,9 +44,9 @@ public class Lantern extends Item implements Sellable {
     public Lantern() {
         super("Lantern", '&');
         this.random = new Random();
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(7));
-        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(10)); // Oil Fuel
-        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(getStatistic(ItemStatistics.QUANTITY) * 5));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_OIL_QUANTITY)); // Oil Fuel
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_OIL));
         this.makePortable();
     }
 

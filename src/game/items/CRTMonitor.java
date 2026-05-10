@@ -22,6 +22,9 @@ import java.util.Random;
  * @author Jax
  */
 public class CRTMonitor extends Item implements Sellable {
+    private static final int WEIGHT = 30;
+    private static final int SELL_VALUE = 25;
+
     private static final int HEALTH_ON_SELL = 5;
     private static final int DAMAGE_ON_SHORT = 2;
     private static final int SHORT_PERCENTAGE_CHANCE = 20;
@@ -33,8 +36,8 @@ public class CRTMonitor extends Item implements Sellable {
      */
     public CRTMonitor() {
         super("CRT Monitor", '◙');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(30));
-        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(25));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(SELL_VALUE));
         this.makePortable();
     }
 
@@ -43,10 +46,10 @@ public class CRTMonitor extends Item implements Sellable {
         actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, getStatistic(ItemStatistics.SELL_VALUE));
         actor.getInventory().remove(this);
 
-        actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.INCREASE, HEALTH_ON_SELL);
+        actor.heal(HEALTH_ON_SELL);
 
         if (random.nextInt(100) < SHORT_PERCENTAGE_CHANCE) {
-            actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.DECREASE, DAMAGE_ON_SHORT);
+            actor.hurt(DAMAGE_ON_SHORT);
 
             // Set surroundings on fire
             for (Exit exit : map.locationOf(actor).getExits()) {
