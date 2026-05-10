@@ -17,15 +17,17 @@ public class BuyAction extends Action {
 
     @Override
     public String execute(Actor actor, GameMap map) {
-        if (actor.getStatistic(ActorStatistics.CREDITS) < buyable.getBuyValue()) {
-            String suffix = buyable.onInsufficientCredits(actor, map);
+        int credits = actor.getStatistic(ActorStatistics.CREDITS);
+        int cost = buyable.getBuyValue();
 
-            return actor + " attempted to buy " + this + " but couldn't afford it. ("
-                    + actor.getStatistic(ActorStatistics.CREDITS) + "/"
-                    + buyable.getBuyValue() + ")" + suffix;
+        if (credits < cost) {
+            String appendMessage = buyable.onInsufficientCredits(actor, map);
+
+            return actor + " attempted to buy " + this + " but lacked credits. " +
+                    "(" + credits + "/" + cost + ")" + appendMessage;
         }
 
-        actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, buyable.getBuyValue());
+        actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, cost);
 
         return buyable.buy(actor, map);
     }
