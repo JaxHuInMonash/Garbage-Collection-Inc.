@@ -9,9 +9,10 @@ package game.capabilities;
  */
 public enum Ability {
     /**
-     * Allows an actor (or an item granting this ability) to unlock doors.
+     * A state given to ground game entities to indicate
+     * whether the ground is an instance of Fire or not
      */
-    CAN_UNLOCK_DOORS,
+    ON_FIRE,
 
     /**
      * Indicates the carrier has a SterilisationBox, which purifies consumables
