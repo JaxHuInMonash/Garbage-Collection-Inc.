@@ -11,6 +11,12 @@ import game.actions.UnlockAction;
 import game.capabilities.Ability;
 import game.capabilities.Unlockable;
 
+/**
+ * An abstract Door class that is intended to be extended,
+ * providing varying clearances and overriding where necessary
+ *
+ * @author Tommy
+ */
 public abstract class Door extends Ground implements Unlockable {
     private boolean isUnlocked = false;
 
@@ -55,15 +61,24 @@ public abstract class Door extends Ground implements Unlockable {
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = new ActionList();
 
-        if (isUnlocked) return actions;
-
-        for (Item item : actor.getInventory().getItems()) {
-            if (item.hasStatistic(ItemStatistics.CLEARANCE) && item.getStatistic(ItemStatistics.CLEARANCE) >= requiredClearance) {
-                actions.add(new UnlockAction(this));
-                break;
-            }
-        }
+        if (!isUnlocked && hasClearance(actor))
+            actions.add(new UnlockAction(this));
 
         return actions;
+    }
+
+    /**
+     * whether the actor has the required level of clearance of
+     * the door, based on the items in their backpack.
+     *
+     * @param actor to check for clearance
+     * @return whether the actor has the required level of clearance
+     */
+    private boolean hasClearance(Actor actor) {
+        for (Item item : actor.getInventory().getItems())
+            if (item.hasStatistic(ItemStatistics.CLEARANCE) && item.getStatistic(ItemStatistics.CLEARANCE) >= requiredClearance)
+                return true;
+
+        return false;
     }
 }

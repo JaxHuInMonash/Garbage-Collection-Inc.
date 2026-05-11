@@ -14,9 +14,8 @@ import game.capabilities.Unlockable;
  * contracted workers until they can produce the correct rectangular
  * piece of plastic.
  * <p>
- * A door starts locked and can be unlocked by an actor with ACCESS_LEVEL_3.
+ * A door starts locked and can be unlocked by an actor with clearance of {@value REQUIRED_CLEARANCE}.
  *
- * @author Jax
  * @author Tommy
  */
 public class TitaniumDoor extends Door {
