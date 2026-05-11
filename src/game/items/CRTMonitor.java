@@ -10,6 +10,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
+import game.capabilities.Ability;
 import game.capabilities.Sellable;
 import game.grounds.Fire;
 
@@ -50,12 +51,12 @@ public class CRTMonitor extends Item implements Sellable {
      * {@value DAMAGE_ON_SHORT} damage and surround the CRT
      * Monitor with fire
      *
-     * @param actor the actor selling the cookies
+     * @param actor the actor selling the CRT Monitor
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
-    public String onSell(Actor actor, GameMap map) {
+    public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         actor.heal(HEALTH_ON_SELL);
@@ -63,12 +64,11 @@ public class CRTMonitor extends Item implements Sellable {
         if (random.nextInt(100) < SHORT_PERCENTAGE_CHANCE) {
             actor.hurt(DAMAGE_ON_SHORT);
 
-            // PLEASE CHANGE!!! (Using old implementation)
             for (Exit exit : map.locationOf(actor).getExits()) {
                 Location location = exit.getDestination();
                 Ground ground = location.getGround();
 
-                if (!(ground instanceof Fire)) {
+                if (ground.hasAbility(Ability.ON_FIRE)) { // Dysfunctional in REQ1, Functional when merged
                     location.setGround(new Fire(ground));
                 }
             }

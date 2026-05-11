@@ -47,12 +47,12 @@ public class SterilisationBox extends Item implements Buyable {
      * But right after purchasing, due to the Sterilisation Box's
      * radiation, one random item, including the Box will be removed.
      *
-     * @param actor the actor selling the cookies
+     * @param actor the actor selling the Sterilisation Box
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
-    public String onBuy(Actor actor, GameMap map) {
+    public String onBought(Actor actor, GameMap map) {
         actor.getInventory().add(this);
 
         List<Item> items = actor.getInventory().getItems();

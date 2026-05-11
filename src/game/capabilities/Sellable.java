@@ -18,7 +18,7 @@ public interface Sellable {
      * @param map map the Sellable was sold on
      * @return resultant message of selling the Sellable
      */
-    String onSell(Actor actor, GameMap map);
+    String onSold(Actor actor, GameMap map);
 
     /**
      * Provides the value of the Sellable

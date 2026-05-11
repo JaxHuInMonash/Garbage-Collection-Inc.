@@ -21,7 +21,8 @@ public class FloppyDisk extends Item implements Sellable {
 
     private static final int GLITCH_PERCENTAGE_CHANCE = 50;
     private static final int GLITCH_VALUE = 50;
-    Random random = new Random();
+
+    private Random random = new Random();
 
     /**
      * Constructor.
@@ -40,12 +41,12 @@ public class FloppyDisk extends Item implements Sellable {
      * percentage chance for the Floppy disk to glitch out,
      * deducting an additional {@value GLITCH_VALUE} credits.
      *
-     * @param actor the actor selling the cookies
+     * @param actor the actor selling the Floppy Disk
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
-    public String onSell(Actor actor, GameMap map) {
+    public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         if (random.nextInt(100) < GLITCH_PERCENTAGE_CHANCE) {

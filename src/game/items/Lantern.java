@@ -60,12 +60,12 @@ public class Lantern extends Item implements Sellable {
      * percentage chance for the Lantern to explode, igniting
      * the tiles surrounding the actor with {@link Fire}.
      *
-     * @param actor the actor selling the cookies
+     * @param actor the actor selling the Lantern
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
-    public String onSell(Actor actor, GameMap map) {
+    public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         if (random.nextInt(100) < BURN_ON_SELL_PERCENTAGE_CHANCE) {

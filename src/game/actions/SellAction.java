@@ -34,7 +34,7 @@ public class SellAction extends Action {
     public String execute(Actor actor, GameMap map) {
         actor.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.INCREASE, sellable.getSellValue()); // Capped at 1000
 
-        return sellable.onSell(actor, map);
+        return sellable.onSold(actor, map);
     }
 
     /**
@@ -45,6 +45,6 @@ public class SellAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " sells " + sellable + "for" + sellable.getSellValue() + " credits.";
+        return actor + " sells " + sellable + " for " + sellable.getSellValue() + " credits.";
     }
 }
