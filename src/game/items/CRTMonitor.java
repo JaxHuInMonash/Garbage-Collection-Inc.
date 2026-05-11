@@ -55,7 +55,7 @@ public class CRTMonitor extends Item implements Sellable {
      * @return a description of the result
      */
     @Override
-    public String sell(Actor actor, GameMap map) {
+    public String onSell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         actor.heal(HEALTH_ON_SELL);

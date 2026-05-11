@@ -29,7 +29,7 @@ public interface Buyable {
      * @param map map the Buyable was bought on
      * @return resultant message of buying the Buyable
      */
-    String buy(Actor actor, GameMap map);
+    String onBuy(Actor actor, GameMap map);
 
     /**
      * Provides the value of the Buyable

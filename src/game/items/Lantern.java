@@ -65,7 +65,7 @@ public class Lantern extends Item implements Sellable {
      * @return a description of the result
      */
     @Override
-    public String sell(Actor actor, GameMap map) {
+    public String onSell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         if (random.nextInt(100) < BURN_ON_SELL_PERCENTAGE_CHANCE) {

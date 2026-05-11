@@ -52,7 +52,7 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
      * @return a description of the result
      */
     @Override
-    public String buy(Actor actor, GameMap map) {
+    public String onBuy(Actor actor, GameMap map) {
         actor.getInventory().add(this);
 
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";

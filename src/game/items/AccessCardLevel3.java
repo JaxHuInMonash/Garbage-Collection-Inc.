@@ -55,7 +55,7 @@ public class AccessCardLevel3 extends Item implements Buyable {
      * @return a description of the result
      */
     @Override
-    public String buy(Actor actor, GameMap map) {
+    public String onBuy(Actor actor, GameMap map) {
         String returnMessage = actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits";
         actor.getInventory().add(this);
 

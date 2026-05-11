@@ -48,7 +48,7 @@ public class AccessCardLevel2 extends Item implements Buyable {
      * @return a description of the result
      */
     @Override
-    public String buy(Actor actor, GameMap map) {
+    public String onBuy(Actor actor, GameMap map) {
         actor.getInventory().add(this);
         actor.hurt(DAMAGE_ON_BUY);
 

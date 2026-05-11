@@ -56,7 +56,7 @@ public class Apple extends Item implements Consumable, Sellable {
      * @return a description of the result
      */
     @Override
-    public String sell(Actor actor, GameMap map) {
+    public String onSell(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {

@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ActorStatistics;
-import game.ItemStatistics;
 import game.capabilities.Buyable;
 
 /**
@@ -47,7 +46,7 @@ public class BuyAction extends Action {
 
         actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, cost);
 
-        return buyable.buy(actor, map);
+        return buyable.onBuy(actor, map);
     }
 
     /**
