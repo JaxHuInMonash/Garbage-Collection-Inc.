@@ -25,12 +25,4 @@ public interface Consumable {
      * @return a description of the result of the consumption
      */
     String consumedBy(Actor actor, GameMap map);
-
-    /**
-     * Returns the menu description for the consume action on this item.
-     *
-     * @param actor the actor who may consume this item
-     * @return a string to display in the action menu
-     */
-    String getConsumeMenuDescription(Actor actor);
 }

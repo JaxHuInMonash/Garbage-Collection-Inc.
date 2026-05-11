@@ -8,6 +8,9 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.displays.Menu;
 import edu.monash.fit2099.engine.items.Inventory;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.statistics.BaseStatistic;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.ActorStatistics;
 import game.capabilities.Ability;
 
 /**
@@ -24,6 +27,8 @@ import game.capabilities.Ability;
  * @author Jax
  */
 public class ContractedWorker extends Actor {
+    private static final int MAX_CREDITS = 1000;
+    private static final int INITIAL_CREDITS = 0;
 
     /**
      * Constructor.
@@ -36,6 +41,9 @@ public class ContractedWorker extends Actor {
     public ContractedWorker(String name, char displayChar, int hitPoints, Inventory inventory) {
         super(name, displayChar, hitPoints, inventory);
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
+
+        this.addNewStatistic(ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
+        this.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
     }
 
     /**
