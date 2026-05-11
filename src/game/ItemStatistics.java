@@ -11,6 +11,6 @@ public enum ItemStatistics {
     WEIGHT,
     QUANTITY,
     BUY_VALUE,
-    SELL_VALUE
-
+    SELL_VALUE,
+    CLEARANCE
 }

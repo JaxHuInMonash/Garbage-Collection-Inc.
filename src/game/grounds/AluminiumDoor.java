@@ -16,55 +16,16 @@ import game.capabilities.Unlockable;
  * <p>
  * A door starts locked and can be unlocked by an actor with ACCESS_LEVEL_1.
  *
- * @author Jax
  * @author Tommy
  */
-public class AluminiumDoor extends Ground implements Unlockable {
-    private boolean isUnlocked = false;
+public class AluminiumDoor extends Door {
+    private static final int REQUIRED_CLEARANCE = 1;
 
     /**
      * Constructor.
      */
     public AluminiumDoor() {
-        super('=', "Aluminium Door");
+        super('=', "Aluminium Door", REQUIRED_CLEARANCE);
     }
 
-    /**
-     * If the door is unlocked, any actor can step through it.
-     *
-     * @param actor the Actor to check
-     * @return true if the door is unlocked, false otherwise
-     */
-    @Override
-    public boolean canActorEnter(Actor actor) {
-        return isUnlocked;
-    }
-
-    /**
-     * Unlocks this door, allowing all actors to pass through it.
-     */
-    public String unlock(Actor actor, GameMap map) {
-        this.isUnlocked = true;
-
-        return actor + " unlocked " + this;
-    }
-
-    /**
-     * If the door is locked and the actor has the ability to unlock doors,
-     * provide an UnlockDoorAction targeting this specific door.
-     *
-     * @param actor     the Actor standing nearby
-     * @param location  the location of this door
-     * @param direction the direction of the door from the actor
-     * @return a list of allowable actions for this door
-     */
-    @Override
-    public ActionList allowableActions(Actor actor, Location location, String direction) {
-        ActionList actions = new ActionList();
-
-        if (!isUnlocked && actor.hasAbility(Ability.ACCESS_LEVEL_1))
-            actions.add(new UnlockAction(this));
-
-        return actions;
-    }
 }

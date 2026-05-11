@@ -17,8 +17,9 @@ import game.capabilities.Buyable;
  *
  * @author Tommy
  */
-public class AccessCardLevel1 extends Item implements Buyable {
-    private static final int WEIGHT = 1;
+public class AccessCardLevel1 extends AccessCard implements Buyable {
+    private static final int CLEARANCE = 1;
+
     private static final int BUY_VALUE = 50;
 
     /**
@@ -28,11 +29,8 @@ public class AccessCardLevel1 extends Item implements Buyable {
      * picked up and dropped, and grants the ability ACCESS_LEVEL_1.
      */
     public AccessCardLevel1() {
-        super("Access Card (Level 1)", '▤');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        super("Access Card (Level 1)", '▤', CLEARANCE);
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
-        this.makePortable();
-        this.enableAbility(Ability.ACCESS_LEVEL_1);
     }
 
     /**

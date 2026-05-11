@@ -19,8 +19,8 @@ import java.util.Random;
  *
  * @author Tommy
  */
-public class AccessCardLevel3 extends Item implements Buyable {
-    private static final int WEIGHT = 1;
+public class AccessCardLevel3 extends AccessCard implements Buyable {
+    private static final int CLEARANCE = 3;
     private static final int BUY_VALUE = 200;
 
     private static final int HIDDEN_FEE_PERCENTAGE_CHANCE = 50;
@@ -35,13 +35,8 @@ public class AccessCardLevel3 extends Item implements Buyable {
      * picked up and dropped, and grants the ability ACCESS_LEVEL_3.
      */
     public AccessCardLevel3() {
-        super("Access Card (Level 3)", '◐');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        super("Access Card (Level 3)", '◐', CLEARANCE);
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
-        this.makePortable();
-        this.enableAbility(Ability.ACCESS_LEVEL_1);
-        this.enableAbility(Ability.ACCESS_LEVEL_2);
-        this.enableAbility(Ability.ACCESS_LEVEL_3);
     }
 
     /**
