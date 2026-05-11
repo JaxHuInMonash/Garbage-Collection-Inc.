@@ -124,7 +124,7 @@ public class FleshyTreeSprout extends Ground {
         Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
         try {
             spawnLocation.addActor(slime);
-            SpawnEffectManager.getInstance().onCreatureSpawned(undead, spawnLocation);
+            SpawnEffectManager.getInstance().onCreatureSpawned(slime, spawnLocation);
         } catch (GameEngineException e) {
         }
     }

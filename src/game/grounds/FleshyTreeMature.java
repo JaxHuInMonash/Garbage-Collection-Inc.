@@ -88,10 +88,11 @@ public class FleshyTreeMature extends Ground {
      * @param location the location of this tree
      */
     private void spawnUndead(Location location) {
+        Undead testActor = new Undead();
         List<Location> validLocations = new ArrayList<>();
         for (Exit exit : location.getExits()) {
             Location destination = exit.getDestination();
-            if (!destination.containsAnActor() && destination.getGround().canActorEnter(null)) {
+            if (destination.canActorEnter(testActor)) {
                 validLocations.add(destination);
             }
         }
