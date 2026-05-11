@@ -51,12 +51,12 @@ public class Apple extends Item implements Consumable, Sellable {
      * they will take {@value SELL_POISON_DAMAGE_PER_TURN} damage
      * for {@value SELL_POISON_DURATION} turns.
      *
-     * @param actor the actor selling the cookies
+     * @param actor the actor selling the apple
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
-    public String onSell(Actor actor, GameMap map) {
+    public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
 
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {

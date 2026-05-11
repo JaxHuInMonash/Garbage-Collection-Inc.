@@ -9,6 +9,12 @@ package game.capabilities;
  */
 public enum Ability {
     /**
+     * A state given to ground game entities to indicate
+     * whether the ground is an instance of Fire or not
+     */
+    ON_FIRE,
+
+    /**
      * Indicates the carrier has a SterilisationBox, which purifies consumables
      * and environmental hazards on the moon.
      */

@@ -46,7 +46,7 @@ public class BuyAction extends Action {
 
         actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, cost);
 
-        return buyable.onBuy(actor, map);
+        return buyable.onBought(actor, map);
     }
 
     /**
