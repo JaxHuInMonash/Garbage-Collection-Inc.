@@ -17,8 +17,8 @@ import game.behaviours.WanderBehaviour;
 import game.capabilities.Infectable;
 import game.weapons.UndeadFist;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A hostile reanimated corpse that wanders the moon's facility.
@@ -36,8 +36,8 @@ import java.util.List;
  */
 public class Undead extends Actor implements AlarmListener, Infectable {
 
-    /** Prioritised list of behaviours this Undead can perform. */
-    private final List<Behaviour<Actor, Action>> behaviours = new ArrayList<>();
+    /** Prioritised map of behaviours this Undead can perform (lower key = higher priority). */
+    private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
 
     /**
      * Constructor. Registers this Undead with the {@link AlarmManager} so
@@ -46,25 +46,25 @@ public class Undead extends Actor implements AlarmListener, Infectable {
     public Undead() {
         super("Undead", 'Ѫ', 15, new BasicInventory());
         this.setIntrinsicWeapon(new UndeadFist());
-        this.behaviours.add(new AttackBehaviour());
-        this.behaviours.add(new WanderBehaviour());
+        this.behaviours.put(1, new AttackBehaviour());
+        this.behaviours.put(3, new WanderBehaviour());
         AlarmManager.getInstance().registerListener(this);
     }
 
     /**
      * Responds to the facility alarm by injecting a {@link FollowBehaviour}
-     * targeting the triggering worker. The follow behaviour is inserted
-     * between attack (index 0) and wander (index 1), so the Undead will:
-     * 1. Attack if adjacent to a worker
-     * 2. Follow the triggering worker if not adjacent
-     * 3. Wander randomly only if following fails
+     * targeting the triggering worker at priority 2 (between attack and wander),
+     * so the Undead will:
+     * 1. Attack if adjacent to a worker (priority 1)
+     * 2. Follow the triggering worker if not adjacent (priority 2)
+     * 3. Wander randomly only if following fails (priority 3)
      *
      * @param triggeringWorker the worker who triggered the alarm
      * @param map              the game map
      */
     @Override
     public void onAlarmTriggered(Actor triggeringWorker, GameMap map) {
-        this.behaviours.add(1, new FollowBehaviour(triggeringWorker));
+        this.behaviours.put(2, new FollowBehaviour(triggeringWorker));
     }
 
     /**
@@ -119,7 +119,7 @@ public class Undead extends Actor implements AlarmListener, Infectable {
             return new DoNothingAction();
         }
 
-        for (Behaviour<Actor, Action> behaviour : behaviours) {
+        for (Behaviour<Actor, Action> behaviour : behaviours.values()) {
             Action action = behaviour.operate(this, map.locationOf(this));
             if (action != null) {
                 return action;

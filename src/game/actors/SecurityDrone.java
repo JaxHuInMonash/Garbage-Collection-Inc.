@@ -13,8 +13,8 @@ import game.behaviours.FollowBehaviour;
 import game.behaviours.WanderBehaviour;
 import game.weapons.DroneLaser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * An automated security drone spawned when the facility alarm is triggered.
@@ -30,8 +30,8 @@ import java.util.List;
  */
 public class SecurityDrone extends Actor {
 
-    /** Prioritised list of behaviours this drone can perform. */
-    private final List<Behaviour<Actor, Action>> behaviours = new ArrayList<>();
+    /** Prioritised map of behaviours this drone can perform (lower key = higher priority). */
+    private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
 
     /**
      * Constructor.
@@ -41,9 +41,9 @@ public class SecurityDrone extends Actor {
     public SecurityDrone(Actor target) {
         super("Security Drone", 'δ', 10, new BasicInventory());
         this.setIntrinsicWeapon(new DroneLaser());
-        this.behaviours.add(new AggressiveAttackBehaviour());
-        this.behaviours.add(new FollowBehaviour(target));
-        this.behaviours.add(new WanderBehaviour());
+        this.behaviours.put(1, new AggressiveAttackBehaviour());
+        this.behaviours.put(2, new FollowBehaviour(target));
+        this.behaviours.put(3, new WanderBehaviour());
     }
 
     /**
@@ -63,7 +63,7 @@ public class SecurityDrone extends Actor {
             return new DoNothingAction();
         }
 
-        for (Behaviour<Actor, Action> behaviour : behaviours) {
+        for (Behaviour<Actor, Action> behaviour : behaviours.values()) {
             Action action = behaviour.operate(this, map.locationOf(this));
             if (action != null) {
                 return action;

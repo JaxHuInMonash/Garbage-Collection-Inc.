@@ -11,8 +11,8 @@ import game.BasicInventory;
 import game.behaviours.InfectBehaviour;
 import game.behaviours.WanderBehaviour;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A parasitic creature that wanders in search of hosts to infect.
@@ -28,16 +28,16 @@ import java.util.List;
  */
 public class Parasite extends Actor {
 
-    /** Prioritised list of behaviours this Parasite can perform. */
-    private final List<Behaviour<Actor, Action>> behaviours = new ArrayList<>();
+    /** Prioritised map of behaviours this Parasite can perform (lower key = higher priority). */
+    private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
 
     /**
      * Constructor.
      */
     public Parasite() {
         super("Parasite", 'x', 30, new BasicInventory());
-        this.behaviours.add(new InfectBehaviour());
-        this.behaviours.add(new WanderBehaviour());
+        this.behaviours.put(1, new InfectBehaviour());
+        this.behaviours.put(2, new WanderBehaviour());
     }
 
     /**
@@ -57,7 +57,7 @@ public class Parasite extends Actor {
             return new DoNothingAction();
         }
 
-        for (Behaviour<Actor, Action> behaviour : behaviours) {
+        for (Behaviour<Actor, Action> behaviour : behaviours.values()) {
             Action action = behaviour.operate(this, map.locationOf(this));
             if (action != null) {
                 return action;
