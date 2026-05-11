@@ -60,11 +60,27 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('#', Wall::new);
         groundCreator.registerGround('~', Puddle::new);
         groundCreator.registerGround('_', Floor::new);
-        groundCreator.registerGround('=', Door::new);
-        groundCreator.registerGround('O', () -> new Hole(List.of(Undead::new, Slime::new)));
+//        groundCreator.registerGround('=', Door::new);
+        groundCreator.registerGround('o', () -> new Hole(List.of(Undead::new, Slime::new)));
         groundCreator.registerGround('V', Vent::new);
+        groundCreator.registerGround('=', AluminiumDoor::new);
+        groundCreator.registerGround('N', IronDoor::new);
+        groundCreator.registerGround('M', TitaniumDoor::new);
+        groundCreator.registerGround('≡', Supercomputer::new);
+//        groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
 
+        // --- Flora ground types (used by 20-Overflow map) ---
+        groundCreator.registerGround('≈', ToxicWaste::new);
+        groundCreator.registerGround('≡', Supercomputer::new);
+
+        groundCreator.registerGround('y', FleshyTreeSprout::new);
+        groundCreator.registerGround('v', FleshyTreeSapling::new);
+        groundCreator.registerGround('Y', FleshyTreeMature::new);
+        groundCreator.registerGround('w', WarperTreeSapling::new);
+        groundCreator.registerGround('W', WarperTreeMature::new);
+
+        // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
                 "...#######..........#______V___________#___________________#",
@@ -73,7 +89,7 @@ public class EclipseNebula extends World {
                 "...#_____#..~~~.....########=#####=#####___#############___#",
                 "...#######.~~~~.....#______#_#_________#___#___________#___#",
                 ".........~~~~.......#______#_#_________#####___________#####",
-                "....................#______=_#_________#________O__________#",
+                "....................#______=_#_________#________o__________#",
                 "......~.............#______#_#_________#___________________#",
                 ".....~~~............#______#_###########___#############___#",
                 ".....~..............#______#_____a_____#___#___________#___#",
@@ -83,7 +99,7 @@ public class EclipseNebula extends World {
                 "........~~~~~~......#______#_____a_____=___________________#",
                 ".........~~~~.......#______#___________#___________________#",
                 "....................#______#############___#############___#",
-                "....................#______#___________#___#_____O_____#___#",
+                "....................#______#___________#___#_____o_____#___#",
                 "..~.................#______=___________=___=_____V_____=___#",
                 "....................########################################"
         );
@@ -92,9 +108,7 @@ public class EclipseNebula extends World {
         this.addGameMap(moon99DeprecatedMap);
 
         // Place the three unique ship items (only instantiated once)
-        moon99DeprecatedMap.at(5, 2).addItem(new AccessCard());
-        moon99DeprecatedMap.at(31, 10).addItem(new AccessCard());
-        moon99DeprecatedMap.at(51, 10).addItem(new AccessCard());
+        moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());
         moon99DeprecatedMap.at(6, 2).addItem(new FirstAidKit());
         moon99DeprecatedMap.at(7, 2).addItem(new SterilisationBox());
 
@@ -108,18 +122,46 @@ public class EclipseNebula extends World {
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
 
+        // 20-Overflow
+
+        List<String> moon20Overflow = Arrays.asList(
+                ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                "...#######.....y..w..≈≈≈≈≈≈≈≈≈≈≈≈≈≈##################≈≈≈≈≈≈≈",
+                "...#≡____#.....v.....≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
+                "...#_____=.....Y..W..≈≈≈≈≈≈≈≈#######________________#≈≈≈≈≈≈≈",
+                "...#_____#...........≈≈≈≈≈≈≈≈#_____=________________#≈≈≈≈≈≈≈",
+                "...#######...≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_____###########=######≈≈≈≈≈≈≈",
+                ".............≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_____#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#########=#####≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#_____________#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#_____________#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                ".............≈≈≈≈≈≈≈≈######=########≈≈≈≈≈≈≈≈≈####=###≈≈≈≈≈≈≈",
+                "...≈≈≈≈≈≈≈≈≈.≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈≈≈≈≈",
+                "...≈≈≈≈≈≈≈≈≈.≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈###############_#######≈≈≈",
+                ".............≈≈≈≈≈≈≈≈≈≈≈≈≈#_____________________________#≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈≈≈≈≈≈#_______=_____________≈≈≈≈____#≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈≈≈≈≈≈#_______#_____________≈≈≈≈≈≈__≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈≈≈≈≈≈######################≈≈≈≈≈≈≈≈≈≈≈≈",
+                ".............≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+                ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
+        );
+
+        GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator, moon20Overflow);
+        this.addGameMap(moon20OverflowMap);
+
         // Create workers, each with their own WeightLimitedInventory(50) and a Flask
         ContractedWorker contractedWorker1 = createWorker("#1 Bob");
         ContractedWorker contractedWorker2 = createWorker("#2 Tom");
 //        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
-        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
+//        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
         this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(4, 2));
-        this.addPlayer(contractedWorker2, moon99DeprecatedMap.at(50, 10));
+        this.addPlayer(contractedWorker1, moon20OverflowMap.at(11, 2));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
-        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
+ //       this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
     }
 
     /**

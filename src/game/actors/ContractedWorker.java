@@ -13,6 +13,7 @@ import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.capabilities.Ability;
 import game.capabilities.Infectable;
 import game.spawning.SpawnEffectManager;
@@ -33,6 +34,8 @@ import game.statuses.InfectedStatus;
  */
 public class ContractedWorker extends Actor implements Infectable {
 
+    private static final int MAX_CREDITS = 1000;
+    private static final int INITIAL_CREDITS = 0;
     private static final int INFECTION_DAMAGE_PER_TURN = 1;
     private static final int INFECTION_SPAWN_INTERVAL = 5;
 
@@ -50,6 +53,8 @@ public class ContractedWorker extends Actor implements Infectable {
     public ContractedWorker(String name, char displayChar, int hitPoints, Inventory inventory) {
         super(name, displayChar, hitPoints, inventory);
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
+        this.addNewStatistic(game.ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
+        this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
         this.infected = false;
         this.infectionTurnCount = 0;
     }

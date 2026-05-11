@@ -3,29 +3,30 @@ package game.items;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
-import game.capabilities.Ability;
 
 /**
- * A small rectangular piece of plastic that holds entirely too much power
- * over your ability to walk through doors. Its primary function is to beep
- * happily when the player has clearance, and beep angrily when they don't.
- * <p>
- * The AccessCard weighs 1 unit and grants the {@link Ability#CAN_UNLOCK_DOORS}
- * ability to whoever carries it, enabling them to unlock doors in the facility.
+ * An abstract AccessCard class that is intended to be extended,
+ * allowing cards to assign their own clearances on instantiation
  *
  * @author Jax
+ * @author Tommy
  */
-public class AccessCard extends Item {
+public abstract class AccessCard extends Item {
+    private static final int WEIGHT = 1;
 
     /**
-     * Constructor.
-     * Creates an AccessCard with weight 1, made portable so it can be
-     * picked up and dropped, and grants the CAN_UNLOCK_DOORS ability.
+     * Constructor. Assigns a clearances provided in the parameters
+     * as a statistic and makes the Item able to be picked up and dropped.
+     *
+     * @param name Name of the AccessCard
+     * @param displayChar character to represent the AccessCard on the map
+     * @param clearance the integer number level of clearance the card provides
      */
-    public AccessCard() {
-        super("Access Card", '▤');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
+    public AccessCard(String name, Character displayChar, int clearance) {
+        super(name, displayChar);
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.CLEARANCE, new BaseStatistic(clearance));
+
         this.makePortable();
-        this.enableAbility(Ability.CAN_UNLOCK_DOORS);
     }
 }

@@ -8,10 +8,6 @@ package game.capabilities;
  * @author Jax
  */
 public enum Ability {
-    /**
-     * Allows an actor (or an item granting this ability) to unlock doors.
-     */
-    CAN_UNLOCK_DOORS,
 
     /**
      * Indicates the carrier has a SterilisationBox, which purifies consumables
