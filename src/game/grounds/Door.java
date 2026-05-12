@@ -8,13 +8,13 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.ItemStatistics;
 import game.actions.UnlockAction;
-import game.capabilities.Ability;
 import game.capabilities.Unlockable;
 
 /**
  * An abstract Door class that is intended to be extended,
  * providing varying clearances and overriding where necessary
  *
+ * @author Jax
  * @author Tommy
  */
 public abstract class Door extends Ground implements Unlockable {

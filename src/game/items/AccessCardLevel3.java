@@ -1,13 +1,11 @@
 package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ActorStatistics;
 import game.ItemStatistics;
-import game.capabilities.Ability;
 import game.capabilities.Buyable;
 
 import java.util.Random;

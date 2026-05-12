@@ -8,6 +8,7 @@ import game.ItemStatistics;
  * An abstract AccessCard class that is intended to be extended,
  * allowing cards to assign their own clearances on instantiation
  *
+ * @author Jax
  * @author Tommy
  */
 public abstract class AccessCard extends Item {

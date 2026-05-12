@@ -11,8 +11,8 @@ import game.BasicInventory;
 import game.behaviours.ConsumeItemBehaviour;
 import game.behaviours.WanderBehaviour;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A non-hostile, gluttonous slime that wanders the moon's facility.
@@ -28,16 +28,16 @@ import java.util.List;
  */
 public class Slime extends Actor {
 
-    /** Prioritised list of behaviours this Slime can perform. */
-    private final List<Behaviour<Actor, Action>> behaviours = new ArrayList<>();
+    /** Prioritised map of behaviours this Slime can perform (lower key = higher priority). */
+    private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
 
     /**
      * Constructor.
      */
     public Slime() {
         super("Slime", '⍾', 25, new BasicInventory());
-        this.behaviours.add(new ConsumeItemBehaviour());
-        this.behaviours.add(new WanderBehaviour());
+        this.behaviours.put(1, new ConsumeItemBehaviour());
+        this.behaviours.put(2, new WanderBehaviour());
     }
 
     /**
@@ -57,7 +57,7 @@ public class Slime extends Actor {
             return new DoNothingAction();
         }
 
-        for (Behaviour<Actor, Action> behaviour : behaviours) {
+        for (Behaviour<Actor, Action> behaviour : behaviours.values()) {
             Action action = behaviour.operate(this, map.locationOf(this));
             if (action != null) {
                 return action;

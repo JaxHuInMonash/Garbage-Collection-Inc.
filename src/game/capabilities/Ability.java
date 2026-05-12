@@ -8,11 +8,6 @@ package game.capabilities;
  * @author Jax
  */
 public enum Ability {
-    /**
-     * A state given to ground game entities to indicate
-     * whether the ground is an instance of Fire or not
-     */
-    ON_FIRE,
 
     /**
      * Indicates the carrier has a SterilisationBox, which purifies consumables
@@ -26,4 +21,16 @@ public enum Ability {
      * targets without depending on concrete worker classes.
      */
     ATTACKABLE_BY_CREATURES,
+
+    /**
+     * Marks a ground tile as being on fire. Used to check whether fire
+     * should be spawned without relying on instanceof checks.
+     */
+    ON_FIRE,
+
+    /**
+     * Marks a ground tile as a hole. Used by hole expansion logic to
+     * avoid converting existing holes.
+     */
+    IS_HOLE,
 }

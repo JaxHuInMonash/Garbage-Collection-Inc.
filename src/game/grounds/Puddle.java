@@ -41,6 +41,15 @@ public class Puddle extends Ground implements Consumable {
         }
     }
 
+    @Override
+    public void removeFromGround(Location location) {
+        return;
+    }
+
+    @Override
+    public String getConsumeMenuDescription(Actor actor) {
+        return actor + " drinks from puddle";
+    }
     /**
      * When an actor is standing on this puddle (direction is empty string),
      * offer the option to drink from it.

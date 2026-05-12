@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.Slime;
 import game.capabilities.Ability;
+import game.spawning.SpawnEffectManager;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,6 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.ActorStatistics;
 import game.actions.BuyAction;
 import game.actions.SellAction;
-import game.capabilities.Ability;
 import game.capabilities.Buyable;
 import game.capabilities.Sellable;
 import game.items.*;

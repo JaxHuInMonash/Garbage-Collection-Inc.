@@ -4,8 +4,8 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
 import game.capabilities.Ability;
@@ -96,6 +96,16 @@ public class Apple extends Item implements Consumable, Sellable {
             actor.addStatus(new PoisonStatus(CONSUME_POISON_DAMAGE_PER_TURN, CONSUME_POISON_DURATION));
             return actor + " eats a toxic Apple and is poisoned! (1 dmg/turn for 5 turns)";
         }
+    }
+
+    @Override
+    public void removeFromGround(Location location) {
+        location.removeItem(this);
+    }
+
+    @Override
+    public String getConsumeMenuDescription(Actor actor) {
+        return actor + " eats Apple";
     }
 
     /**

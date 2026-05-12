@@ -6,11 +6,14 @@ import edu.monash.fit2099.engine.positions.DefaultGroundCreator;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
-import game.actors.ContractedWorker;
-import game.actors.SecurityDrone;
+import game.actors.*;
 import game.alarm.AlarmManager;
 import game.grounds.*;
 import game.items.*;
+import game.spawning.ParasiteSpawnEffect;
+import game.spawning.SlimeSpawnEffect;
+import game.spawning.SpawnEffectManager;
+import game.spawning.UndeadSpawnEffect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,19 +46,28 @@ public class EclipseNebula extends World {
      * @throws Exception in case if anything goes wrong
      */
     public void initialise() throws Exception {
-        // Reset alarm state for a fresh game
+        // Reset singletons for a fresh game
         AlarmManager.resetInstance();
+        SpawnEffectManager.resetInstance();
+
+        // Register spawn effects for each creature type
+        SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
+        SpawnEffectManager.getInstance().registerEffect(Slime.class, new SlimeSpawnEffect());
+        SpawnEffectManager.getInstance().registerEffect(Parasite.class, new ParasiteSpawnEffect());
 
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround('#', Wall::new);
         groundCreator.registerGround('~', Puddle::new);
         groundCreator.registerGround('_', Floor::new);
+//        groundCreator.registerGround('=', Door::new);
+        groundCreator.registerGround('o', () -> new Hole(List.of(Undead::new, Slime::new)));
+        groundCreator.registerGround('V', Vent::new);
         groundCreator.registerGround('=', AluminiumDoor::new);
         groundCreator.registerGround('N', IronDoor::new);
         groundCreator.registerGround('M', TitaniumDoor::new);
         groundCreator.registerGround('≡', Supercomputer::new);
-        groundCreator.registerGround('o', Hole::new);
+//        groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
 
         // --- Flora ground types (used by 20-Overflow map) ---
@@ -71,7 +83,7 @@ public class EclipseNebula extends World {
         // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
-                "...#######..........#__________________#___________________#",
+                "...#######..........#______V___________#___________________#",
                 "...#_____#..........=__________________=___________________#",
                 "...#_____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
@@ -88,14 +100,12 @@ public class EclipseNebula extends World {
                 ".........~~~~.......#______#___________#___________________#",
                 "....................#______#############___#############___#",
                 "....................#______#___________#___#_____o_____#___#",
-                "..~.................#______=___________=___=___________=___#",
+                "..~.................#______=___________=___=_____V_____=___#",
                 "....................########################################"
         );
 
         GameMap moon99DeprecatedMap = new GameMap("99-Deprecated", groundCreator, moon99Deprecated);
         this.addGameMap(moon99DeprecatedMap);
-
-
 
         // Place the three unique ship items (only instantiated once)
         moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());
@@ -142,13 +152,13 @@ public class EclipseNebula extends World {
 
         // Create workers, each with their own WeightLimitedInventory(50) and a Flask
         ContractedWorker contractedWorker1 = createWorker("#1 Bob");
-//        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
+        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
 //        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
+        this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(4, 2));
         this.addPlayer(contractedWorker1, moon20OverflowMap.at(11, 2));
-//        this.addPlayer(contractedWorker2, moon99DeprecatedMap.at(50, 10));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
  //       this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));

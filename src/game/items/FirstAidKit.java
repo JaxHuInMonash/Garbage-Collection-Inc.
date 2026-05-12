@@ -103,6 +103,16 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
                 + actor.getMaximumStatistic(ActorStatistics.HEALTH) + ")";
     }
 
+    @Override
+    public String getConsumeMenuDescription(Actor actor) {
+        return actor + " uses a FirstAidKit";
+    }
+
+    @Override
+    public void removeFromGround(Location location) {
+
+    }
+
     /**
      * Ticks the cooldown timer while being carried by an actor.
      * The timer only progresses while the kit is in a worker's inventory.

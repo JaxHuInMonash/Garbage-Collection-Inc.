@@ -2,6 +2,7 @@ package game.capabilities;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 
 /**
  * An interface for any item that can be consumed by an actor.
@@ -25,4 +26,21 @@ public interface Consumable {
      * @return a description of the result of the consumption
      */
     String consumedBy(Actor actor, GameMap map);
+
+    /**
+     * Returns the menu description for the consume action on this item.
+     *
+     * @param actor the actor who may consume this item
+     * @return a string to display in the action menu
+     */
+    String getConsumeMenuDescription(Actor actor);
+
+    /**
+     * Removes this consumable from the given ground location.
+     * Each implementor knows its own concrete type, so it can remove
+     * itself without the caller needing to downcast.
+     *
+     * @param location the location to remove this consumable from
+     */
+    void removeFromGround(Location location);
 }

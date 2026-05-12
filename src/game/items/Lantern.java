@@ -2,15 +2,18 @@ package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
-import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
+import game.capabilities.Ability;
+import game.capabilities.Infectable;
 import game.capabilities.Sellable;
 import game.grounds.Fire;
+import game.statuses.InfectedStatus;
 import game.statuses.BurnStatus;
 
 import java.util.Random;
@@ -25,18 +28,21 @@ import java.util.Random;
  * @author Jax
  * @author Tommy
  */
-public class Lantern extends Item implements Sellable {
+public class Lantern extends Item implements Sellable, Infectable {
     private static final int WEIGHT = 7;
+
+    private static final int INITIAL_OIL = 10;
+    private static final int LEAK_CHANCE_PERCENT = 5;
 
     private static final int BURN_ON_SELL_PERCENTAGE_CHANCE = 50;
     private static final int EXPLODE_ON_SELL_PERCENTAGE_CHANCE = 25;
-    private static final int LEAK_CHANCE_PERCENT = 5;
 
     private static final int INITIAL_OIL_QUANTITY = 10;
     private static final int VALUE_PER_OIL = 5;
     private static final int BURN_DAMAGE = 1;
     private static final int BURN_DURATION = 5;
 
+    private int oilFuel;
     private final Random random;
 
     /**
@@ -44,6 +50,7 @@ public class Lantern extends Item implements Sellable {
      */
     public Lantern() {
         super("Lantern", '&');
+        this.oilFuel = INITIAL_OIL;
         this.random = new Random();
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_OIL_QUANTITY)); // Oil Fuel
@@ -97,6 +104,38 @@ public class Lantern extends Item implements Sellable {
     }
 
     /**
+     * Called when this lantern is infected by a Parasite. Adds the generic
+     * {@link InfectedStatus} which delegates per-turn logic back to this class.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.addStatus(new InfectedStatus(this));
+    }
+
+    /**
+     * Per-turn infection logic: drains 1 unit of oil each turn.
+     *
+     * @param location the current location of this lantern
+     */
+    @Override
+    public void onInfectionTick(Location location) {
+        this.oilFuel = Math.max(0, this.oilFuel - 1);
+    }
+
+    /**
+     * The infection remains active while the lantern still has oil.
+     *
+     * @return true if oil remains, false otherwise
+     */
+    @Override
+    public boolean isInfectionActive() {
+        return oilFuel > 0;
+    }
+
+    /**
      * Returns a string representation including remaining oil fuel,
      * since the oil level is meaningful gameplay state for the player.
      *
@@ -123,7 +162,7 @@ public class Lantern extends Item implements Sellable {
 
             Ground currentGround = currentLocation.getGround();
             // Only spawn fire if the ground isn't already on fire
-            if (!(currentGround instanceof Fire)) {
+            if (!currentGround.hasAbility(Ability.ON_FIRE)) {
                 currentLocation.setGround(new Fire(currentGround));
             }
         }
