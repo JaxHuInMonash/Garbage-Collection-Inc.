@@ -7,13 +7,13 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.grounds.Fire;
-import game.items.TeleportationTube;
+import game.grounds.TeleportationTube;
 import game.capabilities.Ability;
 import java.util.List;
 import java.util.Random;
 /**
  * An action that teleports the actor to a chosen destination via a
- * {@link game.items.TeleportationTube}.
+ * {@link game.grounds.TeleportationTube}.
  * <p>
  * There is a 50% chance of malfunction, which causes the actor to be
  * teleported to a random passable location in the destination map instead
