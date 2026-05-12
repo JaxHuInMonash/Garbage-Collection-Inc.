@@ -3,6 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
+import game.capabilities.Ability;
 
 /**
  * An abstract AccessCard class that is intended to be extended,
@@ -26,6 +27,7 @@ public abstract class AccessCard extends Item {
         super(name, displayChar);
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.CLEARANCE, new BaseStatistic(clearance));
+        this.enableAbility(Ability.CAN_UNLOCK_DOORS);
 
         this.makePortable();
     }

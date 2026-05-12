@@ -1,14 +1,26 @@
 package game;
 
 /**
- * A highly ambitious enumeration designed to categorize the myriad of complex,
- * nuanced statistics an item can possess in the game world.
- * Currently, it only tracks how hard gravity pulls on a thing. Future updates
- * may include groundbreaking concepts like "Value" or "Durability," but for now,
- * we just need to know if it will break the {@code ContractedWorker}'s back.
+ * An enumeration of statistics that items can track.
+ * Used with the engine's statistic system for weight limits,
+ * commerce, quantities, and access control.
+ *
+ * @author Jax
+ * @author Tommy
  */
 public enum ItemStatistics {
+    /** The weight of the item, used for inventory weight limits. */
     WEIGHT,
+
+    /** The remaining uses or charges of a multi-use item. */
+    QUANTITY,
+
+    /** The credit value when buying this item from the Supercomputer. */
     BUY_VALUE,
+
+    /** The credit value when selling this item to the Supercomputer. */
+    SELL_VALUE,
+
+    /** The clearance level granted by an access card. */
     CLEARANCE
 }
