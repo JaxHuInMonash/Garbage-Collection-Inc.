@@ -7,7 +7,6 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.grounds.Fire;
-import game.grounds.Wall;
 import game.items.TeleportationTube;
 import game.capabilities.Ability;
 import java.util.List;
@@ -116,7 +115,7 @@ public class UseTeleportationTubeAction extends Action {
             int y = destMap.getYRange().min() + random.nextInt(height);
             candidate = destMap.at(x, y);
             attempts++;
-        } while ((candidate.getGround() instanceof Wall || candidate.containsAnActor()) && attempts < 100);
+        } while ((candidate.getGround().hasAbility(Ability.BLOCKS_ENTRY) || candidate.containsAnActor()) && attempts < 100);
         return candidate;
     }
 }

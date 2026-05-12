@@ -9,40 +9,39 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.grounds.ToxicWaste;
 import game.items.AlienCube;
 import game.capabilities.Ability;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
 /**
- * An action that uses an {@link game.items.AlienCube} to teleport the actor
- * to one of three randomly chosen locations within the current map.
+ * An action that uses an {@link AlienCube} to teleport the actor to a
+ * randomly chosen passable location within the current map.
  * <p>
  * After teleportation, all adjacent ground tiles at the source location are
- * permanently corrupted into {@link game.grounds.ToxicWaste}, which deals
- * 1 damage per turn to any actor standing on it.
+ * permanently corrupted into {@link ToxicWaste}, which deals 1 damage per
+ * turn to any actor standing on it.
  *
- *@author zhengjun Yang
+ * @author zhengjun Yang
  */
 public class UseAlienCubeAction extends Action {
 
     private final AlienCube cube;
-    private final int destinationIndex;
     private static final Random random = new Random();
-
 
     /**
      * Constructor.
      *
-     * @param cube             the AlienCube being used
-     * @param destinationIndex which of the 3 random locations to teleport to (0, 1, or 2)
+     * @param cube the AlienCube being used
      */
-    public UseAlienCubeAction(AlienCube cube, int destinationIndex) {
+    public UseAlienCubeAction(AlienCube cube) {
         this.cube = cube;
-        this.destinationIndex = destinationIndex;
     }
+
     /**
-     * Teleports the actor to the chosen random location and corrupts the
-     * source location's adjacent tiles into ToxicWaste.
+     * Teleports the actor to a random passable location on the current map
+     * and corrupts the source location's adjacent tiles into ToxicWaste.
      *
      * @param actor the actor performing the action
      * @param map   the map the actor is currently on
@@ -51,14 +50,18 @@ public class UseAlienCubeAction extends Action {
     @Override
     public String execute(Actor actor, GameMap map) {
         Location source = map.locationOf(actor);
-        List<Location> destinations = getDestinations(map);
-        Location target = destinations.get(destinationIndex % destinations.size());
+        Location target = getRandomPassableLocation(map);
+
+        if (target == null) {
+            return actor + " tries to use the Alien Cube, but there is nowhere to teleport!";
+        }
 
         corruptSurroundings(source);
         map.moveActor(actor, target);
         return actor + " uses the Alien Cube! Source corrupted into Toxic Waste. Teleported to ("
                 + target.x() + ", " + target.y() + ")!";
     }
+
     /**
      * Returns a description of this action for the menu.
      *
@@ -67,32 +70,33 @@ public class UseAlienCubeAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        List<Location> destinations = getDestinations(null);
-        String loc = (destinations != null && destinationIndex < destinations.size())
-                ? "(" + destinations.get(destinationIndex).x() + ", " + destinations.get(destinationIndex).y() + ")"
-                : "random location " + (destinationIndex + 1);
-        return actor + " uses Alien Cube → destination " + (destinationIndex + 1) + " " + loc;
+        return actor + " uses Alien Cube (teleport to random location)";
     }
+
     /**
-     * Returns a list of 3 random passable locations in the given map.
+     * Returns a random passable, unoccupied location in the given map.
      *
      * @param map the current map
-     * @return list of 3 random locations
+     * @return a random passable location, or null if none available
      */
-
-    private List<Location> getDestinations(GameMap map) {
+    private Location getRandomPassableLocation(GameMap map) {
         List<Location> candidates = new ArrayList<>();
         for (int x = map.getXRange().min(); x <= map.getXRange().max(); x++) {
             for (int y = map.getYRange().min(); y <= map.getYRange().max(); y++) {
                 Location loc = map.at(x, y);
-                if (!loc.getGround().hasAbility(Ability.BLOCKS_ENTRY)) {
+                if (!loc.getGround().hasAbility(Ability.BLOCKS_ENTRY) && !loc.containsAnActor()) {
                     candidates.add(loc);
                 }
             }
         }
-        Collections.shuffle(candidates, random);
-        return candidates.subList(0, Math.min(3, candidates.size()));
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+
+        return candidates.get(random.nextInt(candidates.size()));
     }
+
     /**
      * Turns all adjacent non-wall, non-toxic ground tiles at the given
      * location into ToxicWaste.

@@ -46,28 +46,22 @@ public class EclipseNebula extends World {
         // Reset alarm state for a fresh game
         AlarmManager.resetInstance();
 
+        // Single ground creator shared across all maps
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround('#', Wall::new);
         groundCreator.registerGround('~', Puddle::new);
         groundCreator.registerGround('_', Floor::new);
         groundCreator.registerGround('=', AluminiumDoor::new);
+        groundCreator.registerGround('N', IronDoor::new);
+        groundCreator.registerGround('M', TitaniumDoor::new);
         groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
+        groundCreator.registerGround('≈', ToxicWaste::new);
+        groundCreator.registerGround('◎', MagicCircle::new);
         groundCreator.registerGround('Φ', Floor::new);
-        DefaultGroundCreator groundCreator20 = new DefaultGroundCreator();
-        groundCreator20.registerGround('.', Dirt::new);
-        groundCreator20.registerGround('#', Wall::new);
-        groundCreator20.registerGround('_', Floor::new);
-        groundCreator20.registerGround('=', AluminiumDoor::new);
-        groundCreator20.registerGround('N', IronDoor::new);
-        groundCreator20.registerGround('M', TitaniumDoor::new);
-        groundCreator20.registerGround('o', Hole::new);
-        groundCreator20.registerGround('≈', ToxicWaste::new);
-        groundCreator20.registerGround('◎', MagicCircle::new);
-        groundCreator20.registerGround('Φ', Floor::new);
-        groundCreator20.registerGround('◈', Floor::new);
-        groundCreator20.registerGround('≡', Floor::new);
+        groundCreator.registerGround('◈', Floor::new);
+        groundCreator.registerGround('≡', Floor::new);
 
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
@@ -118,7 +112,7 @@ public class EclipseNebula extends World {
                 ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
         );
 
-        GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator20, moon20Overflow);
+        GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator, moon20Overflow);
         this.addGameMap(moon20OverflowMap);
         TeleportationTube tube99 = new TeleportationTube();
         tube99.addDestination(moon20OverflowMap, 5, 3, "20-Overflow");
