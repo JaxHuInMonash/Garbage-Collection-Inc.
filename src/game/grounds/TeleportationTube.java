@@ -12,15 +12,16 @@ import java.util.List;
 /**
  * A teleportation device installed in armoured ships. Displays as {@code Φ}.
  * <p>
- * Supports multiple destination locations across maps. Using the tube burns
- * the surroundings of the destination for 2 turns. There is a 50% chance the
- * device malfunctions, teleporting the worker to a random location within the
- * destination map instead of the intended spot. The burning effect still occurs
- * at the random destination. If the destination is occupied by another actor,
- * the worker is automatically relocated to a random empty tile.
+ * Supports multiple destination locations across maps. When an actor stands
+ * on the tube, they can choose a destination to teleport to. Using the tube
+ * burns the surroundings of the destination for 2 turns. There is a 50% chance
+ * the device malfunctions, teleporting the worker to a random location within
+ * the destination map instead of the intended spot. The burning effect still
+ * occurs at the random destination. If the destination is occupied by another
+ * actor, the worker is automatically relocated to a random empty tile.
  * <p>
- * Must be added to the ship in both the 99-deprecated and 20-overflow maps.
- *
+ * Installed as a fixed ground tile in the ships of both the 99-deprecated
+ * and 20-overflow maps.
  *@author zhengjun Yang
  */
 public class TeleportationTube extends Ground {
