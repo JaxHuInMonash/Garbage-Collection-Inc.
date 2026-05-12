@@ -66,7 +66,7 @@ public class CRTMonitor extends Item implements Sellable {
                 Location location = exit.getDestination();
                 Ground ground = location.getGround();
 
-                if (ground.hasAbility(Ability.ON_FIRE)) { // Dysfunctional in REQ1, Functional when merged
+                if (!ground.hasAbility(Ability.BLOCKS_ENTRY) && !ground.hasAbility(Ability.ON_FIRE)) {
                     location.setGround(new Fire(ground));
                 }
             }
