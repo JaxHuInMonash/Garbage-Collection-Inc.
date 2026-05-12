@@ -54,7 +54,7 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('=', AluminiumDoor::new);
         groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
-        groundCreator.registerGround('Φ', Floor::new);
+        groundCreator.registerGround('Φ', TeleportationTube::new);
         DefaultGroundCreator groundCreator20 = new DefaultGroundCreator();
         groundCreator20.registerGround('.', Dirt::new);
         groundCreator20.registerGround('#', Wall::new);
@@ -126,8 +126,8 @@ public class EclipseNebula extends World {
         TeleportationTube tube20 = new TeleportationTube();
         tube20.addDestination(moon99DeprecatedMap, 5, 2, "99-Deprecated");
 
-        moon99DeprecatedMap.at(4, 3).addItem(tube99);
-        moon20OverflowMap.at(5, 3).addItem(tube20);
+        moon99DeprecatedMap.at(4, 3).setGround(tube99);
+        moon20OverflowMap.at(5, 3).setGround(tube20);
         // Place the three unique ship items (only instantiated once)
         moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());
         moon99DeprecatedMap.at(31, 10).addItem(new AccessCardLevel2());

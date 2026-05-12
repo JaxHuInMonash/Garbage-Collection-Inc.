@@ -1,11 +1,10 @@
-package game.items;
+package game.grounds;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.statistics.BaseStatistic;
-import game.ItemStatistics;
+import edu.monash.fit2099.engine.positions.Ground;
+import edu.monash.fit2099.engine.positions.Location;
 import game.actions.UseTeleportationTubeAction;
 import java.util.Collections;
 import java.util.ArrayList;
@@ -24,18 +23,20 @@ import java.util.List;
  *
  *@author zhengjun Yang
  */
-public class TeleportationTube extends Item {
+public class TeleportationTube extends Ground {
 
-    public record Destination(GameMap map, int x, int y, String label) {}
+    public record Destination(GameMap map, int x, int y, String label) {
+    }
 
     private final List<Destination> destinations = new ArrayList<>();
+
     /**
      * Constructor.
      */
     public TeleportationTube() {
-        super("Teleportation Tube", 'Φ');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(5));
+        super('Φ', "Teleportation Tube");
     }
+
     /**
      * Registers a destination location for this tube.
      *
@@ -47,6 +48,7 @@ public class TeleportationTube extends Item {
     public void addDestination(GameMap map, int x, int y, String label) {
         destinations.add(new Destination(map, x, y, label));
     }
+
     /**
      * Returns an unmodifiable view of the registered destinations.
      *
@@ -57,10 +59,12 @@ public class TeleportationTube extends Item {
     }
 
     @Override
-    public ActionList allowableActions(Actor owner, GameMap map) {
+    public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = new ActionList();
-        for (int i = 0; i < destinations.size(); i++) {
-            actions.add(new UseTeleportationTubeAction(this, i));
+        if (direction.isEmpty()) {
+            for (int i = 0; i < destinations.size(); i++) {
+                actions.add(new UseTeleportationTubeAction(this, i));
+            }
         }
         return actions;
     }
