@@ -2,7 +2,7 @@ package game.grounds;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
-
+import game.capabilities.Ability;
 /**
  * A class representing a solid wall. No actor can enter a wall.
  *
@@ -11,6 +11,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 public class Wall extends Ground {
     public Wall() {
         super('#', "Wall");
+        this.enableAbility(Ability.BLOCKS_ENTRY);
     }
 
     /**

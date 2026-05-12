@@ -69,3 +69,6 @@ public class AccessCardLevel3 extends AccessCard implements Buyable {
         return getStatistic(ItemStatistics.BUY_VALUE);
     }
 }
+
+
+

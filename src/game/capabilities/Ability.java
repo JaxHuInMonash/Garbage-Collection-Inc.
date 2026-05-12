@@ -8,6 +8,10 @@ package game.capabilities;
  * @author Jax
  */
 public enum Ability {
+    /**
+     * Allows an item to unlock secured doors when used by an actor.
+     */
+    CAN_UNLOCK_DOORS,
 
     /**
      * Indicates the carrier has a SterilisationBox, which purifies consumables
@@ -23,14 +27,27 @@ public enum Ability {
     ATTACKABLE_BY_CREATURES,
 
     /**
-     * Marks a ground tile as being on fire. Used to check whether fire
-     * should be spawned without relying on instanceof checks.
+     * Marks a ground tile as impassable (e.g., walls, locked doors).
+     */
+    BLOCKS_ENTRY,
+
+    /**
+     * Marks a ground tile as a Magic Circle teleportation point.
+     */
+    IS_MAGIC_CIRCLE,
+
+    /**
+     * Marks a ground tile as currently on fire.
      */
     ON_FIRE,
 
     /**
-     * Marks a ground tile as a hole. Used by hole expansion logic to
-     * avoid converting existing holes.
+     * Marks a ground tile as toxic waste that damages actors standing on it.
+     */
+    IS_TOXIC,
+
+    /**
+     * Marks a ground tile as a Hole spawner.
      */
     IS_HOLE,
 }
