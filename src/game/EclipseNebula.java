@@ -31,16 +31,14 @@ public class EclipseNebula extends World {
     }
 
     /**
-     * Initialise maps, actors, items, grounds, and the alarm system.
+     * This class handles the miracle of creation, translating a bunch of periods
+     * and hashtags into a sprawling, functional sci-fi facility.
      * <p>
-     * Each worker gets their own {@link WeightLimitedInventory} with a 50-unit
-     * weight limit and a {@link game.items.Flask} already inside. The three special items
-     * (AccessCard, FirstAidKit, SterilisationBox) are placed once in the ship.
-     * <p>
-     * The alarm system is initialised with a drone-spawning listener that
-     * deploys Security Drones at predefined locations when triggered.
+     * Initialises two game maps: the 99-Deprecated moon facility and the
+     * 20-Overflow factory complex. Connects them via TeleportationTubes,
+     * places items, actors, and registers the alarm system.
      *
-     * @throws Exception in case if anything goes wrong
+     * @author zhengjun Yang
      */
     public void initialise() throws Exception {
         // Reset alarm state for a fresh game
@@ -55,19 +53,12 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('o', Hole::new);
         groundCreator.registerGround('a', AlarmFloor::new);
         groundCreator.registerGround('Φ', TeleportationTube::new);
-        DefaultGroundCreator groundCreator20 = new DefaultGroundCreator();
-        groundCreator20.registerGround('.', Dirt::new);
-        groundCreator20.registerGround('#', Wall::new);
-        groundCreator20.registerGround('_', Floor::new);
-        groundCreator20.registerGround('=', AluminiumDoor::new);
-        groundCreator20.registerGround('N', IronDoor::new);
-        groundCreator20.registerGround('M', TitaniumDoor::new);
-        groundCreator20.registerGround('o', Hole::new);
-        groundCreator20.registerGround('≈', ToxicWaste::new);
-        groundCreator20.registerGround('◎', MagicCircle::new);
-        groundCreator20.registerGround('Φ', Floor::new);
-        groundCreator20.registerGround('◈', Floor::new);
-        groundCreator20.registerGround('≡', Floor::new);
+        groundCreator.registerGround('N', IronDoor::new);
+        groundCreator.registerGround('M', TitaniumDoor::new);
+        groundCreator.registerGround('≈', ToxicWaste::new);
+        groundCreator.registerGround('◎', MagicCircle::new);
+        groundCreator.registerGround('◈', Floor::new);
+        groundCreator.registerGround('≡', Floor::new);
 
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
@@ -118,7 +109,7 @@ public class EclipseNebula extends World {
                 ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
         );
 
-        GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator20, moon20Overflow);
+        GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator, moon20Overflow);
         this.addGameMap(moon20OverflowMap);
         TeleportationTube tube99 = new TeleportationTube();
         tube99.addDestination(moon20OverflowMap, 5, 3, "20-Overflow");
