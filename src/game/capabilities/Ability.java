@@ -31,6 +31,6 @@ public enum Ability {
     IS_MAGIC_CIRCLE,
     ON_FIRE,
     IS_TOXIC,
-    HAS_CLEARANCE,
+
     }
 
