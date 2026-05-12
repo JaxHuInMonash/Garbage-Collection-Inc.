@@ -1,16 +1,23 @@
 package game.items;
 
+import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
+import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
+import game.actors.Parasite;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
+import game.capabilities.Infectable;
+import game.spawning.SpawnEffectManager;
+import game.statuses.InfectedStatus;
+import game.capabilities.Sellable;
 
 /**
  * A packet of cookies found on the moon's facility. Weighs 2 units and
@@ -21,11 +28,19 @@ import game.capabilities.Consumable;
  * The item disappears from the inventory only after all 5 cookies are eaten.
  *
  * @author Jax
+ * @author Tommy
  */
-public class Cookies extends Item implements Consumable {
+public class Cookies extends Item implements Consumable, Sellable, Infectable {
+    private static final int WEIGHT = 2;
+
+    private static final int INITIAL_QUANTITY = 5;
+    private static final int VALUE_PER_COOKIE = 1;
 
     private static final int MAX_COOKIES = 5;
     private int remainingCookies;
+    private static final int SELL_DAMAGE_PER_COOKIE = 1;
+    private static final int CONSUME_STERILISED_HEAL = 1;
+    private static final int CONSUME_UNSTERILISED_DAMAGE = 1;
 
     /**
      * Constructor.
@@ -33,7 +48,9 @@ public class Cookies extends Item implements Consumable {
     public Cookies() {
         super("Cookies", '◍');
         this.remainingCookies = MAX_COOKIES;
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(2));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_QUANTITY * VALUE_PER_COOKIE));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(this.getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE));
         this.makePortable();
     }
 
@@ -44,6 +61,88 @@ public class Cookies extends Item implements Consumable {
      */
     public int getRemainingCookies() {
         return remainingCookies;
+    }
+
+    /**
+     * Defines what happens when a cookie is sold.
+     * Removes the Cookies from the actor's inventory
+     * and damages them by {@value SELL_DAMAGE_PER_COOKIE} per cookie
+     *
+     * @param actor the actor selling the cookies
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
+    @Override
+    public String onSold(Actor actor, GameMap map) {
+        actor.getInventory().remove(this);
+
+        actor.hurt(SELL_DAMAGE_PER_COOKIE * getStatistic(ItemStatistics.QUANTITY));
+
+        return this + " were sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits, harming the player " + SELL_DAMAGE_PER_COOKIE + " for each cookie.";
+    }
+
+    /**
+     * Provides the value of the item when sold
+     * @return current sell value of the item
+     */
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
+    }
+
+    /**
+     * Called when these cookies are infected by a Parasite. Adds the generic
+     * {@link InfectedStatus} which delegates per-turn logic back to this class.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.addStatus(new InfectedStatus(this));
+    }
+
+    /**
+     * Per-turn infection logic: reduces cookies by 1 and spawns a Parasite
+     * on an adjacent empty tile each turn.
+     *
+     * @param location the current location of these cookies
+     */
+    @Override
+    public void onInfectionTick(Location location) {
+        this.remainingCookies = Math.max(0, this.remainingCookies - 1);
+        spawnParasiteAdjacent(location);
+    }
+
+    /**
+     * The infection remains active while cookies remain.
+     *
+     * @return true if there are cookies remaining
+     */
+    @Override
+    public boolean isInfectionActive() {
+        return remainingCookies > 0;
+    }
+
+    /**
+     * Attempts to spawn a Parasite on an adjacent empty tile.
+     *
+     * @param location the location around which to spawn
+     */
+    private void spawnParasiteAdjacent(Location location) {
+        for (Exit exit : location.getExits()) {
+            Location adjacent = exit.getDestination();
+            Parasite parasite = new Parasite();
+            if (adjacent.canActorEnter(parasite)) {
+                try {
+                    adjacent.addActor(parasite);
+                    SpawnEffectManager.getInstance().onCreatureSpawned(parasite, adjacent);
+                } catch (GameEngineException e) {
+                    // Tile became occupied between check and placement — skip
+                }
+                return;
+            }
+        }
     }
 
     /**
@@ -58,29 +157,45 @@ public class Cookies extends Item implements Consumable {
     @Override
     public String consumedBy(Actor actor, GameMap map) {
         remainingCookies--;
+        modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
+        modifyStatistic(ItemStatistics.SELL_VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE);
 
         String result;
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
-            actor.heal(1);
+            actor.heal(CONSUME_STERILISED_HEAL);
             result = actor + " eats a sterilised cookie and heals 1 HP.";
         } else {
-            actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.DECREASE, 1);
+            actor.hurt(CONSUME_UNSTERILISED_DAMAGE);
             result = actor + " eats a toxic cookie. Maximum HP decreased by 1!";
         }
 
-        if (remainingCookies <= 0) {
+        if (getStatistic(ItemStatistics.QUANTITY) <= 0) {
             actor.getInventory().remove(this);
             result += " The cookie packet is now empty and discarded.";
         } else {
-            result += " (" + remainingCookies + " cookies remaining)";
+            result += " (" + getStatistic(ItemStatistics.QUANTITY) + " cookies remaining)";
         }
 
         return result;
     }
 
     @Override
+    public void removeFromGround(Location location) {
+        location.removeItem(this);
+    }
+
+    @Override
     public String getConsumeMenuDescription(Actor actor) {
         return actor + " eats a cookie (" + remainingCookies + " remaining)";
+    }
+
+    /**
+     * Provides the correct name when displaying the name
+     * @return Singular or plural depending on quantity
+     */
+    @Override
+    public String toString() {
+        return "Cookie" + (getStatistic(ItemStatistics.QUANTITY) == 1 ? "" : "s");
     }
 
     /**
@@ -93,7 +208,7 @@ public class Cookies extends Item implements Consumable {
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {
         ActionList actions = new ActionList();
-        if (remainingCookies > 0) {
+        if (getStatistic(ItemStatistics.QUANTITY) > 0) {
             actions.add(new ConsumeAction(this));
         }
         return actions;

@@ -3,7 +3,6 @@ package game.behaviours;
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.behaviours.Behaviour;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.ConsumeAction;
 import game.capabilities.Consumable;
@@ -41,10 +40,8 @@ public class ConsumeItemBehaviour implements Behaviour<Actor, Action> {
 
         if (!consumables.isEmpty()) {
             Consumable consumable = consumables.get(0);
-            // Remove the item from the ground before consuming
-            if (consumable instanceof Item) {
-                location.removeItem((Item) consumable);
-            }
+            // The consumable removes itself
+            consumable.removeFromGround(location);
             return new ConsumeAction(consumable);
         }
 
