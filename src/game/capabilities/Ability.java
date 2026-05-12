@@ -25,5 +25,12 @@ public enum Ability {
      * targets without depending on concrete worker classes.
      */
     ATTACKABLE_BY_CREATURES,
+
     IS_UNDEAD,
-}
+    BLOCKS_ENTRY,
+    IS_MAGIC_CIRCLE,
+    ON_FIRE,
+    IS_TOXIC,
+    HAS_CLEARANCE,
+    }
+

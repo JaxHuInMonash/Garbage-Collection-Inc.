@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.statuses.BurnStatus;
-
+import game.capabilities.Ability;
 /**
  * A fire ground tile spawned by a leaking Lantern. Displays as {@code ^}.
  * <p>
@@ -34,8 +34,10 @@ public class Fire extends Ground {
     }
     public Fire(Ground originalGround, int duration) {
         super('^', "Fire");
+        this.enableAbility(Ability.ON_FIRE);
         this.originalGround = originalGround;
         this.remainingTurns = duration;
+
     }
 
     /**

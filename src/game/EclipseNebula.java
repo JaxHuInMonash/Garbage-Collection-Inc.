@@ -129,9 +129,9 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(4, 3).addItem(tube99);
         moon20OverflowMap.at(5, 3).addItem(tube20);
         // Place the three unique ship items (only instantiated once)
-        moon99DeprecatedMap.at(5, 2).addItem(new AccessCard(1));
-        moon99DeprecatedMap.at(31, 10).addItem(new AccessCard(1));
-        moon99DeprecatedMap.at(51, 10).addItem(new AccessCard(1));
+        moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());
+        moon99DeprecatedMap.at(31, 10).addItem(new AccessCardLevel2());
+        moon99DeprecatedMap.at(51, 10).addItem(new AccessCardLevel3());
         moon99DeprecatedMap.at(6, 2).addItem(new FirstAidKit());
         moon99DeprecatedMap.at(7, 2).addItem(new SterilisationBox());
 
@@ -146,8 +146,8 @@ public class EclipseNebula extends World {
         moon20OverflowMap.at(11, 15).addItem(new AlienCube());
 
 
-        moon20OverflowMap.at(20, 8).addItem(new AccessCard(2));
-        moon20OverflowMap.at(40, 14).addItem(new AccessCard(3));
+        moon20OverflowMap.at(20, 8).addItem(new AccessCardLevel2());
+        moon20OverflowMap.at(40, 14).addItem(new AccessCardLevel3());
 
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
