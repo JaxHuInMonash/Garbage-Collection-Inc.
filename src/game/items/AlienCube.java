@@ -40,7 +40,8 @@ public class AlienCube extends Item implements Sellable {
 
     /**
      * Called when the cube is sold to the Supercomputer.
-     * Removes the cube from the actor's inventory.
+     * Removes the cube from the actor's inventory and spawns an Undead
+     * on an adjacent empty tile next to the actor as a last resort of defence.
      *
      * @param actor the actor selling the cube
      * @param map   the map the actor is on
