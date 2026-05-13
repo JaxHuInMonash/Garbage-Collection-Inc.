@@ -3,8 +3,9 @@ package game.grounds;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.statuses.BurnStatus;
 import game.capabilities.Ability;
+import game.statuses.BurnStatus;
+
 /**
  * A fire ground tile spawned by a leaking Lantern. Displays as {@code ^}.
  * <p>
@@ -24,20 +25,25 @@ public class Fire extends Ground {
     private int remainingTurns;
 
     /**
-     * Constructor.
+     * Constructor with default fire duration.
      *
      * @param originalGround the ground type that was here before the fire started
      */
-
     public Fire(Ground originalGround) {
         this(originalGround, FIRE_DURATION);
     }
+
+    /**
+     * Constructor with custom fire duration.
+     *
+     * @param originalGround the ground type that was here before the fire started
+     * @param duration       how many turns this fire lasts
+     */
     public Fire(Ground originalGround, int duration) {
         super('^', "Fire");
         this.enableAbility(Ability.ON_FIRE);
         this.originalGround = originalGround;
         this.remainingTurns = duration;
-
     }
 
     /**
@@ -72,7 +78,6 @@ public class Fire extends Ground {
      */
     @Override
     public void tick(Location location) {
-        // Apply burn to any actor standing on this fire
         if (location.containsAnActor()) {
             Actor actor = location.getActor();
             actor.addStatus(new BurnStatus(BURN_DAMAGE, BURN_DURATION));

@@ -49,4 +49,3 @@ public interface Infectable {
      */
     boolean isInfectionActive();
 }
-

@@ -1,14 +1,23 @@
 package game.actors;
 
+import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.displays.Menu;
 import edu.monash.fit2099.engine.items.Inventory;
+import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.capabilities.Ability;
+import game.capabilities.Infectable;
+import game.spawning.SpawnEffectManager;
+import game.statuses.InfectedStatus;
 
 /**
  * This brave soul is capable of performing complex tasks such as picking up trash
@@ -23,7 +32,15 @@ import game.capabilities.Ability;
  *
  * @author Jax
  */
-public class ContractedWorker extends Actor {
+public class ContractedWorker extends Actor implements Infectable {
+
+    private static final int MAX_CREDITS = 1000;
+    private static final int INITIAL_CREDITS = 0;
+    private static final int INFECTION_DAMAGE_PER_TURN = 1;
+    private static final int INFECTION_SPAWN_INTERVAL = 5;
+
+    private boolean infected;
+    private int infectionTurnCount;
 
     /**
      * Constructor.
@@ -36,6 +53,71 @@ public class ContractedWorker extends Actor {
     public ContractedWorker(String name, char displayChar, int hitPoints, Inventory inventory) {
         super(name, displayChar, hitPoints, inventory);
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
+        this.addNewStatistic(game.ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
+        this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
+        this.infected = false;
+        this.infectionTurnCount = 0;
+    }
+
+    /**
+     * Called when this worker is infected by a Parasite. Adds the generic
+     * {@link InfectedStatus} which delegates per-turn logic back to this class.
+     *
+     * @param infector the Parasite that caused the infection
+     * @param map      the current game map
+     */
+    @Override
+    public void onInfected(Actor infector, GameMap map) {
+        this.infected = true;
+        this.infectionTurnCount = 0;
+        this.addStatus(new InfectedStatus(this));
+    }
+
+    /**
+     * Per-turn infection logic: takes 1 damage each turn. Every 5 turns,
+     * attempts to spawn a Parasite on an adjacent empty tile.
+     *
+     * @param location the current location of this worker
+     */
+    @Override
+    public void onInfectionTick(Location location) {
+        this.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.DECREASE, INFECTION_DAMAGE_PER_TURN);
+        infectionTurnCount++;
+
+        if (infectionTurnCount % INFECTION_SPAWN_INTERVAL == 0) {
+            spawnParasiteAdjacent(location);
+        }
+    }
+
+    /**
+     * The worker's infection persists indefinitely while they remain conscious.
+     *
+     * @return true always (infection ends only when the worker dies)
+     */
+    @Override
+    public boolean isInfectionActive() {
+        return infected;
+    }
+
+    /**
+     * Attempts to spawn a Parasite on an adjacent empty tile.
+     *
+     * @param location the location around which to spawn
+     */
+    private void spawnParasiteAdjacent(Location location) {
+        for (Exit exit : location.getExits()) {
+            Location adjacent = exit.getDestination();
+            Parasite parasite = new Parasite();
+            if (adjacent.canActorEnter(parasite)) {
+                try {
+                    adjacent.addActor(parasite);
+                    SpawnEffectManager.getInstance().onCreatureSpawned(parasite, adjacent);
+                } catch (GameEngineException e) {
+                    // Tile became occupied between check and placement — skip
+                }
+                return;
+            }
+        }
     }
 
     /**

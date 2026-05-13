@@ -55,5 +55,3 @@ public class InfectedStatus implements Status {
         return host.isInfectionActive();
     }
 }
-
-

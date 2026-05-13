@@ -4,11 +4,13 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
 import game.actions.ConsumeAction;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
+import game.capabilities.Sellable;
 import game.statuses.PoisonStatus;
 
 /**
@@ -19,16 +21,59 @@ import game.statuses.PoisonStatus;
  * The apple disappears from the inventory once consumed.
  *
  * @author Jax
+ * @author Tommy
  */
-public class Apple extends Item implements Consumable {
+public class Apple extends Item implements Consumable, Sellable {
+    private static final int WEIGHT = 1;
+    private static final int SELL_VALUE = 1;
+
+    private static final int SELL_POISON_DAMAGE_PER_TURN = 2;
+    private static final int SELL_POISON_DURATION = 2;
+
+    private static final int CONSUME_STERILISATION_HEAL = 3;
+    private static final int CONSUME_POISON_DAMAGE_PER_TURN = 1;
+    private static final int CONSUME_POISON_DURATION = 5;
 
     /**
      * Constructor.
      */
     public Apple() {
         super("Apple", 'ó');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(1));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(SELL_VALUE));
         this.makePortable();
+    }
+
+    /**
+     * Defines what happens when an Apple is sold.
+     * Removes the apple from the actor's inventory.
+     * if the player does not have the ability to sterilise,
+     * they will take {@value SELL_POISON_DAMAGE_PER_TURN} damage
+     * for {@value SELL_POISON_DURATION} turns.
+     *
+     * @param actor the actor selling the apple
+     * @param map   the game map the actor is on
+     * @return a description of the result
+     */
+    @Override
+    public String onSold(Actor actor, GameMap map) {
+        actor.getInventory().remove(this);
+
+        if (actor.hasAbility(Ability.HAS_STERILISATION)) {
+            return actor + " sells a sterilised Apple - Neutralising its poisonous effects.";
+        } else {
+            actor.addStatus(new PoisonStatus(SELL_POISON_DAMAGE_PER_TURN, SELL_POISON_DURATION));
+            return actor + " sells a toxic Apple and is poisoned! (" + SELL_POISON_DAMAGE_PER_TURN + " dmg/turn for " + SELL_POISON_DURATION + " turns)";
+        }
+    }
+
+    /**
+     * provides the value of the item when sold
+     * @return sell value of the item
+     */
+    @Override
+    public int getSellValue() {
+        return getStatistic(ItemStatistics.SELL_VALUE);
     }
 
     /**
@@ -45,12 +90,17 @@ public class Apple extends Item implements Consumable {
         actor.getInventory().remove(this);
 
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
-            actor.heal(3);
-            return actor + " eats a sterilised Apple and heals 3 HP.";
+            actor.heal(CONSUME_STERILISATION_HEAL);
+            return actor + " eats a sterilised Apple and heals " + CONSUME_STERILISATION_HEAL + " HP.";
         } else {
-            actor.addStatus(new PoisonStatus(1, 5));
+            actor.addStatus(new PoisonStatus(CONSUME_POISON_DAMAGE_PER_TURN, CONSUME_POISON_DURATION));
             return actor + " eats a toxic Apple and is poisoned! (1 dmg/turn for 5 turns)";
         }
+    }
+
+    @Override
+    public void removeFromGround(Location location) {
+        location.removeItem(this);
     }
 
     @Override
