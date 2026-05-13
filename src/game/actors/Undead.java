@@ -14,7 +14,10 @@ import game.alarm.AlarmManager;
 import game.behaviours.AttackBehaviour;
 import game.behaviours.FollowBehaviour;
 import game.behaviours.WanderBehaviour;
+import game.capabilities.Ability;
 import game.capabilities.Infectable;
+import game.items.UndeadCorpse;
+import game.statuses.DizzyStatus;
 import game.weapons.UndeadFist;
 
 import java.util.Map;
@@ -45,6 +48,8 @@ public class Undead extends Actor implements AlarmListener, Infectable {
      */
     public Undead() {
         super("Undead", 'Ѫ', 15, new BasicInventory());
+        this.enableAbility(Ability.IS_UNDEAD);
+        this.enableAbility(Ability.HOSTILE_TO_WORKERS);
         this.setIntrinsicWeapon(new UndeadFist());
         this.behaviours.put(1, new AttackBehaviour());
         this.behaviours.put(3, new WanderBehaviour());
@@ -102,6 +107,22 @@ public class Undead extends Actor implements AlarmListener, Infectable {
     }
 
     /**
+     * Drops an {@link UndeadCorpse} on this tile before removal, so the
+     * Meeple's EngineerState can detect and transmute the remains.
+     */
+    @Override
+    public String unconscious(Actor otherActor, GameMap map) {
+        map.locationOf(this).addItem(new UndeadCorpse());
+        return super.unconscious(otherActor, map);
+    }
+
+    @Override
+    public String unconscious(GameMap map) {
+        map.locationOf(this).addItem(new UndeadCorpse());
+        return super.unconscious(map);
+    }
+
+    /**
      * Each turn, the Undead checks its behaviours in priority order.
      * It attacks an adjacent worker if one exists, follows the alarm target
      * if the alarm has been triggered, otherwise wanders randomly.
@@ -116,6 +137,10 @@ public class Undead extends Actor implements AlarmListener, Infectable {
     @Override
     public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
         if (!this.isConscious()) {
+            return new DoNothingAction();
+        }
+
+        if (this.hasStatus(DizzyStatus.class)) {
             return new DoNothingAction();
         }
 

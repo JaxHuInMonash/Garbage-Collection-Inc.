@@ -10,6 +10,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import game.BasicInventory;
 import game.behaviours.InfectBehaviour;
 import game.behaviours.WanderBehaviour;
+import game.capabilities.Ability;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,6 +37,7 @@ public class Parasite extends Actor {
      */
     public Parasite() {
         super("Parasite", 'x', 30, new BasicInventory());
+        this.enableAbility(Ability.IS_PARASITE);
         this.behaviours.put(1, new InfectBehaviour());
         this.behaviours.put(2, new WanderBehaviour());
     }

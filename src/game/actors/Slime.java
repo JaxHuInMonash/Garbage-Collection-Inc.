@@ -10,6 +10,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import game.BasicInventory;
 import game.behaviours.ConsumeItemBehaviour;
 import game.behaviours.WanderBehaviour;
+import game.statuses.DizzyStatus;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,6 +55,10 @@ public class Slime extends Actor {
     @Override
     public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
         if (!this.isConscious()) {
+            return new DoNothingAction();
+        }
+
+        if (this.hasStatus(DizzyStatus.class)) {
             return new DoNothingAction();
         }
 
