@@ -50,4 +50,22 @@ public enum Ability {
      * Marks a ground tile as a Hole spawner.
      */
     IS_HOLE,
+
+    /**
+     * Marks an actor as a Parasite. Used by states to detect Parasite presence
+     * without coupling to the concrete Parasite class.
+     */
+    IS_PARASITE,
+
+    /**
+     * Marks an actor as an Undead creature. Used by states to count Undead
+     * without coupling to the concrete Undead class.
+     */
+    IS_UNDEAD,
+
+    /**
+     * Marks an actor as hostile to Workers (e.g. Undead, SecurityDrone).
+     * Used by the Swarmling's CullingState to detect nearby threats.
+     */
+    HOSTILE_TO_WORKERS,
 }
