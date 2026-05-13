@@ -66,7 +66,7 @@ public class WarperTreeMature extends Ground {
 
             if (destination.containsAnActor() && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES))
                 warpWorker(destination.getActor(), location);
-            return;
+                return;
         }
     }
 
@@ -89,7 +89,7 @@ public class WarperTreeMature extends Ground {
             for (int y = map.getYRange().min(); y <= map.getYRange().max(); y++) {
                 Location candidate = map.at(x, y);
 
-                if (!candidate.canActorEnter(worker))
+                if (candidate.canActorEnter(worker) && !candidate.containsAnActor())
                     validDestinations.add(candidate);
             }
         }
