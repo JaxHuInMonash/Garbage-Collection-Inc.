@@ -8,6 +8,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
 import game.actors.*;
 import game.alarm.AlarmManager;
+import game.items.ScrapPile;
 import game.grounds.*;
 import game.items.*;
 import game.spawning.ParasiteSpawnEffect;
@@ -164,6 +165,19 @@ public class EclipseNebula extends World {
         moon20OverflowMap.at(11, 15).addItem(new AlienCube());
         moon20OverflowMap.at(20, 8).addItem(new AccessCardLevel2());
         moon20OverflowMap.at(40, 14).addItem(new AccessCardLevel3());
+
+        // Scrap piles — trigger Meeple's NomadState → EngineerState transition
+        moon99DeprecatedMap.at(30, 3).addItem(new ScrapPile());
+        moon99DeprecatedMap.at(50, 3).addItem(new ScrapPile());
+        moon20OverflowMap.at(30, 14).addItem(new ScrapPile());
+
+        // Swarmlings — thrive in toxic zones; place one on each map
+        moon99DeprecatedMap.addActor(new Swarmling(), moon99DeprecatedMap.at(34, 6));
+        moon20OverflowMap.addActor(new Swarmling(), moon20OverflowMap.at(18, 9));
+
+        // Meeples — support units, one per map
+        moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
+        moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
 
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
