@@ -27,8 +27,7 @@ import java.util.List;
  */
 public class TeleportationTube extends Ground {
 
-    public record Destination(GameMap map, int x, int y, String label) {
-    }
+    public record Destination(GameMap map, int x, int y, String label) {}
 
     private final List<Destination> destinations = new ArrayList<>();
 

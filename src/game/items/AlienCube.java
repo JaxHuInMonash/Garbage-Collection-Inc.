@@ -28,7 +28,7 @@ import game.spawning.SpawnEffectManager;
  * @author zhengjun Yang
  */
 public class AlienCube extends Item implements Sellable {
-
+    private static final int WEIGHT = 2;
     private static final int CREDIT_VALUE = 25;
 
     /**
@@ -36,7 +36,7 @@ public class AlienCube extends Item implements Sellable {
      */
     public AlienCube() {
         super("Alien Cube", '◈');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(2));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(CREDIT_VALUE));
         this.makePortable();
     }

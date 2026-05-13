@@ -10,15 +10,17 @@ import game.capabilities.Ability;
 /**
  * An abstract base class representing a tiered security door in the facility.
  * All doors require an {@link game.items.AccessCard} of a minimum clearance level
- * to unlock. Each subclass defines its own required clearance level and unlock
- * side effect via {@link #requiredClearance()} and {@link #unlockEffect(Actor, Location)}.
+ * to unlock. Each subclass defines its own required clearance level
+ * and {@link #unlockEffect(Actor, Location)}.
  * <p>
  * This design centralises common door logic (clearance checking, unlock action)
  * in one place, following the DRY and Open/Closed principles.
  *
  * @author zhengjun Yang
+ * @author Tommy
  */
 public abstract class SecuredDoor extends Ground {
+    private final int REQUIRED_CLEARANCE;
 
     private boolean isUnlocked = false;
     /**
@@ -27,20 +29,17 @@ public abstract class SecuredDoor extends Ground {
      * @param displayChar the character representing this door on the map
      * @param name        the name of this door
      */
-    public SecuredDoor(char displayChar, String name) {
+    public SecuredDoor(char displayChar, String name, int requiredClearance) {
         super(displayChar, name);
+
+        this.REQUIRED_CLEARANCE = requiredClearance;
     }
 
     @Override
     public boolean canActorEnter(Actor actor) {
         return isUnlocked;
     }
-    /**
-     * Returns the minimum clearance level required to unlock this door.
-     *
-     * @return the required clearance level
-     */
-    protected abstract int requiredClearance();
+
     /**
      * Defines the side effect that occurs when this door is unlocked.
      *
@@ -73,6 +72,6 @@ public abstract class SecuredDoor extends Ground {
     private boolean hasRequiredClearance(Actor actor) {
         return actor.getInventory().getItems().stream()
                 .filter(item -> item.hasAbility(Ability.CAN_UNLOCK_DOORS))
-                .anyMatch(item -> item.getStatistic(ItemStatistics.CLEARANCE) >= requiredClearance());
+                .anyMatch(item -> item.getStatistic(ItemStatistics.CLEARANCE) >= REQUIRED_CLEARANCE);
     }
 }

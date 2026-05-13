@@ -61,29 +61,14 @@ public class WarperTreeMature extends Ground {
      */
     @Override
     public void tick(Location location) {
-        Actor worker = findAdjacentWorker(location);
-        if (worker != null) {
-            warpWorker(worker, location);
+        for (Exit exit : location.getExits()) {
+            Location destination = exit.getDestination();
+
+            if (destination.containsAnActor() && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES))
+                warpWorker(destination.getActor(), location);
         }
     }
 
-    /**
-     * Returns the first adjacent actor that has the
-     * {@link Ability#ATTACKABLE_BY_CREATURES} ability, or null if none exists.
-     *
-     * @param location the location of this tree
-     * @return an adjacent worker, or null
-     */
-    private Actor findAdjacentWorker(Location location) {
-        for (Exit exit : location.getExits()) {
-            Location destination = exit.getDestination();
-            if (destination.containsAnActor()
-                    && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES)) {
-                return destination.getActor();
-            }
-        }
-        return null;
-    }
 
     /**
      * Teleports the given worker to a random valid location on the map.
@@ -96,26 +81,19 @@ public class WarperTreeMature extends Ground {
      */
     private void warpWorker(Actor worker, Location location) {
         GameMap map = location.map();
-        Location workerLocation = map.locationOf(worker);
 
         // Collect every tile on the map the worker can validly land on
         List<Location> validDestinations = new ArrayList<>();
         for (int x = map.getXRange().min(); x <= map.getXRange().max(); x++) {
             for (int y = map.getYRange().min(); y <= map.getYRange().max(); y++) {
                 Location candidate = map.at(x, y);
-                if (candidate != workerLocation
-                        && !candidate.containsAnActor()
-                        && candidate.getGround().canActorEnter(worker)) {
+
+                if (!candidate.canActorEnter(worker))
                     validDestinations.add(candidate);
-                }
             }
         }
 
-        if (validDestinations.isEmpty()) {
-            return;
-        }
-
-        Location destination = validDestinations.get(random.nextInt(validDestinations.size()));
-        map.moveActor(worker, destination);
+        if (!validDestinations.isEmpty())
+            map.moveActor(worker, validDestinations.get(random.nextInt(validDestinations.size())));
     }
 }

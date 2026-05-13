@@ -28,6 +28,7 @@ import java.util.TreeMap;
  * @author Jax
  */
 public class Parasite extends Actor {
+    private static final int INITIAL_HIT_POINTS = 30;
 
     /** Prioritised map of behaviours this Parasite can perform (lower key = higher priority). */
     private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
@@ -36,7 +37,7 @@ public class Parasite extends Actor {
      * Constructor.
      */
     public Parasite() {
-        super("Parasite", 'x', 30, new BasicInventory());
+        super("Parasite", 'x', INITIAL_HIT_POINTS, new BasicInventory());
         this.enableAbility(Ability.IS_PARASITE);
         this.behaviours.put(1, new InfectBehaviour());
         this.behaviours.put(2, new WanderBehaviour());

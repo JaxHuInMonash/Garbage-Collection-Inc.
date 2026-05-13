@@ -27,7 +27,7 @@ import java.util.List;
  *       before the timer expires).</li>
  * </ul>
  */
-public class OverloadedState extends CreatureState {
+public class OverloadedState implements CreatureState {
 
     private static final int DISCHARGE_RADIUS = 2;
     private static final int REBOOT_TURNS = 3;

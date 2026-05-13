@@ -29,7 +29,7 @@ import java.util.List;
  *   <li>→ {@link DormantState}: no Parasites remain within 3 tiles.</li>
  * </ul>
  */
-public class CullingState extends CreatureState {
+public class CullingState implements CreatureState {
 
     private static final int SCREECH_RADIUS = 8;
     private static final int PULL_STEPS = 2;

@@ -26,48 +26,21 @@ import game.weapons.MeepleFist;
  * <p>
  * When {@link DizzyStatus} is applied by an EngineerState Repelling Pulse,
  * the Meeple skips its action for that turn.
+ *
+ * @author Ethan
+ * @author Tommy
  */
-public class Meeple extends Actor {
-
-    private CreatureState currentState;
-    private boolean initialEntryDone = false;
+public class Meeple extends StatefulCreature {
+    private static final int INITIAL_HIT_POINTS = 40;
 
     /** Constructor. */
     public Meeple() {
-        super("Meeple", 'Ψ', 40, new BasicInventory());
+        super("Meeple", 'Ψ', INITIAL_HIT_POINTS, new BasicInventory(), new NomadState());
         this.setIntrinsicWeapon(new MeepleFist());
-        this.currentState = new NomadState();
     }
 
     @Override
-    public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
-        if (!isConscious()) return new DoNothingAction();
-
-        // Dizzy check — skip turn if disoriented
-        if (hasStatus(DizzyStatus.class)) return new DoNothingAction();
-
-        Location location = map.locationOf(this);
-
-        // Fire onEnter for the initial state (first turn only)
-        if (!initialEntryDone) {
-            currentState.onEnter(this, map);
-            initialEntryDone = true;
-        }
-
-        // Deterministic state transition
-        CreatureState nextState = currentState.checkTransitions(this, location, map);
-        if (nextState != currentState) {
-            currentState.onExit(this, map);
-            currentState = nextState;
-            currentState.onEnter(this, map);
-        }
-
-        display.println(this + " [" + currentState.getStateName() + "]");
-        return currentState.getAction(this, location);
-    }
-
-    @Override
-    public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
-        return new ActionList();
+    public boolean skipTurn(GameMap map) {
+        return hasStatus(DizzyStatus.class); // Dizzy check — skip turn if disoriented
     }
 }

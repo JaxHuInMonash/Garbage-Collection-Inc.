@@ -31,7 +31,7 @@ import java.util.List;
  *   <li>→ {@link DormantState}: 3 entities are killed while in this state.</li>
  * </ul>
  */
-public class BerserkState extends CreatureState {
+public class BerserkState implements CreatureState {
 
     private static final int TIDAL_STRIKE_DAMAGE = 15;
     private static final int KNOCKBACK_STEPS = 3;

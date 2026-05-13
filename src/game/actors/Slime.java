@@ -28,6 +28,7 @@ import java.util.TreeMap;
  * @author Jax
  */
 public class Slime extends Actor {
+    private static final int INITIAL_HIT_POINTS = 25;
 
     /** Prioritised map of behaviours this Slime can perform (lower key = higher priority). */
     private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
@@ -36,7 +37,7 @@ public class Slime extends Actor {
      * Constructor.
      */
     public Slime() {
-        super("Slime", '⍾', 25, new BasicInventory());
+        super("Slime", '⍾', INITIAL_HIT_POINTS, new BasicInventory());
         this.behaviours.put(1, new ConsumeItemBehaviour());
         this.behaviours.put(2, new WanderBehaviour());
     }

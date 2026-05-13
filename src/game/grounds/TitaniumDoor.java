@@ -12,21 +12,17 @@ import edu.monash.fit2099.engine.positions.Location;
  * @author zhengjun Yang
  */
 public class TitaniumDoor extends SecuredDoor {
+    private static final int REQUIRED_CLEARANCE = 3;
+    private static final int UNLOCK_EFFECT_HEAL = 5;
     /**
      * Constructor.
      */
     public TitaniumDoor() {
-        super('M', "Titanium Door");
+        super('M', "Titanium Door", REQUIRED_CLEARANCE);
     }
+
     /**
-     * Returns the minimum clearance level required: 3.
-     *
-     * @return 3
-     */
-    @Override
-    protected int requiredClearance() { return 3; }
-    /**
-     * Heals the actor for 5 HP via decontamination sequence.
+     * Heals the actor for {@value UNLOCK_EFFECT_HEAL} HP via decontamination sequence.
      *
      * @param actor    the actor unlocking the door
      * @param location the location of this door
@@ -34,7 +30,7 @@ public class TitaniumDoor extends SecuredDoor {
      */
     @Override
     public String unlockEffect(Actor actor, Location location) {
-        actor.heal(5);
-        return actor + " unlocked the Titanium Door — decontamination sequence heals 5 HP!";
+        actor.heal(UNLOCK_EFFECT_HEAL);
+        return actor + " unlocked the Titanium Door — decontamination sequence heals " + UNLOCK_EFFECT_HEAL + " HP!";
     }
 }

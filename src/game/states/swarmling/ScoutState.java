@@ -25,7 +25,7 @@ import game.states.CreatureState;
  *       is present (implies damage from a non-Parasite source).</li>
  * </ul>
  */
-public class ScoutState extends CreatureState {
+public class ScoutState implements CreatureState {
 
     private int lastHp = -1;
 

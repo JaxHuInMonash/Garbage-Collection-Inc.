@@ -20,7 +20,7 @@ import edu.monash.fit2099.engine.positions.Location;
  *   <li>{@link #getAction} — the action the creature executes while in this state.</li>
  * </ul>
  */
-public abstract class CreatureState {
+public interface  CreatureState {
 
     /**
      * Called exactly once when the creature first enters this state.
@@ -29,7 +29,7 @@ public abstract class CreatureState {
      * @param creature the creature entering this state
      * @param map      the game map
      */
-    public abstract void onEnter(Actor creature, GameMap map);
+    void onEnter(Actor creature, GameMap map);
 
     /**
      * Called when the creature is about to leave this state.
@@ -38,8 +38,7 @@ public abstract class CreatureState {
      * @param creature the creature leaving this state
      * @param map      the game map
      */
-    public void onExit(Actor creature, GameMap map) {
-    }
+    default void onExit(Actor creature, GameMap map) {}
 
     /**
      * Inspects the world and returns the next state. Must be deterministic —
@@ -51,7 +50,7 @@ public abstract class CreatureState {
      * @param map      the game map
      * @return the next state (may be the same instance)
      */
-    public abstract CreatureState checkTransitions(Actor creature, Location location, GameMap map);
+    CreatureState checkTransitions(Actor creature, Location location, GameMap map);
 
     /**
      * Returns the action the creature will execute this turn in this state.
@@ -60,8 +59,8 @@ public abstract class CreatureState {
      * @param location the creature's current location
      * @return the chosen Action
      */
-    public abstract Action getAction(Actor creature, Location location);
+    Action getAction(Actor creature, Location location);
 
     /** Human-readable state name for display and debugging. */
-    public abstract String getStateName();
+    String getStateName();
 }

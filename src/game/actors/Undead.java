@@ -38,6 +38,7 @@ import java.util.TreeMap;
  * @author Jax
  */
 public class Undead extends Actor implements AlarmListener, Infectable {
+    private static final int INITIAL_HIT_POINTS = 15;
 
     /** Prioritised map of behaviours this Undead can perform (lower key = higher priority). */
     private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
@@ -47,7 +48,7 @@ public class Undead extends Actor implements AlarmListener, Infectable {
      * it will be notified if the facility alarm is triggered.
      */
     public Undead() {
-        super("Undead", 'Ѫ', 15, new BasicInventory());
+        super("Undead", 'Ѫ', INITIAL_HIT_POINTS, new BasicInventory());
         this.enableAbility(Ability.IS_UNDEAD);
         this.enableAbility(Ability.HOSTILE_TO_WORKERS);
         this.setIntrinsicWeapon(new UndeadFist());

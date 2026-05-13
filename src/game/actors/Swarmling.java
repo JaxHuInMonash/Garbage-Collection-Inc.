@@ -33,8 +33,12 @@ import java.util.List;
  * <strong>Reflection:</strong> {@link ReflectionStatus} added by DormantState is
  * intercepted in {@link #hurt(int)} so incoming damage is absorbed before
  * reaching HP.
+ *
+ * @author Ethan
+ * @author Tommy
  */
-public class Swarmling extends Actor {
+public class Swarmling extends StatefulCreature {
+    private static final int INITIAL_HIT_POINTS = 50;
 
     private CreatureState currentState;
     private boolean initialEntryDone = false;
@@ -44,41 +48,20 @@ public class Swarmling extends Actor {
 
     /** Constructor. */
     public Swarmling() {
-        super("Swarmling", 'Ŝ', 50, new BasicInventory());
+        super("Swarmling", 'Ŝ', INITIAL_HIT_POINTS, new BasicInventory(), new DormantState());
         this.setIntrinsicWeapon(new SwarmlingClaw());
-        this.currentState = new DormantState();
     }
 
     @Override
-    public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
-        if (!isConscious()) return new DoNothingAction();
-
-        Location location = map.locationOf(this);
-
-        // Fire onEnter for the initial state (first turn only)
-        if (!initialEntryDone) {
-            currentState.onEnter(this, map);
-            initialEntryDone = true;
-        }
-
+    public Action passive(GameMap map) {
         // Environmental passive: toxic waste heals, normal ground hurts
-        if (location.getGround().hasAbility(Ability.IS_TOXIC)) {
+        if (map.locationOf(this).getGround().hasAbility(Ability.IS_TOXIC)) {
             this.heal(TOXIC_HEAL);
         } else {
             this.hurt(PASSIVE_DAMAGE);
-            if (!isConscious()) return new DoNothingAction();
         }
 
-        // Deterministic state transition
-        CreatureState nextState = currentState.checkTransitions(this, location, map);
-        if (nextState != currentState) {
-            currentState.onExit(this, map);
-            currentState = nextState;
-            currentState.onEnter(this, map);
-        }
-
-        display.println(this + " [" + currentState.getStateName() + "]");
-        return currentState.getAction(this, location);
+        return null;
     }
 
     /**
@@ -88,25 +71,19 @@ public class Swarmling extends Actor {
     @Override
     public void hurt(int damage) {
         List<ReflectionStatus> shields = statusesOf(ReflectionStatus.class);
-        if (!shields.isEmpty()) {
-            ReflectionStatus shield = shields.get(0);
-            int absorbed = shield.absorb(damage);
-            int remaining = damage - absorbed;
-            if (!shield.isStatusActive()) {
-                removeStatus(shield);
-            }
-            if (remaining > 0) {
-                super.hurt(remaining);
-            }
-        } else {
+        if (shields.isEmpty()) {
             super.hurt(damage);
+            return;
         }
-    }
 
-    @Override
-    public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
-        ActionList list = new ActionList();
-        // Swarmlings don't let other actors attack them via the menu; combat is creature-initiated
-        return list;
+        ReflectionStatus shield = shields.get(0);
+        int absorbed = shield.absorb(damage);
+        int remaining = damage - absorbed;
+
+        if (!shield.isStatusActive())
+            removeStatus(shield);
+
+        if (remaining > 0)
+            super.hurt(remaining);
     }
 }

@@ -22,7 +22,7 @@ import game.statuses.ReflectionStatus;
  *   <li>→ {@link CullingState}: more than 3 Parasites enter the 3-tile radius.</li>
  * </ul>
  */
-public class DormantState extends CreatureState {
+public class DormantState implements CreatureState {
 
     private static final int REFLECTION_AMOUNT = 20;
     private static final int SCOUT_TILE_RADIUS = 5;

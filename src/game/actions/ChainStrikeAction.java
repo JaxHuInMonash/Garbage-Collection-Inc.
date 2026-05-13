@@ -16,7 +16,7 @@ import java.util.List;
  * The Swarmling's BerserkState unique attack action.
  * <p>
  * Performs a normal weapon attack against the primary target, then
- * triggers a shockwave dealing {@link SwarmlingClaw#DAMAGE}{@code / 2}
+ * triggers a shockwave dealing 4 damage
  * to every <em>other</em> adjacent actor. If any actor dies, the
  * {@link KillListener} is notified so BerserkState can track its kill count.
  */
@@ -24,7 +24,7 @@ public class ChainStrikeAction extends Action {
 
     private final Actor target;
     private final KillListener killListener;
-    private static final int CHAIN_DAMAGE = SwarmlingClaw.DAMAGE / 2;
+    private static final int CHAIN_DAMAGE = 4;
 
     /**
      * Constructor.
@@ -58,7 +58,9 @@ public class ChainStrikeAction extends Action {
             if (!dest.containsAnActor()) continue;
             Actor adjacent = dest.getActor();
             if (adjacent == target) continue; // already hit
+
             adjacent.hurt(CHAIN_DAMAGE);
+
             result.append("\n").append(actor).append(" chain strikes ").append(adjacent)
                   .append(" for ").append(CHAIN_DAMAGE).append(" shockwave damage.");
             if (!adjacent.isConscious()) {

@@ -37,7 +37,7 @@ public class FleshyTreeSprout extends Ground {
     private static final int GROWTH_CHANCE = 25;
 
     private int turnCounter;
-    private final Random random;
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -45,7 +45,6 @@ public class FleshyTreeSprout extends Ground {
     public FleshyTreeSprout() {
         super('y', "Fleshy Tree Sprout");
         this.turnCounter = 0;
-        this.random = new Random();
     }
 
     /**
@@ -109,20 +108,22 @@ public class FleshyTreeSprout extends Ground {
      * @param location the location of this sprout
      */
     private void spawnSlime(Location location) {
+        Slime slime = new Slime();
+
         List<Location> validLocations = new ArrayList<>();
         for (Exit exit : location.getExits()) {
             Location destination = exit.getDestination();
-            if (!destination.containsAnActor() && destination.getGround().canActorEnter(null)) {
+
+            if (destination.canActorEnter(slime))
                 validLocations.add(destination);
-            }
         }
 
         if (validLocations.isEmpty()) {
             return;
         }
 
-        Slime slime = new Slime();
         Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
+
         try {
             spawnLocation.addActor(slime);
             SpawnEffectManager.getInstance().onCreatureSpawned(slime, spawnLocation);

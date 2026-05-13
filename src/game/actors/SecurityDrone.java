@@ -31,6 +31,7 @@ import java.util.TreeMap;
  * @author Jax
  */
 public class SecurityDrone extends Actor {
+    private static final int INITIAL_HIT_POINTS = 10;
 
     /** Prioritised map of behaviours this drone can perform (lower key = higher priority). */
     private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
@@ -41,7 +42,7 @@ public class SecurityDrone extends Actor {
      * @param target the actor this drone should pursue (the alarm trigger)
      */
     public SecurityDrone(Actor target) {
-        super("Security Drone", 'δ', 10, new BasicInventory());
+        super("Security Drone", 'δ', INITIAL_HIT_POINTS, new BasicInventory());
         this.enableAbility(Ability.HOSTILE_TO_WORKERS);
         this.setIntrinsicWeapon(new DroneLaser());
         this.behaviours.put(1, new AggressiveAttackBehaviour());

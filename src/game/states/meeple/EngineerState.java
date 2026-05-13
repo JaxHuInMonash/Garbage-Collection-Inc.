@@ -31,7 +31,7 @@ import game.statuses.DizzyStatus;
  *   <li>→ {@link OverloadedState}: more than 3 Undead actors are adjacent.</li>
  * </ul>
  */
-public class EngineerState extends CreatureState {
+public class EngineerState implements CreatureState {
 
     private static final int OVERLOAD_UNDEAD_THRESHOLD = 3;
 

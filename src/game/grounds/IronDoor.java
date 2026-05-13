@@ -12,21 +12,19 @@ import game.capabilities.Ability;
  * setting all adjacent floor tiles on Fire for 2 turns. Walking through
  * the fire applies the standard burn effect.
  * @author zhengjun Yang
+ * @author Tommy
  */
 public class IronDoor extends SecuredDoor {
+    private static final int REQUIRED_CLEARANCE = 2;
+
+    private static final int UNLOCK_EFFECT_FIRE_DURATION = 2;
     /**
      * Constructor.
      */
     public IronDoor() {
-        super('N', "Iron Door");
+        super('N', "Iron Door", REQUIRED_CLEARANCE);
     }
-    /**
-     * Returns the minimum clearance level required: 2.
-     *
-     * @return 2
-     */
-    @Override
-    protected int requiredClearance() { return 2; }
+
     /**
      * Sets all adjacent non-wall, non-door tiles on fire for 2 turns.
      *
@@ -40,7 +38,7 @@ public class IronDoor extends SecuredDoor {
             Location adjacent = exit.getDestination();
             Ground ground = adjacent.getGround();
             if (!ground.hasAbility(Ability.BLOCKS_ENTRY) && !ground.hasAbility(Ability.ON_FIRE)) {
-                adjacent.setGround(new Fire(ground, 2));
+                adjacent.setGround(new Fire(ground, UNLOCK_EFFECT_FIRE_DURATION));
             }
         }
         return actor + " unlocked the Iron Door — machinery overheats, adjacent tiles catch fire!";

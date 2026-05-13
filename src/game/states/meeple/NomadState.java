@@ -26,7 +26,7 @@ import game.states.CreatureState;
  *   <li>→ {@link GuardianState}: any Worker within 3 tiles is below 50% HP.</li>
  * </ul>
  */
-public class NomadState extends CreatureState {
+public class NomadState implements CreatureState {
 
     private static final int BEACON_RADIUS = 10;
     private static final int BEACON_PARASITE_DAMAGE = 2;

@@ -33,7 +33,7 @@ import java.util.List;
  *       (all link applications used up).</li>
  * </ul>
  */
-public class GuardianState extends CreatureState {
+public class GuardianState implements CreatureState {
 
     private static final int NANOBOT_RADIUS = 3;
     private static final int SHIELD_HP = 30;
