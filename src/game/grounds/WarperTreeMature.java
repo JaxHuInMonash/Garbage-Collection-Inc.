@@ -29,17 +29,17 @@ import java.util.Random;
  * Actors cannot enter the mature warper tree tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class WarperTreeMature extends Ground {
 
-    private final Random random;
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
      */
     public WarperTreeMature() {
         super('W', "Warper Tree (Mature)");
-        this.random = new Random();
     }
 
     /**
@@ -66,6 +66,7 @@ public class WarperTreeMature extends Ground {
 
             if (destination.containsAnActor() && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES))
                 warpWorker(destination.getActor(), location);
+            return;
         }
     }
 
@@ -94,6 +95,6 @@ public class WarperTreeMature extends Ground {
         }
 
         if (!validDestinations.isEmpty())
-            map.moveActor(worker, validDestinations.get(random.nextInt(validDestinations.size())));
+            map.moveActor(worker, validDestinations.get(RANDOM.nextInt(validDestinations.size())));
     }
 }
