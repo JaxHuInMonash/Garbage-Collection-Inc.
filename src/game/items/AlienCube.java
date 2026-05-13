@@ -1,5 +1,8 @@
 package game.items;
-
+import edu.monash.fit2099.engine.positions.Exit;
+import edu.monash.fit2099.engine.positions.Location;
+import game.actors.Undead;
+import game.capabilities.Ability;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
@@ -9,7 +12,7 @@ import game.ItemStatistics;
 import game.actions.UseAlienCubeAction;
 import game.capabilities.Sellable;
 import game.actions.SellAction;
-
+import edu.monash.fit2099.engine.GameEngineException;
 /**
  * A mysterious alien artifact that can teleport its user to a random
  * location on the current map. Displays as {@code ◈}.
@@ -46,6 +49,19 @@ public class AlienCube extends Item implements Sellable {
     @Override
     public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
+
+        for (Exit exit : map.locationOf(actor).getExits()) {
+            Location adjacent = exit.getDestination();
+            if (!adjacent.containsAnActor()
+                    && !adjacent.getGround().hasAbility(Ability.BLOCKS_ENTRY)) {
+                try {
+                    adjacent.addActor(new Undead());
+                } catch (GameEngineException e) {
+                }
+                break;
+            }
+        }
+
         return actor + " sold the Alien Cube for " + CREDIT_VALUE + " credits — an Undead materialises nearby!";
     }
 
