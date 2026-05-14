@@ -37,7 +37,7 @@ public class FleshyTreeSprout extends Ground {
     private static final int GROWTH_CHANCE = 25;
 
     private int turnCounter;
-    private final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public class FleshyTreeSprout extends Ground {
         // Priority 2: attempt growth every 20 turns
         if (turnCounter >= GROWTH_INTERVAL) {
             turnCounter = 0; // reset regardless of roll outcome
-            if (random.nextInt(100) < GROWTH_CHANCE) {
+            if (RANDOM.nextInt(100) < GROWTH_CHANCE) {
                 location.setGround(new FleshyTreeSapling());
             }
         }
@@ -122,7 +122,7 @@ public class FleshyTreeSprout extends Ground {
             return;
         }
 
-        Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
+        Location spawnLocation = validLocations.get(RANDOM.nextInt(validLocations.size()));
 
         try {
             spawnLocation.addActor(slime);

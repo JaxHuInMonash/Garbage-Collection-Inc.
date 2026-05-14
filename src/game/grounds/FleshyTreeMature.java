@@ -30,14 +30,13 @@ import java.util.Random;
  */
 public class FleshyTreeMature extends Ground {
 
-    private final Random random;
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
      */
     public FleshyTreeMature() {
         super('Y', "Fleshy Tree (Mature)");
-        this.random = new Random();
     }
 
     /**
@@ -103,7 +102,7 @@ public class FleshyTreeMature extends Ground {
             return;
         }
 
-        Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
+        Location spawnLocation = validLocations.get(RANDOM.nextInt(validLocations.size()));
 
         try {
             spawnLocation.addActor(undead);
