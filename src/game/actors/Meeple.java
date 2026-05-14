@@ -1,16 +1,8 @@
 package game.actors;
 
-import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.ActionList;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
-import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.displays.Display;
-import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
 import game.BasicInventory;
-import game.states.CreatureState;
+import game.capabilities.Ability;
 import game.states.meeple.NomadState;
-import game.statuses.DizzyStatus;
 import game.weapons.MeepleFist;
 
 /**
@@ -24,8 +16,6 @@ import game.weapons.MeepleFist;
  * {@link game.states.meeple.GuardianState}, and
  * {@link game.states.meeple.OverloadedState}.
  * <p>
- * When {@link DizzyStatus} is applied by an EngineerState Repelling Pulse,
- * the Meeple skips its action for that turn.
  *
  * @author Ethan
  * @author Tommy
@@ -36,11 +26,7 @@ public class Meeple extends StatefulCreature {
     /** Constructor. */
     public Meeple() {
         super("Meeple", 'Ψ', INITIAL_HIT_POINTS, new BasicInventory(), new NomadState());
+        this.enableAbility(Ability.IS_MEEPLE);
         this.setIntrinsicWeapon(new MeepleFist());
-    }
-
-    @Override
-    public boolean skipTurn(GameMap map) {
-        return hasStatus(DizzyStatus.class); // Dizzy check — skip turn if disoriented
     }
 }

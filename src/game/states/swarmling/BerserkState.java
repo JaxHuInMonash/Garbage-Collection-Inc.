@@ -8,9 +8,9 @@ import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.ChainStrikeAction;
-import game.behaviours.WanderBehaviour;
 import game.capabilities.Ability;
 import game.states.CreatureState;
+import game.utils.LocationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,8 +83,7 @@ public class BerserkState implements CreatureState {
                 return new ChainStrikeAction(target, () -> killCount++);
             }
         }
-        Action wander = new WanderBehaviour().operate(creature, location);
-        return wander != null ? wander : new DoNothingAction();
+        return wanderOrDoNothing(creature, location);
     }
 
     @Override
@@ -103,7 +102,7 @@ public class BerserkState implements CreatureState {
             for (Exit exit : current.getExits()) {
                 Location dest = exit.getDestination();
                 if (!dest.canActorEnter(actor)) continue;
-                double dist = euclidean(dest, origin);
+                double dist = LocationUtils.euclidean(dest, origin);
                 if (dist > bestDist) {
                     bestDist = dist;
                     best = dest;
@@ -115,9 +114,4 @@ public class BerserkState implements CreatureState {
         }
     }
 
-    private double euclidean(Location a, Location b) {
-        int dx = a.x() - b.x();
-        int dy = a.y() - b.y();
-        return Math.sqrt((double) dx * dx + dy * dy);
-    }
 }

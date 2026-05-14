@@ -8,7 +8,7 @@ import edu.monash.fit2099.engine.positions.Location;
  * A disorientation status that causes an actor to skip their turn.
  * <p>
  * Applied by the Meeple's EngineerState Repelling Pulse to adjacent
- * non-Worker actors. Each affected actor's {@code playTurn()} checks for
+ * non-Meeple actors. Each affected actor's {@code playTurn()} checks for
  * this status and returns {@code DoNothingAction} if present, then
  * DizzyStatus ticks down by one.
  */

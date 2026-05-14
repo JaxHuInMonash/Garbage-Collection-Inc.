@@ -1,12 +1,14 @@
 package game.states;
 
 import edu.monash.fit2099.engine.actions.Action;
+import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.behaviours.WanderBehaviour;
 
 /**
- * Abstract base for all creature state-machine states.
+ * Interface for all creature state-machine states.
  * <p>
  * Each concrete state encapsulates:
  * <ul>
@@ -20,7 +22,24 @@ import edu.monash.fit2099.engine.positions.Location;
  *   <li>{@link #getAction} — the action the creature executes while in this state.</li>
  * </ul>
  */
-public interface  CreatureState {
+public interface CreatureState {
+
+    /** Shared WanderBehaviour instance — stateless between calls, safe to reuse. */
+    WanderBehaviour WANDER = new WanderBehaviour();
+
+    /**
+     * Convenience method: attempts to wander, falls back to doing nothing.
+     * Eliminates the repeated {@code new WanderBehaviour().operate(...)} pattern
+     * across every state's {@link #getAction} implementation.
+     *
+     * @param creature the creature that will wander
+     * @param location the creature's current location
+     * @return a move action to a random adjacent tile, or {@link DoNothingAction}
+     */
+    default Action wanderOrDoNothing(Actor creature, Location location) {
+        Action wander = WANDER.operate(creature, location);
+        return wander != null ? wander : new DoNothingAction();
+    }
 
     /**
      * Called exactly once when the creature first enters this state.

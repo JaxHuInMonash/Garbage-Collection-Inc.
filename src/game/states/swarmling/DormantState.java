@@ -1,11 +1,9 @@
 package game.states.swarmling;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.GameMap;
-import game.behaviours.WanderBehaviour;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 import game.statuses.ReflectionStatus;
@@ -65,8 +63,7 @@ public class DormantState implements CreatureState {
 
     @Override
     public Action getAction(Actor creature, Location location) {
-        Action action = new WanderBehaviour().operate(creature, location);
-        return action != null ? action : new DoNothingAction();
+        return wanderOrDoNothing(creature, location);
     }
 
     @Override

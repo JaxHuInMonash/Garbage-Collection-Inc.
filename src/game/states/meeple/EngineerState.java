@@ -1,15 +1,12 @@
 package game.states.meeple;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.TransmuteAction;
-import game.behaviours.WanderBehaviour;
 import game.capabilities.Ability;
-import game.capabilities.Scrap;
 import game.capabilities.Transmutable;
 import game.states.CreatureState;
 import game.statuses.DizzyStatus;
@@ -19,7 +16,7 @@ import game.statuses.DizzyStatus;
  * The Meeple's crafting state. Unique Behaviour 3.
  * <p>
  * <strong>Immediate effect (onEnter):</strong> Repelling Pulse — all adjacent
- * actors that are <em>not</em> Workers receive {@link DizzyStatus}(1), causing
+ * actors that are <em>not</em> Meeples receive {@link DizzyStatus}(1), causing
  * them to skip their next turn.
  * <p>
  * <strong>Unique action:</strong> Transmute — converts an adjacent or current-tile
@@ -42,7 +39,7 @@ public class EngineerState implements CreatureState {
             Location dest = exit.getDestination();
             if (!dest.containsAnActor()) continue;
             Actor actor = dest.getActor();
-            if (!actor.hasAbility(Ability.ATTACKABLE_BY_CREATURES)) {
+            if (!(actor.hasAbility(Ability.IS_MEEPLE))) {
                 actor.addStatus(new DizzyStatus(1));
             }
         }
@@ -82,8 +79,7 @@ public class EngineerState implements CreatureState {
                 return new TransmuteAction(dest);
             }
         }
-        Action wander = new WanderBehaviour().operate(creature, location);
-        return wander != null ? wander : new DoNothingAction();
+        return wanderOrDoNothing(creature, location);
     }
 
     @Override

@@ -8,7 +8,6 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.BasicInventory;
-import game.states.CreatureState;
 import game.states.swarmling.DormantState;
 import game.statuses.ReflectionStatus;
 import game.weapons.SwarmlingClaw;
@@ -39,9 +38,6 @@ import java.util.List;
  */
 public class Swarmling extends StatefulCreature {
     private static final int INITIAL_HIT_POINTS = 50;
-
-    private CreatureState currentState;
-    private boolean initialEntryDone = false;
 
     private static final int PASSIVE_DAMAGE = 1;
     private static final int TOXIC_HEAL = 2;

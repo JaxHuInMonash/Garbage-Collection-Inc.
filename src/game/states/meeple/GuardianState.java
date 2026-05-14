@@ -7,13 +7,11 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.KineticLinkAction;
-import game.behaviours.WanderBehaviour;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 import game.statuses.KineticLinkStatus;
 import game.statuses.ShieldStatus;
-
-import java.util.List;
+import game.utils.LocationUtils;
 
 /**
  * The Meeple's protective state. Unique Behaviour 4.
@@ -82,8 +80,7 @@ public class GuardianState implements CreatureState {
     @Override
     public Action getAction(Actor creature, Location location) {
         if (shieldBattery <= 0) {
-            Action wander = new WanderBehaviour().operate(creature, location);
-            return wander != null ? wander : new DoNothingAction();
+            return wanderOrDoNothing(creature, location);
         }
 
         // Find the nearest untethered Worker within range
@@ -94,7 +91,7 @@ public class GuardianState implements CreatureState {
             Actor actor = nearby.getActor();
             if (!actor.hasAbility(Ability.ATTACKABLE_BY_CREATURES)) continue;
             if (actor.hasStatus(KineticLinkStatus.class)) continue; // already tethered
-            double dist = euclidean(location, nearby);
+            double dist = LocationUtils.euclidean(location, nearby);
             if (dist < nearestDist) {
                 nearestDist = dist;
                 nearest = actor;
@@ -106,8 +103,7 @@ public class GuardianState implements CreatureState {
             return new KineticLinkAction(nearest);
         }
 
-        Action wander = new WanderBehaviour().operate(creature, location);
-        return wander != null ? wander : new DoNothingAction();
+        return wanderOrDoNothing(creature, location);
     }
 
     @Override
@@ -115,9 +111,4 @@ public class GuardianState implements CreatureState {
         return "Guardian";
     }
 
-    private double euclidean(Location a, Location b) {
-        int dx = a.x() - b.x();
-        int dy = a.y() - b.y();
-        return Math.sqrt((double) dx * dx + dy * dy);
-    }
 }

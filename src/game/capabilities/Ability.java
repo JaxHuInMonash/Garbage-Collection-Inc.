@@ -68,4 +68,9 @@ public enum Ability {
      * Used by the Swarmling's CullingState to detect nearby threats.
      */
     HOSTILE_TO_WORKERS,
+
+    /**
+     * Marks an actor as one of the Meeple Clan!
+     */
+    IS_MEEPLE
 }

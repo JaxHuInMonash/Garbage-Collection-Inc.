@@ -1,13 +1,11 @@
 package game.states.meeple;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.behaviours.WanderBehaviour;
 import game.capabilities.Ability;
 import game.capabilities.Scrap;
 import game.states.CreatureState;
@@ -82,8 +80,7 @@ public class NomadState implements CreatureState {
 
     @Override
     public Action getAction(Actor creature, Location location) {
-        Action action = new WanderBehaviour().operate(creature, location);
-        return action != null ? action : new DoNothingAction();
+        return wanderOrDoNothing(creature, location);
     }
 
     @Override

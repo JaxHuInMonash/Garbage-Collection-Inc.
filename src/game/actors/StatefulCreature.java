@@ -41,9 +41,6 @@ public abstract class StatefulCreature extends Actor {
     public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
         if (!isConscious() || skipTurn(map)) return new DoNothingAction();
 
-        // Dizzy check — skip turn if disoriented
-        if (hasStatus(DizzyStatus.class)) return new DoNothingAction();
-
         Location location = map.locationOf(this);
 
         // Fire onEnter for the initial state (first turn only)
@@ -68,7 +65,15 @@ public abstract class StatefulCreature extends Actor {
         return currentState.getAction(this, location);
     }
 
-    public boolean skipTurn(GameMap map) { return false; }
+    /**
+     * Checks whether the creature should skip its turn. By default, skips
+     * when a {@link DizzyStatus} is active. Subclasses may override to add
+     * additional skip conditions.
+     *
+     * @param map the current game map
+     * @return true if this creature should do nothing this turn
+     */
+    public boolean skipTurn(GameMap map) { return hasStatus(DizzyStatus.class); }
 
     public Action passive(GameMap map) { return null; }
 }
