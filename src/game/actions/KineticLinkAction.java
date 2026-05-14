@@ -2,7 +2,6 @@ package game.actions;
 
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.statuses.KineticLinkStatus;
 
@@ -28,8 +27,7 @@ public class KineticLinkAction extends Action {
 
     @Override
     public String execute(Actor actor, GameMap map) {
-        int workerHp = worker.getStatistic(ActorStatistics.HEALTH);
-        worker.addStatus(new KineticLinkStatus(actor, workerHp));
+        worker.addStatus(new KineticLinkStatus(actor));
         return actor + " establishes a Kinetic Link with " + worker + ".";
     }
 
