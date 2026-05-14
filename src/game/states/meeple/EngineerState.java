@@ -62,11 +62,11 @@ public class EngineerState implements CreatureState {
             return new OverloadedState();
         }
 
-        // → Nomad if no Scrap on adjacent or current tiles
-        if (!location.getItemsAs(Scrap.class).isEmpty()) return this;
-        for (Exit exit : location.getExits()) {
-            if (!exit.getDestination().getItemsAs(Scrap.class).isEmpty()) return this;
-        }
+        // → Nomad if nothing useful remains nearby.
+        // Scrap alone (e.g. ScrapPile) is not enough to stay — there must be at
+        // least one Transmutable item the Meeple can actually convert, otherwise
+        // it would wander aimlessly in EngineerState with nothing to do.
+        if (hasTransmutableNearby(location)) return this;
         return new NomadState();
     }
 
@@ -89,5 +89,14 @@ public class EngineerState implements CreatureState {
     @Override
     public String getStateName() {
         return "Engineer";
+    }
+
+    /** Returns true if a {@link Transmutable} item exists on the current or any adjacent tile. */
+    private boolean hasTransmutableNearby(Location location) {
+        if (!location.getItemsAs(Transmutable.class).isEmpty()) return true;
+        for (Exit exit : location.getExits()) {
+            if (!exit.getDestination().getItemsAs(Transmutable.class).isEmpty()) return true;
+        }
+        return false;
     }
 }

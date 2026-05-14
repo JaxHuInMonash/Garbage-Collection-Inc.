@@ -29,9 +29,13 @@ public class DevourAction extends Action {
     public String execute(Actor actor, GameMap map) {
         int maxHp = actor.getMaximumStatistic(ActorStatistics.HEALTH);
         int healAmount = Math.max(1, maxHp / 10);
-        map.removeActor(target);
+
+        // Use the engine's death lifecycle so item drops, spawn tracking,
+        // and any other death-related effects fire correctly.
+        String deathResult = target.unconscious(actor, map);
+
         actor.heal(healAmount);
-        return actor + " devours " + target + " and recovers " + healAmount + " HP.";
+        return actor + " devours " + target + " and recovers " + healAmount + " HP.\n" + deathResult;
     }
 
     @Override
