@@ -8,21 +8,45 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actions.AttackAction;
 import game.capabilities.Ability;
 
+import java.util.function.Predicate;
+
 /**
- * A behaviour that makes an actor attack an adjacent target if one is present.
+ * A behaviour that makes an actor attack an adjacent target that satisfies
+ * a configurable filter.
  * <p>
- * The behaviour scans all adjacent locations for actors that possess the
- * {@link Ability#ATTACKABLE_BY_CREATURES} ability and returns an
- * {@link AttackAction} targeting the first one found.
+ * By default, only targets with {@link Ability#ATTACKABLE_BY_CREATURES} are
+ * attacked. Callers can supply a custom {@link Predicate} to widen or
+ * narrow the targeting (e.g. {@code target -> true} for indiscriminate
+ * aggression).
  *
  * @author Jax
  */
 public class AttackBehaviour implements Behaviour<Actor, Action> {
 
+    private final Predicate<Actor> targetFilter;
+
     /**
-     * Returns an AttackAction targeting the first adjacent actor that has
-     * the {@link Ability#ATTACKABLE_BY_CREATURES} ability, or null if no
-     * valid target is adjacent.
+     * Constructor with selective targeting.
+     * Only attacks adjacent actors that possess
+     * {@link Ability#ATTACKABLE_BY_CREATURES}.
+     */
+    public AttackBehaviour() {
+        this(target -> target.hasAbility(Ability.ATTACKABLE_BY_CREATURES));
+    }
+
+    /**
+     * Constructor with a custom target filter.
+     *
+     * @param targetFilter predicate that returns {@code true} for actors
+     *                     this behaviour should attack
+     */
+    public AttackBehaviour(Predicate<Actor> targetFilter) {
+        this.targetFilter = targetFilter;
+    }
+
+    /**
+     * Returns an AttackAction targeting the first adjacent actor that
+     * satisfies the target filter, or null if no valid target is adjacent.
      *
      * @param actor    the actor looking to attack
      * @param location the current location of the actor
@@ -34,7 +58,7 @@ public class AttackBehaviour implements Behaviour<Actor, Action> {
             Location destination = exit.getDestination();
             if (destination.containsAnActor()) {
                 Actor target = destination.getActor();
-                if (target.hasAbility(Ability.ATTACKABLE_BY_CREATURES)) {
+                if (targetFilter.test(target)) {
                     return new AttackAction(target);
                 }
             }

@@ -8,7 +8,7 @@ import edu.monash.fit2099.engine.behaviours.Behaviour;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.BasicInventory;
-import game.behaviours.AggressiveAttackBehaviour;
+import game.behaviours.AttackBehaviour;
 import game.behaviours.FollowBehaviour;
 import game.behaviours.WanderBehaviour;
 import game.capabilities.Ability;
@@ -45,7 +45,7 @@ public class SecurityDrone extends Actor {
         super("Security Drone", 'δ', INITIAL_HIT_POINTS, new BasicInventory());
         this.enableAbility(Ability.HOSTILE_TO_WORKERS);
         this.setIntrinsicWeapon(new DroneLaser());
-        this.behaviours.put(1, new AggressiveAttackBehaviour());
+        this.behaviours.put(1, new AttackBehaviour(actor -> true));
         this.behaviours.put(2, new FollowBehaviour(target));
         this.behaviours.put(3, new WanderBehaviour());
     }
