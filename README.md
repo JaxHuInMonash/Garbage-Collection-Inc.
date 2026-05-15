@@ -79,3 +79,6 @@ OverloadedState: A state of mechanical panic.
 Transition A (to NomadState): If it remains in this state for 3 turns (energy discharge).
 Transition B (to GuardianState): If a Worker "repairs" it via interaction.
 Immediate Effect: Static Discharge. Forces every actor within 2 tiles to drop their entire inventory onto the ground.
+
+Contribution Log for CL_AppliedSession21TeamD
+https://docs.google.com/spreadsheets/d/1s2YXhHnrShSlOuxDv9mJ1T95J-Y2PVcPt5fqlGWt8TM/edit?gid=1582995291#gid=1582995291
