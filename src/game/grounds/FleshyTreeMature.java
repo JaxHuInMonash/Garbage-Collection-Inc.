@@ -27,6 +27,7 @@ import java.util.Random;
  * Actors cannot enter the mature tree tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class FleshyTreeMature extends Ground {
 

@@ -19,6 +19,7 @@ import java.util.Random;
  * Actors cannot enter the sapling tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class FleshyTreeSapling extends Ground {
 
