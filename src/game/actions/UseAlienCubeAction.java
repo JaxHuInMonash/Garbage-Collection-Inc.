@@ -57,6 +57,7 @@ public class UseAlienCubeAction extends Action {
 
         corruptSurroundings(source);
         map.moveActor(actor, target);
+        actor.getInventory().remove(cube);
         return actor + " uses the Alien Cube! Source corrupted into Toxic Waste. Teleported to ("
                 + target.x() + ", " + target.y() + ")!";
     }
