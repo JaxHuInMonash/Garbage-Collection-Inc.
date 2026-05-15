@@ -161,6 +161,7 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(25, 7).addItem(new CRTMonitor());
 
         // Place items on the 20-Overflow map
+        moon20OverflowMap.at(5, 2).addItem(new Apple());
         moon20OverflowMap.at(15, 3).addItem(new AlienCube());
         moon20OverflowMap.at(11, 15).addItem(new AlienCube());
         moon20OverflowMap.at(20, 8).addItem(new AccessCardLevel2());

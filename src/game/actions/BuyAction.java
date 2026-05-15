@@ -40,7 +40,7 @@ public class BuyAction extends Action {
         if (credits < cost) {
             String appendMessage = buyable.onInsufficientCredits(actor, map);
 
-            return actor + " attempted to buy " + this + " but lacked credits. " +
+            return actor + " attempted to buy " + buyable + " but lacked credits. " +
                     "(" + credits + "/" + cost + ")" + appendMessage;
         }
 

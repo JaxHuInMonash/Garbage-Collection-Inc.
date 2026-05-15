@@ -39,7 +39,7 @@ import java.util.List;
 public class ContractedWorker extends Actor implements Infectable {
 
     private static final int MAX_CREDITS = 1000;
-    private static final int INITIAL_CREDITS = 0;
+    private static final int INITIAL_CREDITS = 200;
     private static final int INFECTION_DAMAGE_PER_TURN = 1;
     private static final int INFECTION_SPAWN_INTERVAL = 5;
 
@@ -194,5 +194,21 @@ public class ContractedWorker extends Actor implements Infectable {
         // Display the menu and let the player choose
         Menu menu = new Menu(actions);
         return menu.showMenu(this, display);
+    }
+
+    /**
+     * Returns a string representation including both HP and credits.
+     * <p>
+     * Format: {@code name - hp(current/max), credit(current/max)}
+     *
+     * @return the formatted display string
+     */
+    @Override
+    public String toString() {
+        int hp = this.getStatistic(ActorStatistics.HEALTH);
+        int maxHp = this.getMaximumStatistic(ActorStatistics.HEALTH);
+        int credits = this.getStatistic(game.ActorStatistics.CREDITS);
+        int maxCredits = this.getMaximumStatistic(game.ActorStatistics.CREDITS);
+        return this.name + " - hp(" + hp + "/" + maxHp + "), credit(" + credits + "/" + maxCredits + ")";
     }
 }

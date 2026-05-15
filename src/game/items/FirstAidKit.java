@@ -41,6 +41,7 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
         this.makePortable();
+        this.cooldown.update(0);
     }
 
     /**
@@ -132,7 +133,7 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
      *
      * @param owner the actor carrying this kit
      * @param map   the map where the actor is
-     * @return a list containing the UseFirstAidKitAction if ready, empty otherwise
+     * @return a list containing the ConsumeAction if ready, empty otherwise
      */
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {

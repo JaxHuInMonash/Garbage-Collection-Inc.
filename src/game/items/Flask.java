@@ -62,6 +62,7 @@ public class Flask extends Item implements Consumable {
     public String consumedBy(Actor actor, GameMap map) {
         if (getStatistic(ItemStatistics.QUANTITY) > 0) {
             modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
+            remainingUses--;
             actor.heal(CONSUME_HEAL);
             return actor + " drinks from the Flask, healing " + CONSUME_HEAL + " point. (" + getStatistic(ItemStatistics.QUANTITY) + " uses remaining)";
         }
@@ -75,7 +76,7 @@ public class Flask extends Item implements Consumable {
 
     @Override
     public String getConsumeMenuDescription(Actor actor) {
-        return actor + " drinks from Flask (" + remainingUses + " uses remaining)";
+        return actor + " drinks from Flask (" + getStatistic(ItemStatistics.QUANTITY) + " uses remaining)";
     }
 
     /**

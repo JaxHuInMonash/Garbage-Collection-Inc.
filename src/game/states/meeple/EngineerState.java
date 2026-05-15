@@ -25,7 +25,7 @@ import game.statuses.DizzyStatus;
  * <p>
  * <strong>Transitions:</strong>
  * <ul>
- *   <li>→ {@link NomadState}: no Scrap items on any adjacent or current tile.</li>
+ *   <li>→ {@link NomadState}: no Transmutable items on any adjacent or current tile.</li>
  *   <li>→ {@link OverloadedState}: more than 3 Undead actors are adjacent.</li>
  * </ul>
  *
