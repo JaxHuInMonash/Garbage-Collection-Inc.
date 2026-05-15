@@ -28,6 +28,11 @@ import game.statuses.DizzyStatus;
  *   <li>→ {@link NomadState}: no Scrap items on any adjacent or current tile.</li>
  *   <li>→ {@link OverloadedState}: more than 3 Undead actors are adjacent.</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class EngineerState implements CreatureState {
 

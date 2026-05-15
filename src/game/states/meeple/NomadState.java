@@ -24,6 +24,11 @@ import game.states.CreatureState;
  *       {@link Transmutable} item (e.g. UndeadCorpse) that can be converted.</li>
  *   <li>→ {@link GuardianState}: any Worker within 3 tiles is below 50% HP.</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class NomadState implements CreatureState {
 

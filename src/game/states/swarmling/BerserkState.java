@@ -31,6 +31,11 @@ import java.util.List;
  *   <li>→ {@link CullingState}: HP drops below 20% of maximum.</li>
  *   <li>→ {@link DormantState}: 3 entities are killed while in this state.</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class BerserkState implements CreatureState {
 

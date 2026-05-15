@@ -19,6 +19,11 @@ import java.util.List;
  * triggers a shockwave dealing 4 damage
  * to every <em>other</em> adjacent actor. If any actor dies, the
  * {@link KillListener} is notified so BerserkState can track its kill count.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class ChainStrikeAction extends Action {
 

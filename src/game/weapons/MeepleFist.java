@@ -8,7 +8,9 @@ import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
  * than raw combat output.
  *
  * @author Ethan
- * @author Tommy
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class MeepleFist extends IntrinsicWeapon {
 

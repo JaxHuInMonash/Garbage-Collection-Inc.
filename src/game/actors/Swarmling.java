@@ -29,7 +29,9 @@ import java.util.List;
  * reaching HP.
  *
  * @author Ethan
- * @author Tommy
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class Swarmling extends StatefulCreature  {
     private static final int INITIAL_HIT_POINTS = 50;

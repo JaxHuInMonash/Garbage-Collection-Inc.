@@ -29,6 +29,11 @@ import game.utils.LocationUtils;
  *   <li>→ {@link OverloadedState}: the shieldBattery counter reaches 0
  *       (all link applications used up).</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class GuardianState implements CreatureState {
 

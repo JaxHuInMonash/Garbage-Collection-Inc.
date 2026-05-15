@@ -16,6 +16,11 @@ import game.capabilities.Consumable;
  * Processed remains produced by the Meeple's TransmuteAction from an
  * {@link UndeadCorpse}. When consumed by a Worker, permanently raises
  * their maximum HP by 20.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class RefinedMaterial extends Item implements Consumable {
 

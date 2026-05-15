@@ -11,6 +11,11 @@ import edu.monash.fit2099.engine.positions.GameMap;
  * The Swarmling devours an adjacent Parasite: it is removed from the map
  * and the Swarmling heals for 10% of its maximum HP. Consuming a Parasite
  * does not consume the Swarmling's attack turn — this action IS the turn.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class DevourAction extends Action {
 
