@@ -30,6 +30,7 @@ import java.util.Random;
  * Actors cannot enter the sprout tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class FleshyTreeSprout extends Ground {
 
