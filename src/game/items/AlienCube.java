@@ -12,7 +12,6 @@ import game.ItemStatistics;
 import game.actions.UseAlienCubeAction;
 import game.actions.SellAction;
 import game.actors.Undead;
-import game.capabilities.Ability;
 import game.capabilities.Sellable;
 import game.spawning.SpawnEffectManager;
 
@@ -26,9 +25,10 @@ import game.spawning.SpawnEffectManager;
  * Undead to materialise nearby.
  *
  * @author zhengjun Yang
+ * @author Mary Chuang
  */
 public class AlienCube extends Item implements Sellable {
-
+    private static final int WEIGHT = 2;
     private static final int CREDIT_VALUE = 25;
 
     /**
@@ -36,7 +36,7 @@ public class AlienCube extends Item implements Sellable {
      */
     public AlienCube() {
         super("Alien Cube", '◈');
-        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(2));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(CREDIT_VALUE));
         this.makePortable();
     }
@@ -53,34 +53,23 @@ public class AlienCube extends Item implements Sellable {
     @Override
     public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
-        spawnUndeadNearby(actor, map);
-        return actor + " sold the Alien Cube for " + CREDIT_VALUE + " credits — an Undead materialises nearby!";
-    }
-
-    /**
-     * Spawns an Undead at a random adjacent passable, unoccupied location
-     * near the actor. If no valid location exists, the spawn silently fails.
-     *
-     * @param actor the actor near whom the Undead should appear
-     * @param map   the current game map
-     */
-    private void spawnUndeadNearby(Actor actor, GameMap map) {
         Location actorLocation = map.locationOf(actor);
         for (Exit exit : actorLocation.getExits()) {
             Location adjacent = exit.getDestination();
-            if (!adjacent.containsAnActor()
-                    && !adjacent.getGround().hasAbility(Ability.BLOCKS_ENTRY)) {
+            if (!adjacent.containsAnActor() && adjacent.canActorEnter(new Undead())) {
                 try {
                     Undead undead = new Undead();
                     adjacent.addActor(undead);
                     SpawnEffectManager.getInstance().onCreatureSpawned(undead, adjacent);
                 } catch (GameEngineException e) {
-                    // Location occupied or invalid; skip
                 }
-                return;
+                break;
             }
         }
+        return actor + " sold the Alien Cube for " + CREDIT_VALUE + " credits — an Undead materialises nearby!";
     }
+
+
 
     /**
      * Returns the credit value when sold.

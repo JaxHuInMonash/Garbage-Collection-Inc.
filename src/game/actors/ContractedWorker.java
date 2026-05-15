@@ -18,6 +18,10 @@ import game.capabilities.Ability;
 import game.capabilities.Infectable;
 import game.spawning.SpawnEffectManager;
 import game.statuses.InfectedStatus;
+import game.statuses.KineticLinkStatus;
+import game.statuses.ShieldStatus;
+
+import java.util.List;
 
 /**
  * This brave soul is capable of performing complex tasks such as picking up trash
@@ -57,6 +61,47 @@ public class ContractedWorker extends Actor implements Infectable {
         this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
         this.infected = false;
         this.infectionTurnCount = 0;
+    }
+
+    /**
+     * Intercepts incoming damage through any active {@link ShieldStatus} and
+     * {@link KineticLinkStatus} before it reaches HP.
+     * <p>
+     * Processing order: Shield absorbs first, then Kinetic Link splits the
+     * remainder with the linked Meeple. Only un-mitigated damage reaches HP.
+     *
+     * @param damage the raw incoming damage
+     */
+    @Override
+    public void hurt(int damage) {
+        int remaining = damage;
+
+        // Shield absorbs first
+        List<ShieldStatus> shields = statusesOf(ShieldStatus.class);
+        if (!shields.isEmpty()) {
+            ShieldStatus shield = shields.get(0);
+            int absorbed = shield.absorb(remaining);
+            remaining -= absorbed;
+            if (!shield.isStatusActive()) {
+                removeStatus(shield);
+            }
+        }
+
+        // Kinetic Link splits remaining damage with the Meeple
+        if (remaining > 0) {
+            List<KineticLinkStatus> links = statusesOf(KineticLinkStatus.class);
+            if (!links.isEmpty()) {
+                KineticLinkStatus link = links.get(0);
+                remaining = link.share(remaining);
+                if (!link.isStatusActive()) {
+                    removeStatus(link);
+                }
+            }
+        }
+
+        if (remaining > 0) {
+            super.hurt(remaining);
+        }
     }
 
     /**

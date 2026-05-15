@@ -22,6 +22,9 @@ import game.statuses.PoisonStatus;
  * @author Jax
  */
 public class Puddle extends Ground implements Consumable {
+    private static final int CONSUMED_HEALING = 1;
+    private static final int CONSUMED_POISON_DAMAGE_PER_TURN = 1;
+    private static final int CONSUMED_POISON_DURATION = 3;
 
     /**
      * Constructor
@@ -33,11 +36,11 @@ public class Puddle extends Ground implements Consumable {
     @Override
     public String consumedBy(Actor actor, GameMap map) {
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
-            actor.heal(1);
+            actor.heal(CONSUMED_HEALING);
             return actor + " drinks purified water from the puddle and heals 1 HP.";
         } else {
-            actor.addStatus(new PoisonStatus(1, 3));
-            return actor + " drinks toxic water from the puddle and is poisoned! (1 dmg/turn for 3 turns)";
+            actor.addStatus(new PoisonStatus(CONSUMED_POISON_DAMAGE_PER_TURN, CONSUMED_POISON_DURATION));
+            return actor + " drinks toxic water from the puddle and is poisoned! (" + CONSUMED_POISON_DAMAGE_PER_TURN + " dmg/turn for " + CONSUMED_POISON_DURATION + " turns)";
         }
     }
 

@@ -27,17 +27,17 @@ import java.util.Random;
  * Actors cannot enter the mature tree tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class FleshyTreeMature extends Ground {
 
-    private final Random random;
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
      */
     public FleshyTreeMature() {
         super('Y', "Fleshy Tree (Mature)");
-        this.random = new Random();
     }
 
     /**
@@ -89,11 +89,12 @@ public class FleshyTreeMature extends Ground {
      * @param location the location of this tree
      */
     private void spawnUndead(Location location) {
-        Undead testActor = new Undead();
+        Undead undead = new Undead();
+
         List<Location> validLocations = new ArrayList<>();
         for (Exit exit : location.getExits()) {
             Location destination = exit.getDestination();
-            if (destination.canActorEnter(testActor)) {
+            if (destination.canActorEnter(undead)) {
                 validLocations.add(destination);
             }
         }
@@ -102,8 +103,8 @@ public class FleshyTreeMature extends Ground {
             return;
         }
 
-        Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
-        Undead undead = new Undead();
+        Location spawnLocation = validLocations.get(RANDOM.nextInt(validLocations.size()));
+
         try {
             spawnLocation.addActor(undead);
             SpawnEffectManager.getInstance().onCreatureSpawned(undead, spawnLocation);

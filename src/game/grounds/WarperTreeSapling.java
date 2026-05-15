@@ -19,6 +19,7 @@ import java.util.Random;
  * Actors cannot enter the sapling tile itself
  *
  * @author Ethan
+ * @author Mary
  */
 public class WarperTreeSapling extends Ground {
 
@@ -26,7 +27,7 @@ public class WarperTreeSapling extends Ground {
     private static final int GROWTH_CHANCE = 25;
 
     private int turnCounter;
-    private final Random random;
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -34,7 +35,6 @@ public class WarperTreeSapling extends Ground {
     public WarperTreeSapling() {
         super('w', "Warper Tree Sapling");
         this.turnCounter = 0;
-        this.random = new Random();
     }
 
     /**

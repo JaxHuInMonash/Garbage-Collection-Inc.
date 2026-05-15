@@ -85,7 +85,7 @@ public class Lantern extends Item implements Sellable, Infectable {
                 Location location = exit.getDestination();
                 Ground ground = location.getGround();
 
-                if (!(ground instanceof Fire)) {
+                if (!ground.hasAbility(Ability.ON_FIRE)) {
                     location.setGround(new Fire(ground));
                 }
             }

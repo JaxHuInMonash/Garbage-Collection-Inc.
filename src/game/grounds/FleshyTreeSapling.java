@@ -19,6 +19,7 @@ import java.util.Random;
  * Actors cannot enter the sapling tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class FleshyTreeSapling extends Ground {
 
@@ -26,7 +27,7 @@ public class FleshyTreeSapling extends Ground {
     private static final int GROWTH_CHANCE = 50;
 
     private int turnCounter;
-    private final Random random;
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
@@ -34,7 +35,6 @@ public class FleshyTreeSapling extends Ground {
     public FleshyTreeSapling() {
         super('v', "Fleshy Tree Sapling");
         this.turnCounter = 0;
-        this.random = new Random();
     }
 
     /**
@@ -61,7 +61,7 @@ public class FleshyTreeSapling extends Ground {
 
         if (turnCounter >= GROWTH_INTERVAL) {
             turnCounter = 0; // reset regardless of roll outcome
-            if (random.nextInt(100) < GROWTH_CHANCE) {
+            if (RANDOM.nextInt(100) < GROWTH_CHANCE) {
                 location.setGround(new FleshyTreeMature());
             }
         }

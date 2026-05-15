@@ -26,11 +26,6 @@ public class ToxicWaste extends Ground {
     }
 
     @Override
-    public boolean canActorEnter(Actor actor) {
-        return true;
-    }
-
-    @Override
     public void tick(Location location) {
         if (location.containsAnActor()) {
             Actor actor = location.getActor();

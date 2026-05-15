@@ -30,6 +30,7 @@ import java.util.Random;
  * Actors cannot enter the sprout tile itself.
  *
  * @author Ethan
+ * @author Mary
  */
 public class FleshyTreeSprout extends Ground {
 
@@ -37,7 +38,7 @@ public class FleshyTreeSprout extends Ground {
     private static final int GROWTH_CHANCE = 25;
 
     private int turnCounter;
-    private final Random random;
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
@@ -45,7 +46,6 @@ public class FleshyTreeSprout extends Ground {
     public FleshyTreeSprout() {
         super('y', "Fleshy Tree Sprout");
         this.turnCounter = 0;
-        this.random = new Random();
     }
 
     /**
@@ -78,7 +78,7 @@ public class FleshyTreeSprout extends Ground {
         // Priority 2: attempt growth every 20 turns
         if (turnCounter >= GROWTH_INTERVAL) {
             turnCounter = 0; // reset regardless of roll outcome
-            if (random.nextInt(100) < GROWTH_CHANCE) {
+            if (RANDOM.nextInt(100) < GROWTH_CHANCE) {
                 location.setGround(new FleshyTreeSapling());
             }
         }
@@ -109,20 +109,22 @@ public class FleshyTreeSprout extends Ground {
      * @param location the location of this sprout
      */
     private void spawnSlime(Location location) {
+        Slime slime = new Slime();
+
         List<Location> validLocations = new ArrayList<>();
         for (Exit exit : location.getExits()) {
             Location destination = exit.getDestination();
-            if (!destination.containsAnActor() && destination.getGround().canActorEnter(null)) {
+
+            if (destination.canActorEnter(slime))
                 validLocations.add(destination);
-            }
         }
 
         if (validLocations.isEmpty()) {
             return;
         }
 
-        Slime slime = new Slime();
-        Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
+        Location spawnLocation = validLocations.get(RANDOM.nextInt(validLocations.size()));
+
         try {
             spawnLocation.addActor(slime);
             SpawnEffectManager.getInstance().onCreatureSpawned(slime, spawnLocation);

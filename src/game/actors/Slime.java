@@ -10,6 +10,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import game.BasicInventory;
 import game.behaviours.ConsumeItemBehaviour;
 import game.behaviours.WanderBehaviour;
+import game.statuses.DizzyStatus;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,6 +28,7 @@ import java.util.TreeMap;
  * @author Jax
  */
 public class Slime extends Actor {
+    private static final int INITIAL_HIT_POINTS = 25;
 
     /** Prioritised map of behaviours this Slime can perform (lower key = higher priority). */
     private final Map<Integer, Behaviour<Actor, Action>> behaviours = new TreeMap<>();
@@ -35,7 +37,7 @@ public class Slime extends Actor {
      * Constructor.
      */
     public Slime() {
-        super("Slime", '⍾', 25, new BasicInventory());
+        super("Slime", '⍾', INITIAL_HIT_POINTS, new BasicInventory());
         this.behaviours.put(1, new ConsumeItemBehaviour());
         this.behaviours.put(2, new WanderBehaviour());
     }
@@ -54,6 +56,10 @@ public class Slime extends Actor {
     @Override
     public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
         if (!this.isConscious()) {
+            return new DoNothingAction();
+        }
+
+        if (this.hasStatus(DizzyStatus.class)) {
             return new DoNothingAction();
         }
 
