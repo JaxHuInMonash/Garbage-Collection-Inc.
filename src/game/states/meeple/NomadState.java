@@ -6,8 +6,9 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actors.StatefulCreature;
 import game.capabilities.Ability;
-import game.capabilities.Scrap;
+import game.capabilities.Transmutable;
 import game.states.CreatureState;
 
 /**
@@ -19,8 +20,8 @@ import game.states.CreatureState;
  * <p>
  * <strong>Transitions:</strong>
  * <ul>
- *   <li>→ {@link EngineerState}: any adjacent tile holds a {@link Scrap} item
- *       (ScrapPile or UndeadCorpse).</li>
+ *   <li>→ {@link EngineerState}: any adjacent or current tile holds a
+ *       {@link Transmutable} item (e.g. UndeadCorpse) that can be converted.</li>
  *   <li>→ {@link GuardianState}: any Worker within 3 tiles is below 50% HP.</li>
  * </ul>
  */
@@ -32,7 +33,7 @@ public class NomadState implements CreatureState {
     private static final int GUARDIAN_RADIUS = 3;
 
     @Override
-    public void onEnter(Actor creature, GameMap map) {
+    public void onEnter(StatefulCreature creature, GameMap map) {
         Location loc = map.locationOf(creature);
         for (Location nearby : loc.getNearbyLocations(BEACON_RADIUS)) {
             if (!nearby.containsAnActor()) continue;
@@ -50,16 +51,18 @@ public class NomadState implements CreatureState {
     }
 
     @Override
-    public CreatureState checkTransitions(Actor creature, Location location, GameMap map) {
-        // → Engineer if any adjacent tile has Scrap items
+    public CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map) {
+        // → Engineer if any adjacent or current tile has Transmutable items.
+        // Uses Transmutable (not Scrap) to avoid a flicker loop: ScrapPile is
+        // Scrap but not Transmutable, so entering EngineerState for it would
+        // cause an immediate exit back to NomadState with nothing to convert.
+        if (!location.getItemsAs(Transmutable.class).isEmpty()) {
+            return new EngineerState();
+        }
         for (Exit exit : location.getExits()) {
-            if (!exit.getDestination().getItemsAs(Scrap.class).isEmpty()) {
+            if (!exit.getDestination().getItemsAs(Transmutable.class).isEmpty()) {
                 return new EngineerState();
             }
-        }
-        // Also check current tile
-        if (!location.getItemsAs(Scrap.class).isEmpty()) {
-            return new EngineerState();
         }
 
         // → Guardian if a nearby Worker is below 50% HP
@@ -79,7 +82,7 @@ public class NomadState implements CreatureState {
     }
 
     @Override
-    public Action getAction(Actor creature, Location location) {
+    public Action getAction(StatefulCreature creature, Location location) {
         return wanderOrDoNothing(creature, location);
     }
 

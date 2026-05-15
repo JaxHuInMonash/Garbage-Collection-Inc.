@@ -8,6 +8,7 @@ import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.ChainStrikeAction;
+import game.actors.StatefulCreature;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 import game.utils.LocationUtils;
@@ -41,7 +42,7 @@ public class BerserkState implements CreatureState {
     private int killCount = 0;
 
     @Override
-    public void onEnter(Actor creature, GameMap map) {
+    public void onEnter(StatefulCreature creature, GameMap map) {
         Location loc = map.locationOf(creature);
         // Snapshot exits before we start moving actors
         List<Exit> exits = new ArrayList<>(loc.getExits());
@@ -60,7 +61,7 @@ public class BerserkState implements CreatureState {
     }
 
     @Override
-    public CreatureState checkTransitions(Actor creature, Location location, GameMap map) {
+    public CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map) {
         if (killCount >= KILLS_TO_CALM) {
             return new DormantState();
         }
@@ -73,7 +74,7 @@ public class BerserkState implements CreatureState {
     }
 
     @Override
-    public Action getAction(Actor creature, Location location) {
+    public Action getAction(StatefulCreature creature, Location location) {
         // Prefer Chain Strike on any attackable adjacent actor
         for (Exit exit : location.getExits()) {
             Location dest = exit.getDestination();

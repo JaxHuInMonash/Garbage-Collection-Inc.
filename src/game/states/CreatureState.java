@@ -2,9 +2,9 @@ package game.states;
 
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.DoNothingAction;
-import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actors.StatefulCreature;
 import game.behaviours.WanderBehaviour;
 
 /**
@@ -36,7 +36,7 @@ public interface CreatureState {
      * @param location the creature's current location
      * @return a move action to a random adjacent tile, or {@link DoNothingAction}
      */
-    default Action wanderOrDoNothing(Actor creature, Location location) {
+    default Action wanderOrDoNothing(StatefulCreature creature, Location location) {
         Action wander = WANDER.operate(creature, location);
         return wander != null ? wander : new DoNothingAction();
     }
@@ -48,7 +48,7 @@ public interface CreatureState {
      * @param creature the creature entering this state
      * @param map      the game map
      */
-    void onEnter(Actor creature, GameMap map);
+    void onEnter(StatefulCreature creature, GameMap map);
 
     /**
      * Called when the creature is about to leave this state.
@@ -57,7 +57,7 @@ public interface CreatureState {
      * @param creature the creature leaving this state
      * @param map      the game map
      */
-    default void onExit(Actor creature, GameMap map) {}
+    default void onExit(StatefulCreature creature, GameMap map) {}
 
     /**
      * Inspects the world and returns the next state. Must be deterministic —
@@ -69,7 +69,7 @@ public interface CreatureState {
      * @param map      the game map
      * @return the next state (may be the same instance)
      */
-    CreatureState checkTransitions(Actor creature, Location location, GameMap map);
+    CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map);
 
     /**
      * Returns the action the creature will execute this turn in this state.
@@ -78,7 +78,7 @@ public interface CreatureState {
      * @param location the creature's current location
      * @return the chosen Action
      */
-    Action getAction(Actor creature, Location location);
+    Action getAction(StatefulCreature creature, Location location);
 
     /** Human-readable state name for display and debugging. */
     String getStateName();

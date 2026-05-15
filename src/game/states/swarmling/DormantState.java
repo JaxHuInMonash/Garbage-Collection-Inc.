@@ -1,9 +1,9 @@
 package game.states.swarmling;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.GameMap;
+import game.actors.StatefulCreature;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 import game.statuses.ReflectionStatus;
@@ -31,18 +31,18 @@ public class DormantState implements CreatureState {
     private int turnsWithoutNearbyParasites = 0;
 
     @Override
-    public void onEnter(Actor creature, GameMap map) {
+    public void onEnter(StatefulCreature creature, GameMap map) {
         creature.addStatus(new ReflectionStatus(REFLECTION_AMOUNT));
     }
 
     @Override
-    public void onExit(Actor creature, GameMap map) {
+    public void onExit(StatefulCreature creature, GameMap map) {
         // Remove any remaining reflection shield so it does not carry into new state
         creature.statusesOf(ReflectionStatus.class).forEach(creature::removeStatus);
     }
 
     @Override
-    public CreatureState checkTransitions(Actor creature, Location location, GameMap map) {
+    public CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map) {
         int parasitesIn5 = countParasitesInRadius(location, SCOUT_TILE_RADIUS);
         if (parasitesIn5 == 0) {
             turnsWithoutNearbyParasites++;
@@ -62,7 +62,7 @@ public class DormantState implements CreatureState {
     }
 
     @Override
-    public Action getAction(Actor creature, Location location) {
+    public Action getAction(StatefulCreature creature, Location location) {
         return wanderOrDoNothing(creature, location);
     }
 

@@ -1,12 +1,7 @@
 package game.actors;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.ActionList;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
-import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
 import game.BasicInventory;
 import game.states.swarmling.DormantState;
 import game.statuses.ReflectionStatus;
@@ -36,7 +31,7 @@ import java.util.List;
  * @author Ethan
  * @author Tommy
  */
-public class Swarmling extends StatefulCreature {
+public class Swarmling extends StatefulCreature  {
     private static final int INITIAL_HIT_POINTS = 50;
 
     private static final int PASSIVE_DAMAGE = 1;
@@ -50,25 +45,29 @@ public class Swarmling extends StatefulCreature {
 
     @Override
     public Action passive(GameMap map) {
-        // Environmental passive: toxic waste heals, normal ground hurts
+        // Environmental passive: toxic waste heals, normal ground hurts.
+        // Uses applyPassiveDamage() so the external-damage flag is not set
+        // and ReflectionStatus (combat shield) is not consumed.
         if (map.locationOf(this).getGround().hasAbility(Ability.IS_TOXIC)) {
             this.heal(TOXIC_HEAL);
         } else {
-            this.hurt(PASSIVE_DAMAGE);
+            applyPassiveDamage(PASSIVE_DAMAGE);
         }
 
         return null;
     }
 
     /**
-     * Overrides hurt() to intercept damage through any active {@link ReflectionStatus}.
-     * If a reflection shield is present, damage is absorbed before reaching HP.
+     * Intercepts damage through any active {@link ReflectionStatus} before it
+     * reaches HP. Marks the hit as external damage so ScoutState can detect it.
      */
     @Override
     public void hurt(int damage) {
+        markExternalDamage();
+
         List<ReflectionStatus> shields = statusesOf(ReflectionStatus.class);
         if (shields.isEmpty()) {
-            super.hurt(damage);
+            applyPassiveDamage(damage); // flag already set, just apply HP reduction
             return;
         }
 
@@ -80,6 +79,6 @@ public class Swarmling extends StatefulCreature {
             removeStatus(shield);
 
         if (remaining > 0)
-            super.hurt(remaining);
+            applyPassiveDamage(remaining);
     }
 }

@@ -1,12 +1,11 @@
 package game.states.meeple;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.KineticLinkAction;
+import game.actors.StatefulCreature;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 import game.statuses.KineticLinkStatus;
@@ -40,7 +39,7 @@ public class GuardianState implements CreatureState {
     private int shieldBattery = INITIAL_BATTERY;
 
     @Override
-    public void onEnter(Actor creature, GameMap map) {
+    public void onEnter(StatefulCreature creature, GameMap map) {
         Location loc = map.locationOf(creature);
         for (Location nearby : loc.getNearbyLocations(NANOBOT_RADIUS)) {
             if (!nearby.containsAnActor()) continue;
@@ -52,12 +51,12 @@ public class GuardianState implements CreatureState {
     }
 
     @Override
-    public void onExit(Actor creature, GameMap map) {
+    public void onExit(StatefulCreature creature, GameMap map) {
         // No per-state cleanup needed; KineticLinkStatus auto-expires when Meeple dies
     }
 
     @Override
-    public CreatureState checkTransitions(Actor creature, Location location, GameMap map) {
+    public CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map) {
         if (shieldBattery <= 0) {
             return new OverloadedState();
         }
@@ -78,7 +77,7 @@ public class GuardianState implements CreatureState {
     }
 
     @Override
-    public Action getAction(Actor creature, Location location) {
+    public Action getAction(StatefulCreature creature, Location location) {
         if (shieldBattery <= 0) {
             return wanderOrDoNothing(creature, location);
         }

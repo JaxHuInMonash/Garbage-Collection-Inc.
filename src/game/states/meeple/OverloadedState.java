@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actors.StatefulCreature;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 
@@ -35,7 +36,7 @@ public class OverloadedState implements CreatureState {
     private int turnsRemaining = REBOOT_TURNS;
 
     @Override
-    public void onEnter(Actor creature, GameMap map) {
+    public void onEnter(StatefulCreature creature, GameMap map) {
         Location loc = map.locationOf(creature);
         for (Location nearby : loc.getNearbyLocations(DISCHARGE_RADIUS)) {
             if (!nearby.containsAnActor()) continue;
@@ -49,7 +50,7 @@ public class OverloadedState implements CreatureState {
     }
 
     @Override
-    public CreatureState checkTransitions(Actor creature, Location location, GameMap map) {
+    public CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map) {
         // → Guardian if an adjacent Worker is present (they repair the Meeple)
         for (Exit exit : location.getExits()) {
             Location dest = exit.getDestination();
@@ -68,7 +69,7 @@ public class OverloadedState implements CreatureState {
     }
 
     @Override
-    public Action getAction(Actor creature, Location location) {
+    public Action getAction(StatefulCreature creature, Location location) {
         return new DoNothingAction(); // offline — no action this turn
     }
 

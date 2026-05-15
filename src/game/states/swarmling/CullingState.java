@@ -1,12 +1,12 @@
 package game.states.swarmling;
 
 import edu.monash.fit2099.engine.actions.Action;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.DevourAction;
+import game.actors.StatefulCreature;
 import game.capabilities.Ability;
 import game.states.CreatureState;
 import game.utils.LocationUtils;
@@ -37,7 +37,7 @@ public class CullingState implements CreatureState {
     private static final int PARASITE_CHECK_RADIUS = 3;
 
     @Override
-    public void onEnter(Actor creature, GameMap map) {
+    public void onEnter(StatefulCreature creature, GameMap map) {
         Location swarmlingLoc = map.locationOf(creature);
         // Screech: pull all Parasites within SCREECH_RADIUS two tiles closer
         for (Location nearby : List.copyOf(swarmlingLoc.getNearbyLocations(SCREECH_RADIUS))) {
@@ -48,7 +48,7 @@ public class CullingState implements CreatureState {
     }
 
     @Override
-    public CreatureState checkTransitions(Actor creature, Location location, GameMap map) {
+    public CreatureState checkTransitions(StatefulCreature creature, Location location, GameMap map) {
         // → Berserk if a hostile non-Parasite threat is in range (proxy for Worker under attack)
         for (Location nearby : location.getNearbyLocations(BERSERK_RADIUS)) {
             if (!nearby.containsAnActor()) continue;
@@ -74,7 +74,7 @@ public class CullingState implements CreatureState {
     }
 
     @Override
-    public Action getAction(Actor creature, Location location) {
+    public Action getAction(StatefulCreature creature, Location location) {
         // Prefer Devour if an adjacent Parasite exists
         for (Exit exit : location.getExits()) {
             Location dest = exit.getDestination();
