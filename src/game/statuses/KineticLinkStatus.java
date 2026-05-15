@@ -12,6 +12,11 @@ import edu.monash.fit2099.engine.positions.Location;
  * via {@link #share(int)}. Half the incoming damage (rounded down) is forwarded
  * to the linked Meeple; the Worker only suffers the remaining half. The link
  * expires when the Meeple dies.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class KineticLinkStatus implements Status {
 

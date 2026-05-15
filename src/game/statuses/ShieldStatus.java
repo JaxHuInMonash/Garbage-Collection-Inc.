@@ -12,6 +12,11 @@ import edu.monash.fit2099.engine.positions.Location;
  * via {@link #absorb(int)}, consuming shield points until exhausted. This
  * avoids the one-tick delay of a tick-based approach — the Worker never sits
  * at reduced HP between damage and restoration.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class ShieldStatus implements Status {
 

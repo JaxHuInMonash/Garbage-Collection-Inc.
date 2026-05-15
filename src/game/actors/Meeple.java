@@ -18,7 +18,9 @@ import game.weapons.MeepleFist;
  * <p>
  *
  * @author Ethan
- * @author Tommy
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class Meeple extends StatefulCreature {
     private static final int INITIAL_HIT_POINTS = 40;

@@ -11,6 +11,11 @@ import edu.monash.fit2099.engine.positions.Location;
  * Applied by the Swarmling's DormantState on entry. The Swarmling's
  * {@code hurt()} override checks for this status before forwarding damage,
  * consuming absorption points until exhausted.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class ReflectionStatus implements Status {
 

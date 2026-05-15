@@ -28,6 +28,11 @@ import java.util.List;
  *       detected within 3 tiles (proxy for a threat to a nearby Worker).</li>
  *   <li>→ {@link DormantState}: no Parasites remain within 3 tiles.</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class CullingState implements CreatureState {
 

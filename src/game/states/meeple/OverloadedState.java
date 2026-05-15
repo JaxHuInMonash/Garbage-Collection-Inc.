@@ -27,6 +27,11 @@ import java.util.List;
  *   <li>→ {@link GuardianState}: a Worker is adjacent (they repair the Meeple
  *       before the timer expires).</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class OverloadedState implements CreatureState {
 

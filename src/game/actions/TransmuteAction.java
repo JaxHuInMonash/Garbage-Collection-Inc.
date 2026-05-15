@@ -17,6 +17,11 @@ import java.util.List;
  * {@code location.getItemsAs(Transmutable.class)}
  * removes it, and replaces it with {@link RefinedMaterial} that Workers can
  * consume for a permanent +20 max HP.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class TransmuteAction extends Action {
 

@@ -19,6 +19,11 @@ import game.statuses.ReflectionStatus;
  *   <li>→ {@link ScoutState}: no Parasites within 5 tiles for 3 consecutive turns.</li>
  *   <li>→ {@link CullingState}: more than 3 Parasites enter the 3-tile radius.</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class DormantState implements CreatureState {
 

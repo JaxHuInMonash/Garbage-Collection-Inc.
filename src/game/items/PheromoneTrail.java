@@ -15,6 +15,11 @@ import game.capabilities.Consumable;
  * <p>
  * Workers who pick it up and consume it gain 5 HP — the chemical signals
  * provide a short burst of stimulation.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class PheromoneTrail extends Item implements Consumable {
 

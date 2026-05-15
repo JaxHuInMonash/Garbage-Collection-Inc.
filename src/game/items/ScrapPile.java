@@ -12,6 +12,11 @@ import game.capabilities.Scrap;
  * {@code location.getItemsAs(Scrap.class)} and trigger a transition to
  * EngineerState. Unlike {@link UndeadCorpse}, Scrap cannot be transmuted
  * — it is purely an environmental trigger.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class ScrapPile extends Item implements Scrap {
 

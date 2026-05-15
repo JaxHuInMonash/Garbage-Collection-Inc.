@@ -11,6 +11,11 @@ import edu.monash.fit2099.engine.positions.Location;
  * non-Meeple actors. Each affected actor's {@code playTurn()} checks for
  * this status and returns {@code DoNothingAction} if present, then
  * DizzyStatus ticks down by one.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class DizzyStatus implements Status {
 

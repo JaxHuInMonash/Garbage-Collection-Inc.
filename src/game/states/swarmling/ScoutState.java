@@ -21,6 +21,11 @@ import game.states.CreatureState;
  *   <li>→ {@link BerserkState}: the Swarmling took external damage (combat hit)
  *       while no adjacent Parasite is present.</li>
  * </ul>
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class ScoutState implements CreatureState {
 

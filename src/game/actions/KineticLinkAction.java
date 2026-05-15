@@ -11,6 +11,11 @@ import game.statuses.KineticLinkStatus;
  * Tethers the Meeple to the given Worker by applying a
  * {@link KineticLinkStatus} to the Worker. While active, 50% of each
  * point of damage the Worker takes per tick is forwarded to the Meeple.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class KineticLinkAction extends Action {
 

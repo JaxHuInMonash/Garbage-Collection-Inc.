@@ -14,6 +14,11 @@ import game.capabilities.Transmutable;
  * EngineerState. Implements {@link Transmutable} so TransmuteAction can
  * find and convert it into {@link RefinedMaterial} via
  * {@code location.getItemsAs(Transmutable.class)} — no instanceof needed.
+ *
+ * @author Ethan
+ * @author Mary
+ * @author Jax
+ * @author Thomas
  */
 public class UndeadCorpse extends Item implements Scrap, Transmutable {
 
