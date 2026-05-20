@@ -20,4 +20,9 @@ public class PoisonStatus extends TimedDamageStatus {
     public PoisonStatus(int damagePerTurn, int duration) {
         super(damagePerTurn, duration);
     }
+
+    @Override
+    public String toString() {
+        return "Poison (" + getDamagePerTurn() + " dmg/turn, " + getRemainingTurns() + " turns left)";
+    }
 }

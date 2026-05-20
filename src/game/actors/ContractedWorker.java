@@ -20,6 +20,8 @@ import game.spawning.SpawnEffectManager;
 import game.statuses.InfectedStatus;
 import game.statuses.KineticLinkStatus;
 import game.statuses.ShieldStatus;
+import game.display.EventLog;
+import edu.monash.fit2099.engine.capabilities.Status;
 
 import java.util.List;
 
@@ -191,9 +193,47 @@ public class ContractedWorker extends Actor implements Infectable {
             return lastAction.getNextAction();
         }
 
+        // Display event log (spawns, etc.) that occurred since last turn
+        displayEventLog(display);
+
+        // Display active statuses on this worker
+        displayActiveStatuses(display);
+
         // Display the menu and let the player choose
         Menu menu = new Menu(actions);
         return menu.showMenu(this, display);
+    }
+
+    /**
+     * Prints all queued event messages (e.g., creature spawns) that occurred
+     * since the player's last turn, then clears the queue.
+     *
+     * @param display the display to print to
+     */
+    private void displayEventLog(Display display) {
+        List<String> events = EventLog.getInstance().drain();
+        if (!events.isEmpty()) {
+            display.println("--- Events ---");
+            for (String event : events) {
+                display.println("  " + event);
+            }
+        }
+    }
+
+    /**
+     * Prints the worker's currently active status effects so the player
+     * knows what is affecting them before choosing an action.
+     *
+     * @param display the display to print to
+     */
+    private void displayActiveStatuses(Display display) {
+        List<Status> activeStatuses = this.statuses();
+        if (!activeStatuses.isEmpty()) {
+            display.println("--- " + this.name + "'s Active Statuses ---");
+            for (Status status : activeStatuses) {
+                display.println("  * " + status);
+            }
+        }
     }
 
     /**

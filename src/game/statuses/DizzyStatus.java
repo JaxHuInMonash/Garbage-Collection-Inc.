@@ -39,4 +39,9 @@ public class DizzyStatus implements Status {
     public boolean isStatusActive() {
         return remainingTurns > 0;
     }
+
+    @Override
+    public String toString() {
+        return "Dizzy (skip turn, " + remainingTurns + " turns left)";
+    }
 }

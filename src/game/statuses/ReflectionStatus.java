@@ -55,4 +55,9 @@ public class ReflectionStatus implements Status {
     public int getRemainingAbsorption() {
         return remainingAbsorption;
     }
+
+    @Override
+    public String toString() {
+        return "Reflection (" + remainingAbsorption + " absorption remaining)";
+    }
 }

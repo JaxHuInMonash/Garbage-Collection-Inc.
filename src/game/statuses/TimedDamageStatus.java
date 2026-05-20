@@ -45,4 +45,22 @@ public abstract class TimedDamageStatus implements Status {
     public boolean isStatusActive() {
         return remainingTurns > 0;
     }
+
+    /**
+     * Returns the damage dealt per turn.
+     *
+     * @return damage per turn
+     */
+    protected int getDamagePerTurn() {
+        return damagePerTurn;
+    }
+
+    /**
+     * Returns the number of turns remaining for this status.
+     *
+     * @return remaining turns
+     */
+    protected int getRemainingTurns() {
+        return remainingTurns;
+    }
 }

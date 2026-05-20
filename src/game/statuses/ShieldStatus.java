@@ -56,4 +56,9 @@ public class ShieldStatus implements Status {
     public int getShieldPoints() {
         return shieldPoints;
     }
+
+    @Override
+    public String toString() {
+        return "Shield (" + shieldPoints + " HP remaining)";
+    }
 }

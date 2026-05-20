@@ -19,4 +19,9 @@ public class BurnStatus extends TimedDamageStatus {
     public BurnStatus(int damagePerTurn, int duration) {
         super(damagePerTurn, duration);
     }
+
+    @Override
+    public String toString() {
+        return "Burn (" + getDamagePerTurn() + " dmg/turn, " + getRemainingTurns() + " turns left)";
+    }
 }

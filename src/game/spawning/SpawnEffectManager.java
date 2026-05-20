@@ -2,6 +2,7 @@ package game.spawning;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
+import game.display.EventLog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +69,9 @@ public class SpawnEffectManager {
      * @param location the location where the creature was placed
      */
     public void onCreatureSpawned(Actor creature, Location location) {
+        EventLog.getInstance().log(
+                creature + " spawned at (" + location.x() + ", " + location.y()
+                        + ") of " + location.map());
         SpawnEffect effect = effects.get(creature.getClass());
         if (effect != null) {
             effect.apply(creature, location);

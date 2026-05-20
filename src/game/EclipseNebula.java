@@ -15,6 +15,7 @@ import game.spawning.ParasiteSpawnEffect;
 import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
+import game.display.EventLog;
 
 import java.util.Arrays;
 import java.util.List;
@@ -185,16 +186,16 @@ public class EclipseNebula extends World {
 
         // Create workers, each with their own WeightLimitedInventory(50) and a Flask
         ContractedWorker contractedWorker1 = createWorker("#1 Bob");
-        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
+//        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
 //        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
-        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
+//        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-        this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(4, 2));
-        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
+        this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(25, 1));
+//        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
-        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
+//        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
     }
 
     /**
@@ -219,7 +220,11 @@ public class EclipseNebula extends World {
             for (Location spawnPoint : droneSpawnPoints) {
                 if (!spawnPoint.containsAnActor()) {
                     try {
-                        spawnPoint.addActor(new SecurityDrone(triggeringWorker));
+                        SecurityDrone drone = new SecurityDrone(triggeringWorker);
+                        spawnPoint.addActor(drone);
+                        EventLog.getInstance().log(
+                                drone + " spawned at (" + spawnPoint.x() + ", "
+                                        + spawnPoint.y() + ") of " + spawnPoint.map());
                     } catch (GameEngineException e) {
                         // Spawn point occupied; skip this drone
                     }
@@ -237,6 +242,6 @@ public class EclipseNebula extends World {
     private ContractedWorker createWorker(String name) {
         WeightLimitedInventory inventory = new WeightLimitedInventory(50);
         inventory.add(new Flask());
-        return new ContractedWorker(name, 'ඞ', 10, inventory);
+        return new ContractedWorker(name, 'ඞ', 20, inventory);
     }
 }

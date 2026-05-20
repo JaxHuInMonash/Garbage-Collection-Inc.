@@ -56,4 +56,9 @@ public class KineticLinkStatus implements Status {
     public boolean isStatusActive() {
         return meeple.isConscious();
     }
+
+    @Override
+    public String toString() {
+        return "Kinetic Link (sharing damage with " + meeple + ")";
+    }
 }

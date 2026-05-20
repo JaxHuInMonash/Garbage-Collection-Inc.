@@ -54,4 +54,9 @@ public class InfectedStatus implements Status {
     public boolean isStatusActive() {
         return host.isInfectionActive();
     }
+
+    @Override
+    public String toString() {
+        return "Infected (parasite infection active)";
+    }
 }
