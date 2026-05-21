@@ -4,6 +4,9 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
+import game.statuses.ReflectionStatus;
+
+import java.util.List;
 
 /**
  * An action that allows one actor to attack another using their intrinsic weapon.
@@ -40,11 +43,44 @@ public class AttackAction extends Action {
         IntrinsicWeapon weapon = actor.getIntrinsicWeapon();
         String result = weapon.attack(actor, target, map);
 
+        // Reflection: if the target absorbed damage via ReflectionStatus,
+        // deal the absorbed amount back to the attacker.
+        result += applyReflection(actor);
+
         if (!target.isConscious()) {
             result += "\n" + target.unconscious(actor, map);
         }
 
+        if (!actor.isConscious()) {
+            result += "\n" + actor.unconscious(target, map);
+        }
+
         return result;
+    }
+
+    /**
+     * Checks for pending reflected damage on the target and applies it back
+     * to the attacker. Cleans up the {@link ReflectionStatus} if it is fully
+     * consumed after the reflection is applied.
+     *
+     * @param attacker the actor who performed the attack
+     * @return a description of the reflection, or empty string if none
+     */
+    private String applyReflection(Actor attacker) {
+        List<ReflectionStatus> reflections = target.statusesOf(ReflectionStatus.class);
+        StringBuilder sb = new StringBuilder();
+        for (ReflectionStatus ref : reflections) {
+            int reflected = ref.consumePendingReflection();
+            if (reflected > 0) {
+                attacker.hurt(reflected);
+                sb.append("\n").append(target).append(" reflects ").append(reflected)
+                        .append(" damage back at ").append(attacker).append("!");
+            }
+            if (!ref.isStatusActive()) {
+                target.removeStatus(ref);
+            }
+        }
+        return sb.toString();
     }
 
     /**

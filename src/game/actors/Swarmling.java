@@ -26,7 +26,8 @@ import java.util.List;
  * <p>
  * <strong>Reflection:</strong> {@link ReflectionStatus} added by DormantState is
  * intercepted in {@link #hurt(int)} so incoming damage is absorbed before
- * reaching HP.
+ * reaching HP. The absorbed damage is then reflected back at the attacker
+ * by {@link game.actions.AttackAction}.
  *
  * @author Ethan
  * @author Mary

@@ -12,7 +12,8 @@ import game.statuses.ReflectionStatus;
  * The Swarmling's resting state.
  * <p>
  * <strong>Immediate effect (onEnter):</strong> Wraps the Swarmling in a
- * {@link ReflectionStatus} that absorbs the next 20 points of incoming damage.
+ * {@link ReflectionStatus} that reflects the next 20 points of incoming damage
+ * back at the attacker.
  * <p>
  * <strong>Transitions:</strong>
  * <ul>
