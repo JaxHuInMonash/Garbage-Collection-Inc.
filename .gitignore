@@ -3,3 +3,6 @@
 out
 .DS_Store
 docs/javadoc/
+
+# Maven build output
+target/

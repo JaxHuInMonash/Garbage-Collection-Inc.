@@ -7,32 +7,34 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Flask;
 import game.capabilities.Ability;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 /**
  * An action that uses a {@link game.grounds.MagicCircle} to teleport the actor
  * to a random different Magic Circle within the current map.
  * <p>
  * Upon arrival, magical energy surges and spawns a {@link game.items.Flask}
  * on an empty tile directly adjacent to the destination circle.
- *@author zhengjun yang
+ *
+ * @author zhengjun yang
  */
 public class UseMagicCircleAction extends Action {
 
     private final Location circleLocation;
-    private final String direction;
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
+
     /**
      * Constructor.
      *
      * @param circleLocation the location of the Magic Circle being used
-     * @param direction      the direction from the actor to the circle
      */
-    public UseMagicCircleAction(Location circleLocation, String direction) {
+    public UseMagicCircleAction(Location circleLocation) {
         this.circleLocation = circleLocation;
-        this.direction = direction;
     }
+
     /**
      * Teleports the actor to a random different Magic Circle on the current map
      * and spawns a Flask adjacent to the destination circle.
@@ -57,13 +59,14 @@ public class UseMagicCircleAction extends Action {
             return actor + " steps onto the Magic Circle, but there are no other circles to travel to...";
         }
 
-        Location destination = otherCircles.get(random.nextInt(otherCircles.size()));
+        Location destination = otherCircles.get(RANDOM.nextInt(otherCircles.size()));
         map.moveActor(actor, destination);
         spawnFlaskAdjacent(destination);
 
         return actor + " teleports via Magic Circle to (" + destination.x() + ", " + destination.y()
                 + ")! A Flask materialises nearby!";
     }
+
     /**
      * Returns a description of this action for the menu.
      *
@@ -72,8 +75,9 @@ public class UseMagicCircleAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " steps through Magic Circle (" + direction + ")";
+        return actor + " steps through the Magic Circle";
     }
+
     /**
      * Spawns a Flask on the first available empty adjacent tile next to
      * the given location.

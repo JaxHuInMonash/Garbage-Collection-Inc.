@@ -67,6 +67,7 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('N', IronDoor::new);
         groundCreator.registerGround('M', TitaniumDoor::new);
         groundCreator.registerGround('o', () -> new Hole(List.of(Undead::new, Slime::new)));
+        groundCreator.registerGround('O', () -> new Hole(List.of(Undead::new, Parasite::new)));
         groundCreator.registerGround('V', Vent::new);
         groundCreator.registerGround('≡', Supercomputer::new);
         groundCreator.registerGround('a', AlarmFloor::new);
@@ -85,7 +86,7 @@ public class EclipseNebula extends World {
         // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
-                "...#######..........#______V___________#___________________#",
+                "...#######..........#__________________#___________________#",
                 "...#_____#..........=__________________=___________________#",
                 "...#Φ____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
@@ -102,7 +103,7 @@ public class EclipseNebula extends World {
                 ".........~~~~.......#______#___________#___________________#",
                 "....................#______#############___#############___#",
                 "....................#______#___________#___#_____o_____#___#",
-                "..~.................#______=___________=___=_____V_____=___#",
+                "..~.................#______=___________=___=___________=___#",
                 "....................########################################"
         );
 
@@ -120,8 +121,8 @@ public class EclipseNebula extends World {
                 ".............≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_____#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
                 "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#########=#####≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
                 "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#_____________#≈≈≈≈≈≈≈≈≈#___◎__#≈≈≈≈≈≈≈",
-                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#______o______#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
-                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#______o______#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#______O______#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
+                "....≈≈≈≈≈≈...≈≈≈≈≈≈≈≈#______O______#≈≈≈≈≈≈≈≈≈#______#≈≈≈≈≈≈≈",
                 ".............≈≈≈≈≈≈≈≈######=########≈≈≈≈≈≈≈≈≈####=###≈≈≈≈≈≈≈",
                 "...≈≈≈≈≈≈≈≈≈.≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈≈≈≈≈",
                 "...≈≈≈≈≈≈≈≈≈.≈≈≈≈≈≈≈≈≈≈≈≈≈#_#≈≈≈≈≈###############_#######≈≈≈",
@@ -137,12 +138,15 @@ public class EclipseNebula extends World {
         GameMap moon20OverflowMap = new GameMap("20-Overflow", groundCreator, moon20Overflow);
         this.addGameMap(moon20OverflowMap);
 
-        // Set up TeleportationTubes between the two maps
+        // Set up TeleportationTubes — each tube must support both within-map
+        // and between-maps movement.
         TeleportationTube tube99 = new TeleportationTube();
-        tube99.addDestination(moon20OverflowMap, 5, 3, "20-Overflow");
+        tube99.addDestination(moon20OverflowMap, 25, 10, "20-Overflow (drop zone)");
+        tube99.addDestination(moon99DeprecatedMap, 50, 14, "99-Deprecated (south corridor)"); // within-map
 
         TeleportationTube tube20 = new TeleportationTube();
-        tube20.addDestination(moon99DeprecatedMap, 5, 2, "99-Deprecated");
+        tube20.addDestination(moon99DeprecatedMap, 25, 1, "99-Deprecated (ship dock)");
+        tube20.addDestination(moon20OverflowMap, 25, 8, "20-Overflow (east chamber)"); // within-map
 
         moon99DeprecatedMap.at(4, 3).setGround(tube99);
         moon20OverflowMap.at(5, 3).setGround(tube20);
@@ -191,7 +195,7 @@ public class EclipseNebula extends World {
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-        this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(25, 1));
+        this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));

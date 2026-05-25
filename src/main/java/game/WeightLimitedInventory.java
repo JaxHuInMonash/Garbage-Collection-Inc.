@@ -21,6 +21,24 @@ public class WeightLimitedInventory extends Inventory {
     }
 
     /**
+     * Returns the current carried weight.
+     *
+     * @return the current weight
+     */
+    public int getWeight() {
+        return weight;
+    }
+
+    /**
+     * Returns the weight limit.
+     *
+     * @return the weight limit
+     */
+    public int getWeightLimit() {
+        return weightLimit;
+    }
+
+    /**
      * Perform additional check when adding an item, making sure that by adding the item, the weight limit of the
      * inventory is not exceeded.
      *

@@ -45,17 +45,23 @@ public class FirstAidKit extends Item implements Consumable, Buyable {
     }
 
     /**
-     * Defines what happens when a First Aid Kit is bought.
-     * adds a First Aid Kit to the actor's inventory.
+     * Places the kit into the buyer's inventory. The polymorphic
+     * {@code Inventory.add()} handles any weight check.
+     */
+    @Override
+    public boolean attemptAcquireBy(Actor actor) {
+        return actor.getInventory().add(this);
+    }
+
+    /**
+     * Side effects after a First Aid Kit is successfully acquired.
      *
-     * @param actor the actor selling the First Aid Kit
+     * @param actor the actor buying the First Aid Kit
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
     public String onBought(Actor actor, GameMap map) {
-        actor.getInventory().add(this);
-
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
     }
 

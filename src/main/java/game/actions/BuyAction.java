@@ -8,29 +8,43 @@ import game.ActorStatistics;
 import game.capabilities.Buyable;
 
 /**
- * An Action that allows Actors with CREDITS to buy Buyables
+ * An Action that allows Actors with CREDITS to buy {@link Buyable} items.
+ * <p>
+ * The buy is rejected (no credits charged, no side effects fired) when the
+ * actor cannot accept the buyable. The acquisition check itself is delegated
+ * polymorphically to {@link Buyable#attemptAcquireBy(Actor)} — this action
+ * therefore makes no assumptions about whether the buyable is an inventory
+ * item or what kind of inventory the actor uses, avoiding {@code instanceof}
+ * checks entirely.
  *
  * @author Tommy
+ * @author Jax
  */
 public class BuyAction extends Action {
+
     private final Buyable buyable;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param buyable Item to buy
+     * @param buyable the buyable to acquire
      */
     public BuyAction(Buyable buyable) {
         this.buyable = buyable;
     }
 
     /**
-     * Executes the buy sequence for the respective Buyable object,
-     * deducting the Actor the buy value of the Buyable object
+     * Executes the buy sequence. Order of operations:
+     * <ol>
+     *   <li>Check the actor has enough credits.</li>
+     *   <li>Ask the buyable to place itself with the actor.</li>
+     *   <li>Deduct credits.</li>
+     *   <li>Apply the buyable's purchase side effects.</li>
+     * </ol>
      *
-     * @param actor The actor performing the action.
-     * @param map The map the actor is on.
-     * @return a description of the sell result
+     * @param actor the actor performing the action
+     * @param map   the map the actor is on
+     * @return a description of the buy result
      */
     @Override
     public String execute(Actor actor, GameMap map) {
@@ -39,13 +53,15 @@ public class BuyAction extends Action {
 
         if (credits < cost) {
             String appendMessage = buyable.onInsufficientCredits(actor, map);
-
             return actor + " attempted to buy " + buyable + " but lacked credits. " +
                     "(" + credits + "/" + cost + ")" + appendMessage;
         }
 
-        actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, cost);
+        if (!buyable.attemptAcquireBy(actor)) {
+            return actor + " attempted to buy " + buyable + " but couldn't accept it (inventory full).";
+        }
 
+        actor.modifyStatistic(ActorStatistics.CREDITS, StatisticOperations.DECREASE, cost);
         return buyable.onBought(actor, map);
     }
 

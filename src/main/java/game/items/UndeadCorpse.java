@@ -26,7 +26,8 @@ public class UndeadCorpse extends Item implements Scrap, Transmutable {
 
     /** Constructor. */
     public UndeadCorpse() {
-        super("Undead Corpse", 'u');
+        // Display char 'c' chosen to avoid clashing with Flask's 'u'.
+        super("Undead Corpse", 'c');
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.makePortable();
     }

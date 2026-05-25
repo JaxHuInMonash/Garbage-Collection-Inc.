@@ -41,25 +41,31 @@ public class SterilisationBox extends Item implements Buyable {
     }
 
     /**
-     * Defines what happens when a Sterilisation Box is bought.
-     * Adds the Sterilisation Box to the actor's inventory.
-     * But right after purchasing, due to the Sterilisation Box's
-     * radiation, one random item, including the Box will be removed.
+     * Places this box into the buyer's inventory. The polymorphic
+     * {@code Inventory.add()} handles any weight check.
+     */
+    @Override
+    public boolean attemptAcquireBy(Actor actor) {
+        return actor.getInventory().add(this);
+    }
+
+    /**
+     * Side effects after a Sterilisation Box is successfully acquired:
+     * radiation from the box destroys one random item from the buyer's
+     * inventory (which may be the box itself).
      *
-     * @param actor the actor selling the Sterilisation Box
+     * @param actor the actor buying the Sterilisation Box
      * @param map   the game map the actor is on
      * @return a description of the result
      */
     @Override
     public String onBought(Actor actor, GameMap map) {
-        actor.getInventory().add(this);
-
         List<Item> items = actor.getInventory().getItems();
         Item randomItem = items.get(random.nextInt(items.size()));
 
         actor.getInventory().remove(randomItem);
 
-        return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits - " + randomItem + " was destroyed due to radiation." ;
+        return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits - " + randomItem + " was destroyed due to radiation.";
     }
 
     /**

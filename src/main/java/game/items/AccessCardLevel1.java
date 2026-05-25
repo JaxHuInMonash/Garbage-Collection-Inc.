@@ -24,8 +24,17 @@ public class AccessCardLevel1 extends AccessCard {
     }
 
     /**
-     * Defines what happens when a Level 1 card is bought.
-     * Adds the card to the actor's inventory.
+     * Places this card into the buyer's inventory. The polymorphic
+     * {@code Inventory.add()} handles any weight check.
+     */
+    @Override
+    public boolean attemptAcquireBy(Actor actor) {
+        return actor.getInventory().add(this);
+    }
+
+    /**
+     * Defines what happens after a Level 1 card has been successfully
+     * acquired by the buyer.
      *
      * @param actor the actor buying the card
      * @param map   the game map the actor is on
@@ -33,7 +42,6 @@ public class AccessCardLevel1 extends AccessCard {
      */
     @Override
     public String onBought(Actor actor, GameMap map) {
-        actor.getInventory().add(this);
         return actor + " bought " + this + " for " + getBuyValue() + " credits.";
     }
 }

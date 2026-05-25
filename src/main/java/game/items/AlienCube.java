@@ -10,26 +10,38 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
 import game.actions.UseAlienCubeAction;
-import game.actions.SellAction;
 import game.actors.Undead;
+import game.capabilities.Ability;
 import game.capabilities.Sellable;
 import game.spawning.SpawnEffectManager;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 /**
- * A mysterious alien artifact that can teleport its user to a random
- * location on the current map. Displays as {@code ◈}.
+ * A mysterious alien artifact that can teleport its user to one of three
+ * randomly offered locations on the current map. Displays as {@code ◈}.
  * <p>
  * Using the cube corrupts all adjacent ground tiles at the source into
  * {@link game.grounds.ToxicWaste}. The cube can also be sold at the
- * Supercomputer for {@value CREDIT_VALUE} credits, which causes an
- * Undead to materialise nearby.
+ * Supercomputer for {@value CREDIT_VALUE} credits — selling is offered via
+ * {@link game.grounds.Supercomputer}'s {@code allowableActions}, so it can
+ * only be sold while standing next to the Supercomputer. Selling causes
+ * an Undead to materialise nearby.
  *
  * @author zhengjun Yang
  * @author Mary Chuang
+ * @author Jax
  */
 public class AlienCube extends Item implements Sellable {
+
     private static final int WEIGHT = 2;
     private static final int CREDIT_VALUE = 25;
+    private static final int DESTINATION_CHOICES = 3;
+
+    private static final Random RANDOM = new Random();
 
     /**
      * Constructor.
@@ -62,14 +74,13 @@ public class AlienCube extends Item implements Sellable {
                     adjacent.addActor(undead);
                     SpawnEffectManager.getInstance().onCreatureSpawned(undead, adjacent);
                 } catch (GameEngineException e) {
+                    // adjacent tile became occupied between check and addActor; skip
                 }
                 break;
             }
         }
         return actor + " sold the Alien Cube for " + CREDIT_VALUE + " credits — an Undead materialises nearby!";
     }
-
-
 
     /**
      * Returns the credit value when sold.
@@ -82,7 +93,10 @@ public class AlienCube extends Item implements Sellable {
     }
 
     /**
-     * Provides actions to the owner: use the cube to teleport, or sell it.
+     * Offers up to {@value DESTINATION_CHOICES} pre-selected teleport
+     * destinations as separate menu actions, drawn at random from all
+     * passable, unoccupied tiles on the owner's current map. Selling is
+     * intentionally NOT offered here — it goes through the Supercomputer.
      *
      * @param owner the actor carrying this cube
      * @param map   the current game map
@@ -91,8 +105,29 @@ public class AlienCube extends Item implements Sellable {
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {
         ActionList actions = new ActionList();
-        actions.add(new UseAlienCubeAction(this));
-        actions.add(new SellAction(this));
+        for (Location dest : pickRandomDestinations(map, DESTINATION_CHOICES)) {
+            actions.add(new UseAlienCubeAction(this, dest));
+        }
         return actions;
+    }
+
+    /**
+     * Collects every passable, unoccupied tile on the given map and returns
+     * up to {@code count} of them, shuffled. If the map has fewer candidates
+     * than {@code count}, returns whatever is available.
+     */
+    private List<Location> pickRandomDestinations(GameMap map, int count) {
+        List<Location> candidates = new ArrayList<>();
+        for (int x = map.getXRange().min(); x <= map.getXRange().max(); x++) {
+            for (int y = map.getYRange().min(); y <= map.getYRange().max(); y++) {
+                Location loc = map.at(x, y);
+                if (!loc.getGround().hasAbility(Ability.BLOCKS_ENTRY) && !loc.containsAnActor()) {
+                    candidates.add(loc);
+                }
+            }
+        }
+
+        Collections.shuffle(candidates, RANDOM);
+        return candidates.subList(0, Math.min(count, candidates.size()));
     }
 }
