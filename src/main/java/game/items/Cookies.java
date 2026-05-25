@@ -3,6 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
@@ -26,6 +27,10 @@ import game.capabilities.Sellable;
  * Without a {@link SterilisationBox}, eating one permanently decreases the
  * consumer's maximum HP by 1. With sterilisation, each cookie heals 1 HP.
  * The item disappears from the inventory only after all 5 cookies are eaten.
+ * <p>
+ * The remaining cookie count is the single source of truth, exposed via the
+ * {@link ItemStatistics#QUANTITY} statistic. Sell value is computed on demand
+ * from the current quantity, so the two never drift out of sync.
  *
  * @author Jax
  * @author Tommy
@@ -36,21 +41,17 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
     private static final int INITIAL_QUANTITY = 5;
     private static final int VALUE_PER_COOKIE = 1;
 
-    private static final int MAX_COOKIES = 5;
-    private int remainingCookies;
     private static final int SELL_DAMAGE_PER_COOKIE = 1;
     private static final int CONSUME_STERILISED_HEAL = 1;
-    private static final int CONSUME_UNSTERILISED_DAMAGE = 1;
+    private static final int CONSUME_UNSTERILISED_MAX_HP_LOSS = 1;
 
     /**
      * Constructor.
      */
     public Cookies() {
         super("Cookies", '◍');
-        this.remainingCookies = MAX_COOKIES;
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
-        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_QUANTITY * VALUE_PER_COOKIE));
-        this.addNewStatistic(ItemStatistics.SELL_VALUE, new BaseStatistic(this.getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE));
+        this.addNewStatistic(ItemStatistics.QUANTITY, new BaseStatistic(INITIAL_QUANTITY));
         this.makePortable();
     }
 
@@ -60,7 +61,7 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
      * @return remaining cookie count
      */
     public int getRemainingCookies() {
-        return remainingCookies;
+        return getStatistic(ItemStatistics.QUANTITY);
     }
 
     /**
@@ -74,20 +75,23 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
      */
     @Override
     public String onSold(Actor actor, GameMap map) {
+        int quantity = getStatistic(ItemStatistics.QUANTITY);
+        int sellValue = getSellValue();
         actor.getInventory().remove(this);
 
-        actor.hurt(SELL_DAMAGE_PER_COOKIE * getStatistic(ItemStatistics.QUANTITY));
+        actor.hurt(SELL_DAMAGE_PER_COOKIE * quantity);
 
-        return this + " were sold for " + getStatistic(ItemStatistics.SELL_VALUE) + " credits, harming the player " + SELL_DAMAGE_PER_COOKIE + " for each cookie.";
+        return this + " were sold for " + sellValue + " credits, harming the player " + SELL_DAMAGE_PER_COOKIE + " for each cookie.";
     }
 
     /**
-     * Provides the value of the item when sold
-     * @return current sell value of the item
+     * Sell value is dynamic: 1 credit per remaining cookie.
+     *
+     * @return the current sell value
      */
     @Override
     public int getSellValue() {
-        return getStatistic(ItemStatistics.SELL_VALUE);
+        return getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE;
     }
 
     /**
@@ -110,7 +114,9 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
      */
     @Override
     public void onInfectionTick(Location location) {
-        this.remainingCookies = Math.max(0, this.remainingCookies - 1);
+        if (getStatistic(ItemStatistics.QUANTITY) > 0) {
+            modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
+        }
         spawnParasiteAdjacent(location);
     }
 
@@ -121,7 +127,7 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
      */
     @Override
     public boolean isInfectionActive() {
-        return remainingCookies > 0;
+        return getStatistic(ItemStatistics.QUANTITY) > 0;
     }
 
     /**
@@ -146,9 +152,9 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
     }
 
     /**
-     * Defines what happens when a cookie is consumed. Checks for
-     * sterilisation to determine the effect. Removes the item from
-     * the inventory once all cookies are eaten.
+     * Defines what happens when a cookie is consumed. With sterilisation, heals
+     * 1 HP. Without, permanently decreases the consumer's maximum HP by 1.
+     * Removes the item from the inventory once all cookies are eaten.
      *
      * @param actor the actor consuming a cookie
      * @param map   the game map the actor is on
@@ -156,17 +162,15 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
      */
     @Override
     public String consumedBy(Actor actor, GameMap map) {
-        remainingCookies--;
         modifyStatistic(ItemStatistics.QUANTITY, StatisticOperations.DECREASE, 1);
-        modifyStatistic(ItemStatistics.SELL_VALUE, StatisticOperations.UPDATE, getStatistic(ItemStatistics.QUANTITY) * VALUE_PER_COOKIE);
 
         String result;
         if (actor.hasAbility(Ability.HAS_STERILISATION)) {
             actor.heal(CONSUME_STERILISED_HEAL);
-            result = actor + " eats a sterilised cookie and heals 1 HP.";
+            result = actor + " eats a sterilised cookie and heals " + CONSUME_STERILISED_HEAL + " HP.";
         } else {
-            actor.hurt(CONSUME_UNSTERILISED_DAMAGE);
-            result = actor + " eats a toxic cookie. Maximum HP decreased by 1!";
+            actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.DECREASE, CONSUME_UNSTERILISED_MAX_HP_LOSS);
+            result = actor + " eats a toxic cookie. Maximum HP permanently decreased by " + CONSUME_UNSTERILISED_MAX_HP_LOSS + "!";
         }
 
         if (getStatistic(ItemStatistics.QUANTITY) <= 0) {
@@ -186,7 +190,7 @@ public class Cookies extends Item implements Consumable, Sellable, Infectable {
 
     @Override
     public String getConsumeMenuDescription(Actor actor) {
-        return actor + " eats a cookie (" + remainingCookies + " remaining)";
+        return actor + " eats a cookie (" + getStatistic(ItemStatistics.QUANTITY) + " remaining)";
     }
 
     /**

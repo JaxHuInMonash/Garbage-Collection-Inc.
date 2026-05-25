@@ -13,25 +13,27 @@ import game.capabilities.Buyable;
  *
  * @author Tommy
  */
-public class AccessCardLevel1 extends AccessCard implements Buyable {
-    private static final int CLEARANCE = 1;
-
-    private static final int BUY_VALUE = 50;
+public class AccessCardLevel2 extends AccessCard implements Buyable {
+    private static final int CLEARANCE = 2;
+    private static final int WEIGHT = 2;
+    private static final int BUY_VALUE = 100;
+    private static final int DAMAGE_ON_BUY = 5;
 
     /**
      * Constructor.
      * <p>
      * Creates an AccessCard, makes it portable so it can be
-     * picked up and dropped, and grants the ability ACCESS_LEVEL_1.
+     * picked up and dropped, and grants the ability ACCESS_LEVEL_2.
      */
-    public AccessCardLevel1() {
-        super("Access Card (Level 1)", '▤', CLEARANCE);
+    public AccessCardLevel2() {
+        super("Access Card (Level 2)", 'α', CLEARANCE, WEIGHT, BUY_VALUE);
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
     }
 
     /**
-     * Defines what happens when a AccessCardLevel1 is bought.
-     * Adds the card to the actor's inventory
+     * Defines what happens when a AccessCardLevel2 is bought.
+     * Adds the card to the actor's inventory and
+     * damages the actor by {@value DAMAGE_ON_BUY}
      *
      * @param actor the actor selling the cookies
      * @param map   the game map the actor is on
@@ -40,6 +42,7 @@ public class AccessCardLevel1 extends AccessCard implements Buyable {
     @Override
     public String onBought(Actor actor, GameMap map) {
         actor.getInventory().add(this);
+        actor.hurt(DAMAGE_ON_BUY);
 
         return actor + " bought " + this + " for " + getStatistic(ItemStatistics.BUY_VALUE) + " credits.";
     }
@@ -53,6 +56,5 @@ public class AccessCardLevel1 extends AccessCard implements Buyable {
         return getStatistic(ItemStatistics.BUY_VALUE);
     }
 }
-
 
 

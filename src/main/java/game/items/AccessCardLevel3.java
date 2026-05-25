@@ -19,6 +19,7 @@ import java.util.Random;
  */
 public class AccessCardLevel3 extends AccessCard implements Buyable {
     private static final int CLEARANCE = 3;
+    private static final int WEIGHT = 2;
     private static final int BUY_VALUE = 200;
 
     private static final int HIDDEN_FEE_PERCENTAGE_CHANCE = 50;
@@ -33,7 +34,7 @@ public class AccessCardLevel3 extends AccessCard implements Buyable {
      * picked up and dropped, and grants the ability ACCESS_LEVEL_3.
      */
     public AccessCardLevel3() {
-        super("Access Card (Level 3)", '◐', CLEARANCE);
+        super("Access Card (Level 3)", '◐', CLEARANCE, WEIGHT, BUY_VALUE);
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_VALUE));
     }
 

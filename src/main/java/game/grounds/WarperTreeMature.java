@@ -64,9 +64,11 @@ public class WarperTreeMature extends Ground {
         for (Exit exit : location.getExits()) {
             Location destination = exit.getDestination();
 
-            if (destination.containsAnActor() && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES))
+            if (destination.containsAnActor()
+                    && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES)) {
                 warpWorker(destination.getActor(), location);
-                return;
+                return; // single-threaded flora rule — only one warp per turn
+            }
         }
     }
 
