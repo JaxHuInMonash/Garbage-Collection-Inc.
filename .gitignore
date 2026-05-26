@@ -6,3 +6,8 @@ docs/javadoc/
 
 # Maven build output
 target/
+
+# Secrets — REQ5 API keys must never be committed
+.env
+.env.*
+!.env.example
