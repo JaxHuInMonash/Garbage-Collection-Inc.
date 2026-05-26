@@ -14,33 +14,51 @@ import game.statuses.PoisonStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * A toxic vent that is motion-activated. Displays as {@code V}.
  * <p>
  * When a worker (actor with {@link Ability#ATTACKABLE_BY_CREATURES}) is
- * standing within its adjacent tiles, the vent activates: it spawns either
- * a {@link Parasite} or a {@link Slime} (equal probability) on a random
- * adjacent empty tile, then poisons all adjacent actors (including the
- * newly spawned creature) for 5 turns at 1 damage per turn.
+ * standing within its adjacent tiles, the vent activates: it spawns a randomly
+ * chosen creature from its configured pool on a random adjacent empty tile, then
+ * poisons all adjacent actors (including the newly spawned creature) for 5 turns
+ * at 1 damage per turn.
  * <p>
- * When inactive (no workers nearby), the vent does nothing.
+ * The creature pool is injected at construction time, allowing per-instance
+ * customisation without subclassing (Open-Closed Principle). The no-arg
+ * constructor reproduces the original Parasite + Slime behaviour.
+ * <p>
  * Actors can walk over the vent tile.
  *
  * @author Jax
+ * @author Ethan (configurable supplier pool)
  */
 public class Vent extends Ground {
 
     private static final int POISON_DAMAGE = 1;
     private static final int POISON_DURATION = 5;
 
+    private final List<Supplier<Actor>> creatureSuppliers;
     private final Random random;
 
     /**
-     * Constructor.
+     * Default constructor. Reproduces the original behaviour: spawns either
+     * a {@link Parasite} or a {@link Slime} with equal probability.
      */
     public Vent() {
+        this(List.of(Parasite::new, Slime::new));
+    }
+
+    /**
+     * Configurable constructor. Allows callers to specify which creature
+     * types this vent can spawn.
+     *
+     * @param creatureSuppliers non-empty list of creature suppliers to draw from
+     */
+    public Vent(List<Supplier<Actor>> creatureSuppliers) {
         super('V', "Vent");
+        this.creatureSuppliers = new ArrayList<>(creatureSuppliers);
         this.random = new Random();
     }
 
@@ -57,11 +75,9 @@ public class Vent extends Ground {
             return;
         }
 
-        // Spawn a creature first; only poison if spawn was successful
         boolean spawned = spawnCreature(location);
 
         if (spawned) {
-            // Poison all adjacent actors (including the newly spawned creature)
             poisonAdjacentActors(location);
         }
     }
@@ -81,12 +97,12 @@ public class Vent extends Ground {
                 }
             }
         }
-
         return false;
     }
 
     /**
-     * Spawns either a Parasite or Slime on a random adjacent empty tile.
+     * Spawns a randomly chosen creature from the configured pool on a
+     * random adjacent empty tile.
      *
      * @param location the vent's location
      * @return true if a creature was successfully spawned
@@ -105,14 +121,13 @@ public class Vent extends Ground {
         }
 
         Location spawnLocation = validLocations.get(random.nextInt(validLocations.size()));
-        Actor creature = random.nextBoolean() ? new Parasite() : new Slime();
+        Actor creature = creatureSuppliers.get(random.nextInt(creatureSuppliers.size())).get();
 
         try {
             spawnLocation.addActor(creature);
             SpawnEffectManager.getInstance().onCreatureSpawned(creature, spawnLocation);
             return true;
         } catch (GameEngineException e) {
-            // Spawn failed; skip
             return false;
         }
     }

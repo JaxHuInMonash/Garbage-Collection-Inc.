@@ -8,10 +8,10 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
 import game.actors.*;
 import game.alarm.AlarmManager;
-import game.items.ScrapPile;
 import game.grounds.*;
 import game.items.*;
 import game.spawning.ParasiteSpawnEffect;
+import game.spawning.ScrapSnatcherSpawnEffect;
 import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
@@ -39,7 +39,7 @@ public class EclipseNebula extends World {
      * Initialise maps, actors, items, grounds, and the alarm system.
      * <p>
      * Each worker gets their own {@link WeightLimitedInventory} with a 50-unit
-     * weight limit and a {@link game.items.Flask} already inside. The three special items
+     * weight limit and a {@link Flask} already inside. The three special items
      * (AccessCard, FirstAidKit, SterilisationBox) are placed once in the ship.
      * <p>
      * The alarm system is initialised with a drone-spawning listener that
@@ -56,6 +56,8 @@ public class EclipseNebula extends World {
         SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
         SpawnEffectManager.getInstance().registerEffect(Slime.class, new SlimeSpawnEffect());
         SpawnEffectManager.getInstance().registerEffect(Parasite.class, new ParasiteSpawnEffect());
+        SpawnEffectManager.getInstance().registerEffect(ScrapSnatcher.class,
+                new ScrapSnatcherSpawnEffect(List.of(AluminiumScrap::new, IndustrialFan::new, AlienArtifact::new)));
 
         // Single ground creator shared across all maps
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
@@ -151,6 +153,17 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(4, 3).setGround(tube99);
         moon20OverflowMap.at(5, 3).setGround(tube20);
 
+        // 99-Deprecated: upgrade the two existing Holes to also spawn ScrapSnatchers.
+        // (Positions derived from the map string: 'o' at (48,7) and (49,17).)
+        moon99DeprecatedMap.at(48, 7).setGround(new Hole(List.of(Undead::new, Slime::new, ScrapSnatcher::new)));
+        moon99DeprecatedMap.at(49, 17).setGround(new Hole(List.of(Undead::new, Slime::new, ScrapSnatcher::new)));
+
+        // 99-Deprecated: add the deprecated Fleshy Tree Sprout at an open dirt tile.
+        moon99DeprecatedMap.at(10, 10).setGround(new DeprecatedFleshyTreeSprout());
+
+        // 20-Overflow: add a Vent that can spawn Parasite, Slime, or ScrapSnatcher
+        moon20OverflowMap.at(28, 8).setGround(new Vent(List.of(Parasite::new, Slime::new, ScrapSnatcher::new)));
+
         // Place the three unique ship items (only instantiated once)
         moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());
         moon99DeprecatedMap.at(31, 10).addItem(new AccessCardLevel2());
@@ -177,14 +190,6 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(50, 3).addItem(new ScrapPile());
         moon20OverflowMap.at(30, 14).addItem(new ScrapPile());
 
-        // Swarmlings — thrive in toxic zones; place one on each map
-        moon99DeprecatedMap.addActor(new Swarmling(), moon99DeprecatedMap.at(34, 6));
-        moon20OverflowMap.addActor(new Swarmling(), moon20OverflowMap.at(18, 9));
-
-        // Meeples — support units, one per map
-        moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
-        moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
-
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
 
@@ -195,11 +200,27 @@ public class EclipseNebula extends World {
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-        this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
+        this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(13, 3));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
 //        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
+
+        //TESTING
+        // test scrapsnatcher snatches scrap (start with worker pos 8, 3 for safety)
+//        moon99DeprecatedMap.addActor(new ScrapSnatcher(), moon99DeprecatedMap.at(14, 3));
+//        moon99DeprecatedMap.at(14, 3).addItem(new AluminiumScrap());
+
+        // test spawn effect
+//        ScrapSnatcher snatcher = new ScrapSnatcher();
+//        Location dropZone = moon99DeprecatedMap.at(14, 3);
+//        moon99DeprecatedMap.addActor(snatcher, dropZone);
+//        SpawnEffectManager.getInstance().onCreatureSpawned(snatcher, dropZone);
+
+        // test infection and rabid behaviours (change worker pos to 13, 3)
+        moon99DeprecatedMap.addActor(new ScrapSnatcher(), moon99DeprecatedMap.at(14, 3));
+        moon99DeprecatedMap.addActor(new Parasite(), moon99DeprecatedMap.at(15, 3));
+
     }
 
     /**

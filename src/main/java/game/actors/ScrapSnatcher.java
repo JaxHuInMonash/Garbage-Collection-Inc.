@@ -51,7 +51,6 @@ public class ScrapSnatcher extends Actor implements Infectable {
     /** Constructor. */
     public ScrapSnatcher() {
         super("Scrap Snatcher", 's', INITIAL_HIT_POINTS, new BasicInventory());
-        this.enableAbility(Ability.IS_SCRAP_SNATCHER);
 
         normalBehaviours.put(1, new SnatchItemBehaviour());
         normalBehaviours.put(2, new WanderBehaviour());
