@@ -217,6 +217,8 @@ Alternatively, configure it permanently:
 
 - **Windows**: System Properties → Environment Variables → New User Variable
   `OPENWEATHER_API_KEY` = `your_key_here`
+  → You must **fully restart IntelliJ** (exit the IDE and relaunch) after setting
+  the variable — IntelliJ only reads Windows user environment variables at startup.
 - **macOS / Linux**: Add `export OPENWEATHER_API_KEY="your_key_here"` to
   `~/.bashrc`, `~/.zshrc`, or `~/.profile`.
 
