@@ -16,7 +16,12 @@ import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
 import game.display.EventLog;
-import game.weather.*;
+import game.weather.alerts.ExtremeTemperatureAlert;
+import game.weather.alerts.HeavyRainAlert;
+import game.weather.alerts.HighWindAlert;
+import game.weather.effect.HealthEffect;
+import game.weather.effect.SpawnRateEffect;
+import game.weather.effect.TerrainEffect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -79,8 +84,8 @@ public class EclipseNebula extends World {
 
         // REQ5: Environmental Terminal for weather API scanning
         EnvironmentalTerminal terminal = new EnvironmentalTerminal(
-                List.of(TemperatureDataPoint::new, HumidityDataPoint::new, WindSpeedDataPoint::new),
-                List.of(new HealthEffect(), new SpawnRateEffect(), new TerrainEffect())
+                List.of(new HealthEffect(), new SpawnRateEffect(), new TerrainEffect()),
+                List.of(new ExtremeTemperatureAlert(), new HighWindAlert(), new HeavyRainAlert())
         );
         groundCreator.registerGround('¶', () -> terminal);
 
@@ -122,7 +127,7 @@ public class EclipseNebula extends World {
         List<String> moon20Overflow = Arrays.asList(
                 ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
                 "...#######...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈##################≈≈≈≈≈≈≈",
-                "...#≡____#...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
+                "...#≡____#........¶..≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
                 "...#__Φ__=...........≈≈≈≈≈≈≈≈#######_______◈________#≈≈≈≈≈≈≈",
                 "...#_____#...........≈≈≈≈≈≈≈≈#_____N________________#≈≈≈≈≈≈≈",
                 "...#######...≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_◎___###########=######≈≈≈≈≈≈≈",
@@ -254,6 +259,7 @@ public class EclipseNebula extends World {
     private ContractedWorker createWorker(String name) {
         WeightLimitedInventory inventory = new WeightLimitedInventory(50);
         inventory.add(new Flask());
+        inventory.add(new AccessCardLevel3());
         return new ContractedWorker(name, 'ඞ', 20, inventory);
     }
 }

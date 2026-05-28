@@ -18,6 +18,16 @@ public class WeatherApiClient {
     private static final String API_KEY_VAR = "OPENWEATHER_API_KEY";
     private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 
+    // Fallback values when the API is unreachable
+    private static final double FALLBACK_TEMPERATURE = 20.0;
+    private static final int FALLBACK_HUMIDITY = 50;
+    private static final double FALLBACK_WIND_SPEED = 2.0;
+
+    // The "main" key appears at JSON root (temp/humidity) and again
+    // inside weather[0] (condition label); this skips past the first
+    // occurrence to read the weather condition.
+    private static final int WEATHER_CONDITION_KEY_OCCURRENCE = 2;
+
     private final HttpClient httpClient;
 
     /** Constructor. */
@@ -76,7 +86,8 @@ public class WeatherApiClient {
         double temp = extractDouble(json, "\"temp\"");
         int humidity = extractInt(json, "\"humidity\"");
         double windSpeed = extractDouble(json, "\"speed\"");
-        String condition = extractString(json, "\"main\"", 2); // skip first "main" (weather[0].main)
+        String rawCondition = extractString(json, "\"main\"", WEATHER_CONDITION_KEY_OCCURRENCE);
+        WeatherCondition condition = WeatherCondition.fromApiString(rawCondition);
 
         return new WeatherApiResponse(temp, humidity, windSpeed, condition);
     }
@@ -157,6 +168,6 @@ public class WeatherApiClient {
      */
     private WeatherApiResponse fallback(String reason) {
         System.err.println("[WeatherApiClient] " + reason + " Using fallback data.");
-        return new WeatherApiResponse(20.0, 50, 2.0, "Clear");
+        return new WeatherApiResponse(FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY, FALLBACK_WIND_SPEED, WeatherCondition.CLEAR);
     }
 }

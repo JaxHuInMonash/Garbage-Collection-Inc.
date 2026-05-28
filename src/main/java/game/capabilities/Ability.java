@@ -75,4 +75,17 @@ public enum Ability {
 
     /** Marks a ground tile as a Hole spawner. */
     IS_HOLE,
+
+    /** Marks a ground tile that can be flooded by weather (e.g. Dirt). */
+    FLOODABLE,
+
+    /** Marks a ground tile that can evaporate in dry weather (e.g. Puddle). */
+    EVAPORATABLE,
+
+    // ──────────────────────────────────────────────────────────────────
+    // Weather condition abilities
+    // ──────────────────────────────────────────────────────────────────
+
+    /** Marks a weather condition that can extinguish fires (rain, drizzle, etc.). */
+    EXTINGUISH,
 }
