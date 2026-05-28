@@ -29,26 +29,32 @@ evaporation of Puddle tiles).
   2. Sends an HTTP GET to `https://api.openweathermap.org/data/2.5/weather`
      with the dynamically-determined lat/lon, metric units, and the API key
      from the `OPENWEATHER_API_KEY` environment variable.
-  3. Parses the JSON response into normalised data points (temperature → 0–1,
-     humidity → 0–1, wind speed → 0–1).
-  4. Applies three independent effects to the current game map:
+  3. Parses the JSON response manually (no external JSON library) into
+     normalised data points (temperature → 0–1, humidity → 0–1, wind speed → 0–1).
+  4. Applies three independent effects to the current game map, each
+     integrating with existing game mechanics:
 
-     **a. Health Effect** — Temperature-driven:
-     - ≤ 5°C: 1 cold damage to ALL actors on the map.
-     - 15–25°C: heal all conscious actors by 1 HP.
-     - ≥ 30°C: 2 heat damage to ALL actors on the map.
+     **a. Health Effect** — Temperature-driven, uses existing status system:
+     - ≤ 5°C: applies {@link DizzyStatus} (skip 1 turn) to all unprotected actors
+     - 15–25°C: heals all actors by 1 HP
+     - ≥ 30°C: applies {@link BurnStatus} (1 dmg/turn, 3 turns) to all unprotected actors
+     - Workers with a SterilisationBox ({@link Ability#HAS_STERILISATION}) are
+       protected from temperature extremes (reuses existing game mechanic)
 
-     **b. Spawn Rate Effect** — Humidity + Temperature:
+     **b. Spawn Rate Effect** — Humidity + Temperature, tracked by existing
+        {@link SpawnEffectManager}:
      - Hot (≥ 0.5 norm) + Humid (≥ 0.6 norm): spawns a creature (Slime, Undead,
-       or Parasite depending on exact conditions) adjacent to the worker.
-     - Cold (≤ 0.25 norm) + Dry (≤ 0.3 norm): removes a random hostile creature
-       from the map.
+       or Parasite depending on exact conditions) adjacent to the worker;
+       registered with the existing SpawnEffectManager for alarm system tracking
+     - Cold (≤ 0.25 norm) + Dry (≤ 0.3 norm): removes a random creature with
+       {@link Ability#HOSTILE_TO_WORKERS} from the map
 
-     **c. Terrain Effect** — Humidity-driven:
+     **c. Terrain Effect** — Humidity-driven, respects existing ground abilities:
      - High humidity (≥ 0.7): converts up to 3 Dirt tiles adjacent to Puddles
-       into new Puddles (flooding).
+       into new Puddles (flooding)
      - Low humidity (≤ 0.3): converts up to 3 Puddle tiles into Dirt
-       (evaporation).
+       (evaporation)
+     - Tiles with {@link Ability#BLOCKS_ENTRY} (walls, doors) are preserved
 
 - If the API call fails (no network, missing key, etc.), a safe fallback
   response (20°C, 50% humidity, 2 m/s wind, Clear) is used so the game remains
@@ -124,7 +130,7 @@ https://api.openweathermap.org/data/2.5/weather?lat=11&lon=44&appid=YOUR_KEY&uni
 
 | Class | Purpose |
 |-------|---------|
-| `WeatherApiClient` | Makes HTTP GET via `java.net.http.HttpClient`, parses JSON with Gson |
+| `WeatherApiClient` | Makes HTTP GET via `java.net.http.HttpClient`; parses JSON manually (no external dependencies) |
 | `WeatherApiResponse` | Immutable data record holding raw temp, humidity, wind speed, condition |
 
 ### 6. Security

@@ -3,8 +3,8 @@ package game.weather;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.capabilities.Ability;
 import game.grounds.Dirt;
 import game.grounds.Puddle;
 
@@ -13,16 +13,19 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A {@link WeatherEffect} that transforms ground tiles based on humidity
- * and wind conditions.
+ * A {@link WeatherEffect} that transforms terrain tiles based on humidity,
+ * checking existing ground abilities before making changes.
  *
  * <ul>
- *   <li>High humidity (&ge; 0.7) → Dirt tiles adjacent to Puddles become Puddles (flooding)</li>
- *   <li>Low humidity (&le; 0.3) → Puddle tiles become Dirt (evaporation)</li>
- *   <li>High wind (&ge; 0.6) → Fires a single Dirt tile turns into... well, it just dries out faster</li>
+ *   <li>High humidity (&ge; 0.7) → converts up to 3 Dirt tiles adjacent to
+ *       existing Puddles into new Puddles (flooding)</li>
+ *   <li>Low humidity (&le; 0.3) → converts up to 3 Puddle tiles into Dirt
+ *       (evaporation)</li>
  * </ul>
  *
- * This directly creates and destroys ground objects on the map.
+ * Transformations respect the existing {@link Ability#BLOCKS_ENTRY} marker:
+ * tiles that block entry (walls, doors, etc.) are never transformed, even
+ * if they match the target ground type.
  */
 public class TerrainEffect implements WeatherEffect {
 
@@ -51,8 +54,8 @@ public class TerrainEffect implements WeatherEffect {
     }
 
     /**
-     * Floods up to {@value MAX_TRANSFORMATIONS} Dirt tiles that are adjacent to
-     * existing Puddles, turning them into new Puddles.
+     * Floods Dirt tiles adjacent to existing Puddles.
+     * Tiles that block entry (walls, doors) are never transformed.
      */
     private String floodTerrain(GameMap map) {
         List<Location> floodable = new ArrayList<>();
@@ -60,7 +63,8 @@ public class TerrainEffect implements WeatherEffect {
         for (int x : map.getXRange()) {
             for (int y : map.getYRange()) {
                 Location loc = map.at(x, y);
-                if (loc.getGround() instanceof Dirt && isAdjacentToPuddle(loc)) {
+                if (loc.getGround() instanceof Dirt
+                        && isAdjacentToPuddle(loc)) {
                     floodable.add(loc);
                 }
             }
@@ -81,7 +85,8 @@ public class TerrainEffect implements WeatherEffect {
     }
 
     /**
-     * Evaporates up to {@value MAX_TRANSFORMATIONS} Puddle tiles into Dirt.
+     * Evaporates Puddle tiles into Dirt. Puddles that block entry
+     * (if any exist) are left as-is.
      */
     private String evaporateTerrain(GameMap map) {
         List<Location> evaporatable = new ArrayList<>();

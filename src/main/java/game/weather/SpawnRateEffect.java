@@ -8,6 +8,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actors.Parasite;
 import game.actors.Slime;
 import game.actors.Undead;
+import game.capabilities.Ability;
 import game.spawning.SpawnEffectManager;
 
 import java.util.ArrayList;
@@ -16,15 +17,19 @@ import java.util.Random;
 
 /**
  * A {@link WeatherEffect} that spawns or removes creatures based on humidity
- * and temperature conditions.
+ * and temperature conditions, integrating with the existing spawn tracking
+ * system ({@link SpawnEffectManager}).
  *
  * <ul>
- *   <li>Hot + Humid (temp &ge; 0.5 AND humidity &ge; 0.6) → spawns a creature</li>
- *   <li>Cold + Dry (temp &le; 0.25 AND humidity &le; 0.3) → removes a creature</li>
+ *   <li>Hot + Humid (temp &ge; 0.5 AND humidity &ge; 0.6) → spawns a creature
+ *       on an empty tile near the player</li>
+ *   <li>Cold + Dry (temp &le; 0.25 AND humidity &le; 0.3) → removes a hostile
+ *       creature from the map</li>
  * </ul>
  *
- * Creature type is chosen based on conditions: hot+humid spawns Slime,
- * hot+dry spawns Undead, mild+humid spawns Parasite.
+ * Creature type is chosen dynamically: high humidity spawns Slime, hot+dry
+ * spawns Undead, mild+humid spawns Parasite — aligning with the existing
+ * creature distribution on the moon maps.
  */
 public class SpawnRateEffect implements WeatherEffect {
 
@@ -32,8 +37,6 @@ public class SpawnRateEffect implements WeatherEffect {
     private static final double HUMID_THRESHOLD = 0.60;
     private static final double COLD_THRESHOLD = 0.25;
     private static final double DRY_THRESHOLD = 0.30;
-
-    private static final int DESPAWN_ATTEMPTS = 10;
 
     private final Random random = new Random();
 
@@ -61,6 +64,10 @@ public class SpawnRateEffect implements WeatherEffect {
         return "Spawn rates unaffected by current weather.";
     }
 
+    /**
+     * Chooses a creature type based on exact weather conditions.
+     * Heavy rain spawns Slime, extreme heat spawns Undead, moderate spawns Parasite.
+     */
     private Actor chooseCreature(double temperature, double humidity) {
         if (humidity >= 0.8) {
             return new Slime();
@@ -71,6 +78,12 @@ public class SpawnRateEffect implements WeatherEffect {
         }
     }
 
+    /**
+     * Spawns the given creature on a random empty adjacent tile.
+     * The creature is tracked by the existing {@link SpawnEffectManager},
+     * which handles alarm system registration and event logging —
+     * the same pattern used by Hole and Vent grounds.
+     */
     private String spawnNearPlayer(GameMap map, Location playerLocation, Actor creature) {
         List<Location> validLocations = new ArrayList<>();
         for (Exit exit : playerLocation.getExits()) {
@@ -94,6 +107,11 @@ public class SpawnRateEffect implements WeatherEffect {
         }
     }
 
+    /**
+     * Removes a random hostile creature from the map during harsh cold+dry weather.
+     * Only targets actors with the HOSTILE_TO_WORKERS ability, so player and
+     * friendly Meeples are never affected.
+     */
     private String despawnRandomCreature(GameMap map) {
         List<Actor> removable = new ArrayList<>();
         for (int x : map.getXRange()) {
@@ -101,28 +119,20 @@ public class SpawnRateEffect implements WeatherEffect {
                 Location loc = map.at(x, y);
                 if (loc.containsAnActor()) {
                     Actor target = loc.getActor();
-                    if (!target.hasAbility(game.capabilities.Ability.ATTACKABLE_BY_CREATURES)) {
-                        continue; // don't despawn the player/workers
+                    if (target.hasAbility(Ability.HOSTILE_TO_WORKERS)) {
+                        removable.add(target);
                     }
-                    removable.add(target);
                 }
             }
         }
 
         if (removable.isEmpty()) {
-            return "No creatures to despawn.";
+            return "No hostile creatures to despawn.";
         }
 
-        for (int i = 0; i < DESPAWN_ATTEMPTS && !removable.isEmpty(); i++) {
-            Actor target = removable.get(random.nextInt(removable.size()));
-            if (target.isConscious()) {
-                target.hurt(999);
-                map.removeActor(target);
-                return "Harsh weather claims " + target + " — it freezes in the cold.";
-            }
-        }
-
-        return "Could not find a creature to despawn.";
+        Actor target = removable.get(random.nextInt(removable.size()));
+        map.removeActor(target);
+        return "Harsh weather claims " + target + " — it freezes in the cold.";
     }
 
     @SuppressWarnings("unchecked")

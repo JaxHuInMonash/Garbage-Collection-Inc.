@@ -1,9 +1,5 @@
 package game.weather;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,8 +10,8 @@ import java.net.http.HttpResponse;
  * into a {@link WeatherApiResponse}.
  *
  * <p>The API key is read from the {@code OPENWEATHER_API_KEY} environment
- * variable. The request URL uses the supplied latitude and longitude and
- * requests metric units (Celsius, m/s wind).
+ * variable. JSON parsing is done manually (no external dependencies) since
+ * the response structure is known and stable.
  */
 public class WeatherApiClient {
 
@@ -32,8 +28,8 @@ public class WeatherApiClient {
     /**
      * Fetches current weather data for the given coordinates.
      *
-     * @param lat latitude
-     * @param lon longitude
+     * @param lat latitude (driven by player's y-coordinate)
+     * @param lon longitude (driven by player's x-coordinate)
      * @return parsed weather data, or a fallback response if the API call fails
      */
     public WeatherApiResponse fetch(double lat, double lon) {
@@ -63,27 +59,96 @@ public class WeatherApiClient {
     }
 
     /**
-     * Parses the OpenWeatherMap JSON response into a {@link WeatherApiResponse}.
+     * Manually parses the OpenWeatherMap JSON response.
+     *
+     * The response has a known structure, so we extract values by searching
+     * for known key strings rather than using a full JSON parser. This avoids
+     * any external dependency.
+     *
+     * Expected JSON fragment:
+     * <pre>
+     * { "main": { "temp": 18.5, "humidity": 65 },
+     *   "wind": { "speed": 4.2 },
+     *   "weather": [ { "main": "Rain" } ] }
+     * </pre>
      */
     private WeatherApiResponse parseJson(String json) {
-        JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-
-        JsonObject main = root.getAsJsonObject("main");
-        double temp = main.get("temp").getAsDouble();
-        int humidity = main.get("humidity").getAsInt();
-
-        JsonObject wind = root.getAsJsonObject("wind");
-        double windSpeed = wind.get("speed").getAsDouble();
-
-        String condition = "Unknown";
-        if (root.has("weather")) {
-            JsonArray weather = root.getAsJsonArray("weather");
-            if (weather.size() > 0) {
-                condition = weather.get(0).getAsJsonObject().get("main").getAsString();
-            }
-        }
+        double temp = extractDouble(json, "\"temp\"");
+        int humidity = extractInt(json, "\"humidity\"");
+        double windSpeed = extractDouble(json, "\"speed\"");
+        String condition = extractString(json, "\"main\"", 2); // skip first "main" (weather[0].main)
 
         return new WeatherApiResponse(temp, humidity, windSpeed, condition);
+    }
+
+    /**
+     * Extracts a double value following the first occurrence of {@code key}.
+     * Expects the value to appear as {@code "key": <number>}.
+     */
+    private double extractDouble(String json, String key) {
+        int keyIndex = json.indexOf(key);
+        if (keyIndex < 0) return 0;
+
+        int colonIndex = json.indexOf(':', keyIndex);
+        if (colonIndex < 0) return 0;
+
+        int start = skipWhitespace(json, colonIndex + 1);
+        int end = start;
+        while (end < json.length() && (isDigitOrDot(json.charAt(end)) || json.charAt(end) == '-')) {
+            end++;
+        }
+
+        try {
+            return Double.parseDouble(json.substring(start, end));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Extracts an integer value following the first occurrence of {@code key}.
+     */
+    private int extractInt(String json, String key) {
+        return (int) extractDouble(json, key);
+    }
+
+    /**
+     * Extracts a quoted string value following the {@code skipNth}-th
+     * occurrence of {@code key}. This handles the case where the key appears
+     * multiple times (e.g. "main" appears in both the root and nested objects).
+     */
+    private String extractString(String json, String key, int skipNth) {
+        int keyIndex = -1;
+        for (int i = 0; i < skipNth; i++) {
+            keyIndex = json.indexOf(key, keyIndex + 1);
+            if (keyIndex < 0) return "Unknown";
+        }
+
+        int colonIndex = json.indexOf(':', keyIndex);
+        if (colonIndex < 0) return "Unknown";
+
+        int start = skipWhitespace(json, colonIndex + 1);
+        // Expect opening quote
+        if (start >= json.length() || json.charAt(start) != '"') return "Unknown";
+        start++;
+
+        int end = start;
+        while (end < json.length() && json.charAt(end) != '"') {
+            if (json.charAt(end) == '\\') end++; // skip escaped chars
+            end++;
+        }
+
+        return json.substring(start, end);
+    }
+
+    private int skipWhitespace(String json, int from) {
+        int i = from;
+        while (i < json.length() && json.charAt(i) <= ' ') i++;
+        return i;
+    }
+
+    private boolean isDigitOrDot(char c) {
+        return Character.isDigit(c) || c == '.';
     }
 
     /**
