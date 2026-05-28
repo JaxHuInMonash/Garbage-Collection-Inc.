@@ -17,7 +17,7 @@ public class TemperatureDataPoint implements WeatherDataPoint {
 
     @Override
     public void readFrom(WeatherApiResponse response) {
-        this.rawValue = response.getTemperature();
+        this.rawValue = response.temperature();
         this.normalised = clamp((rawValue - MIN_TEMP) / (MAX_TEMP - MIN_TEMP), 0.0, 1.0);
     }
 

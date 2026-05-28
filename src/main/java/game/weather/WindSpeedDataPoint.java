@@ -16,7 +16,7 @@ public class WindSpeedDataPoint implements WeatherDataPoint {
 
     @Override
     public void readFrom(WeatherApiResponse response) {
-        this.rawValue = response.getWindSpeed();
+        this.rawValue = response.windSpeed();
         this.normalised = Math.min(rawValue / MAX_WIND, 1.0);
     }
 

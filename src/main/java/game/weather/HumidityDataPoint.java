@@ -13,7 +13,7 @@ public class HumidityDataPoint implements WeatherDataPoint {
 
     @Override
     public void readFrom(WeatherApiResponse response) {
-        this.rawValue = response.getHumidity();
+        this.rawValue = response.humidity();
         this.normalised = rawValue / 100.0;
     }
 

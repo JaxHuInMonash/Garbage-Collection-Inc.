@@ -63,7 +63,7 @@ public class WeatherScanAction extends Action {
         for (WeatherDataPoint dp : dataPoints) {
             sb.append("\n  ").append(dp.getLabel());
         }
-        sb.append("\n  Condition: ").append(response.getCondition());
+        sb.append("\n  Condition: ").append(response.condition());
 
         // Apply all effects through their abstractions (DIP)
         sb.append("\n--- Effects ---");
