@@ -66,18 +66,41 @@ L3 ResurrectionProtocol — when this worker falls unconscious, they leave a Sta
 **Owner:** Zhengjun
 
 ### 1. The Pitch
-> _TODO_
+> When a Worker commits a violation — such as trespassing into a restricted zone or attacking a teammate — the Infraction System records and escalates their infraction level (0–3). Once a Worker reaches Level 1, the Company remotely spawns an EnforcerBot onto the map to pursue them. On capture, the bot deducts Company Credits and resets the infraction counter. Reaching Level 3 triggers an immediate fine and a temporary action lockout, forcing players to weigh risky shortcuts against financial and operational consequences.
+
 
 ### 2. The Mechanics
-- _TODO_
+- Every Worker has an **infraction level** tracked by the `InfractionManager` singleton (levels 0–3).
+- Certain in-game actions trigger an `InfractionTrigger`, incrementing the violating Worker's infraction level:
+  - **ZoneTrespassTrigger**: stepping onto a `RestrictedGround` tile increments level by 1.
+  - **FriendlyFireTrigger**: a Worker's attack hitting another Worker increments level by 1.
+- When a Worker's infraction level reaches **Level 1 or above**, `InfractionManager` spawns an `EnforcerBot` Actor onto the map near the ship's security post.
+- The `EnforcerBot` uses `ChaseAndFineAction` each turn to pathfind toward the violating Worker.
+- When the `EnforcerBot` reaches the Worker (adjacent tile), it:
+  1. Deducts **Company Credits** proportional to infraction level (L1: 50, L2: 150, L3: 300).
+  2. At **Level 3**, also applies a `LockedOutStatus` to the Worker for 5 turns (cannot perform actions other than moving).
+  3. Resets the Worker's infraction level to 0 and removes itself from the map.
+- If the Worker exits the map or becomes unconscious before being caught, the `EnforcerBot` despawns automatically.
 
 ### 3. The Architecture
 
 **Abstractions**
-1. `<package>.<AbstractionName1>` — _one-line responsibility_
-2. `<package>.<AbstractionName2>` — _one-line responsibility_
+1. `game.penalty.InfractionTrigger` — Interface; any game event that can cause a violation implements `checkAndApply(Actor violator, GameMap map)`, which calls `InfractionManager` to increment the infraction level and conditionally spawn an `EnforcerBot`.
+2. `game.penalty.EnforcerBehaviour` — Abstract class extending `Behaviour`; defines the contract for all EnforcerBot AI actions, with subclasses implementing `getAction(Actor bot, Actor target, GameMap map)` to pursue or penalise the target.
 
 **Concrete classes**
+
+Implements `InfractionTrigger`
+1. ZoneTrespassTrigger (NEW): Fires when a Worker steps onto a RestrictedGround tile; increments the Worker's infraction level by 1 via InfractionManager, and triggers EnforcerBot spawn if level ≥ 1. (ground × actor-state × spawning)
+2. FriendlyFireTrigger (RETROFITTED): Attached to the existing AttackAction; checks whether the attack target is a fellow Worker and if so calls InfractionManager.increment(), then conditionally spawns an EnforcerBot. (action × actor-state × spawning)
+
+Implements `EnforcerBehaviour`
+3. ChaseAndFineAction (NEW): Each turn, moves the EnforcerBot one step toward the target Worker via pathfinding. When adjacent, deducts Company Credits proportional to infraction level (L1: 50, L2: 150, L3: 300); at Level 3 also applies LockedOutStatus for 5 turns; then resets infraction level to 0 and removes the bot from the map. (actor-movement × currency × status × self-removal)
+
+Other concrete classes
+4. InfractionManager (NEW): Singleton; stores each Worker's infraction level (0–3), exposes increment(Worker), getLevel(Worker), reset(Worker), and spawnEnforcer(Worker, GameMap) which places an EnforcerBot near the ship's security post. (state × spawning)
+5. EnforcerBot (NEW): Actor dynamically spawned by InfractionManager; holds a reference to its target Worker and executes ChaseAndFineAction each turn; automatically despawns if the target becomes unconscious or leaves the map. (dynamic actor × behaviour)
+6. RestrictedGround (RETROFITTED): Existing ground tile modified to hold a ZoneTrespassTrigger; calls trigger.checkAndApply() inside onEnter(Actor, GameMap). (ground × trigger)
 
 ---
 
