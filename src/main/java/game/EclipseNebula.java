@@ -16,6 +16,7 @@ import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
 import game.display.EventLog;
+import game.weather.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,6 +77,13 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('Φ', Floor::new);
         groundCreator.registerGround('◈', Floor::new);
 
+        // REQ5: Environmental Terminal for weather API scanning
+        EnvironmentalTerminal terminal = new EnvironmentalTerminal(
+                List.of(TemperatureDataPoint::new, HumidityDataPoint::new, WindSpeedDataPoint::new),
+                List.of(new HealthEffect(), new SpawnRateEffect(), new TerrainEffect())
+        );
+        groundCreator.registerGround('¶', () -> terminal);
+
         // Flora ground types (used by 20-Overflow map)
         groundCreator.registerGround('y', FleshyTreeSprout::new);
         groundCreator.registerGround('v', FleshyTreeSapling::new);
@@ -86,7 +94,7 @@ public class EclipseNebula extends World {
         // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
-                "...#######..........#__________________#___________________#",
+                "...#######..........#__________________¶___________________#",
                 "...#_____#..........=__________________=___________________#",
                 "...#Φ____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
