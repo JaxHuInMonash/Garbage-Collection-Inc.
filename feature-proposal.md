@@ -33,30 +33,30 @@
 Implements `Upgrade`
 1. CombatConditioning (NEW): On apply: +5 max HP and installs a passive — whenever the worker is hit, 40% chance to inflict BurnStatus(1,3) on the attacker. (status × combat)
 2. SurveyorOptics (NEW): On apply: each turn, applies a Revealed status to any Hole/Vent within 5 tiles; revealed spawners broadcast "spawn imminent" 1 turn before firing. (status × ground × spawner)
-3. HealerBioSync (NEW): On apply: each turn, all other workers within 2 tiles regenerate 2 HP; if none are adjacent, the healer drops a StasisDroplet item on its tile (free heal pickup). (AoE × inter-actor × item-spawn)
+3. HealerBioSync (NEW): On apply: each turn, all other workers within 2 tiles regenerate 2 HP; if none are adjacent, the healer drops a StasisDroplet item on its tile (free heal pickup). (AoE × inter-actor × item-spawn)  
 Implements `UpgradeStation`
 4. CombatStation (NEW): Ground tile that gates Combat-path upgrades; rejects workers already on Surveyor/Healer paths with a clear message
 5. SurveyorStation (NEW): Same shape but only sells Surveyor upgrades
 6. HealerStation (NEW): Same shape but only sells Healer upgrades
 
-Per-upgrade list ↓
-Combat path
-Implements `Upgrade`
-L1 CombatConditioning — see above (retaliation burn).
-L2 ReinforcedPlates — armor that takes the next 5 incoming damage instances, but each absorbed hit converts to Heat, and at 5 stacks the worker emits an AoE shockwave damaging adjacent hostiles for 3. (state machine on the worker + AoE)
-L3 PlasmaGauntlet — replaces the worker's intrinsic weapon. Every attack ignites the target's tile and the tile behind it for 3 turns; if the target dies, all hostiles within 2 tiles get BurnStatus. (terrain × AoE × kill-trigger)
+Per-upgrade list ↓  
+Combat path  
+Implements `Upgrade`  
+L1 CombatConditioning — see above (retaliation burn).  
+L2 ReinforcedPlates — armor that takes the next 5 incoming damage instances, but each absorbed hit converts to Heat, and at 5 stacks the worker emits an AoE shockwave damaging adjacent hostiles for 3. (state machine on the worker + AoE)  
+L3 PlasmaGauntlet — replaces the worker's intrinsic weapon. Every attack ignites the target's tile and the tile behind it for 3 turns; if the target dies, all hostiles within 2 tiles get BurnStatus. (terrain × AoE × kill-trigger)  
 
-Surveyor path
-Implements `Upgrade`
-L1 SurveyorOptics — see above.
-L2 Magboots — move +1 per turn; walking on a Puddle does not poison; instead the puddle "rides along" with the worker for 3 tiles before dissipating (terrain physically moves). Walking on ToxicWaste reverts that tile to Floor after the worker steps off. (terrain modification, terrain follows actor)
-L3 PhaseStabilizer — once per 10 turns the worker may walk through a Wall; the wall converts to Floor permanently. WarperTreeMature and MagicCircle no longer affect the worker; instead, stepping on them de-spawns them. (permanent terrain modification)
+Surveyor path  
+Implements `Upgrade`  
+L1 SurveyorOptics — see above.  
+L2 Magboots — move +1 per turn; walking on a Puddle does not poison; instead the puddle "rides along" with the worker for 3 tiles before dissipating (terrain physically moves). Walking on ToxicWaste reverts that tile to Floor after the worker steps off. (terrain modification, terrain follows actor)  
+L3 PhaseStabilizer — once per 10 turns the worker may walk through a Wall; the wall converts to Floor permanently. WarperTreeMature and MagicCircle no longer affect the worker; instead, stepping on them de-spawns them. (permanent terrain modification)  
 
-Healer path
-Implements `Upgrade`
-L1 HealerBioSync — see above.
-L2 CleanseField — immune to Poison and Burn; standing adjacent to Fire / ToxicWaste reverts those tiles to their original Ground over 2 turns. (status immunity + active terrain purification)
-L3 ResurrectionProtocol — when this worker falls unconscious, they leave a StasisPod ground tile and are removed from play. Any other worker who steps on the pod consumes it and revives the original worker on that tile at 10 HP. The original worker keeps all upgrades but loses 30% of their company-credit balance. (inter-actor revive, terrain spawn, persistent state across death)
+Healer path  
+Implements `Upgrade`  
+L1 HealerBioSync — see above.  
+L2 CleanseField — immune to Poison and Burn; standing adjacent to Fire / ToxicWaste reverts those tiles to their original Ground over 2 turns. (status immunity + active terrain purification)  
+L3 ResurrectionProtocol — when this worker falls unconscious, they leave a StasisPod ground tile and are removed from play. Any other worker who steps on the pod consumes it and revives the original worker on that tile at 10 HP. The original worker keeps all upgrades but loses 30% of their company-credit balance. (inter-actor revive, terrain spawn, persistent state across death)  
 
 ---
 
