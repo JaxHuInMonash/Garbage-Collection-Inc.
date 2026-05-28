@@ -135,15 +135,40 @@ https://api.openweathermap.org/data/2.5/weather?lat=11&lon=44&appid=YOUR_KEY&uni
 
 ### 6. Security
 
-The API key is **never committed to the repository**. It is read at runtime from
-the `OPENWEATHER_API_KEY` environment variable. To run this feature:
+The API key is **never committed to the repository**. It is read at runtime
+from the `OPENWEATHER_API_KEY` environment variable.
 
-1. Sign up for a free OpenWeatherMap API key at
-   https://openweathermap.org/appid.
-2. Set the environment variable:
-   - **Windows (CMD):** `set OPENWEATHER_API_KEY=your_key_here`
-   - **Windows (PowerShell):** `$env:OPENWEATHER_API_KEY="your_key_here"`
-   - **macOS/Linux:** `export OPENWEATHER_API_KEY=your_key_here`
-3. Run the game normally. The terminal will use the key from the environment.
-4. If no key is set or the API call fails, the system falls back to mild default
-   weather (20°C, 50% humidity) so the game remains playable.
+#### Getting an API Key
+
+1. Go to https://openweathermap.org/appid and click **Sign Up** or **Get API Key**.
+2. Create a free account (valid email required).
+3. Once logged in, go to the **API Keys** tab in your account dashboard.
+4. A default key is generated automatically — copy it.
+   - Free tier allows 60 calls/minute, more than enough for this game.
+   - The key activates within a few hours of sign-up.
+
+#### Setting the Environment Variable
+
+**This method only lasts within the same terminal session**
+
+Run this **before** launching the game - (replacing `your_key_here` with your actual key):
+
+| Platform | Command |
+|----------|---------|
+| **Windows (CMD)** | `set OPENWEATHER_API_KEY=your_key_here` |
+| **macOS / Linux** | `export OPENWEATHER_API_KEY=your_key_here` |
+
+Alternatively, configure it permanently:
+
+- **Windows**: System Properties → Environment Variables → New User Variable
+  `OPENWEATHER_API_KEY` = `your_key_here`
+- **macOS / Linux**: Add `export OPENWEATHER_API_KEY="your_key_here"` to
+  `~/.bashrc`, `~/.zshrc`, or `~/.profile`.
+
+Then launch the game normally:
+```bash
+mvn compile exec:java   # or however you run the project
+```
+
+If no key is set or the API call fails, the system falls back to mild default
+weather (20°C, 50% humidity) so the game remains playable regardless.
