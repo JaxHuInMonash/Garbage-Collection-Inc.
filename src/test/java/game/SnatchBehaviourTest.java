@@ -8,7 +8,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actions.SnatchAction;
 import game.actors.ScrapSnatcher;
 import game.behaviours.SnatchItemBehaviour;
-import game.capabilities.Sellable;
+import game.capabilities.Depositable;
 import game.items.AlienArtifact;
 import game.items.AluminiumScrap;
 import game.items.Flask;
@@ -62,7 +62,7 @@ class SnatchBehaviourTest {
 
     @Test
     public void snatchActionLeavesNonSellableItemsAlone() throws GameEngineException {
-        // Flask is Consumable but NOT Sellable, so the Snatcher should ignore it.
+        // Flask is Consumable but NOT Depositable, so the Snatcher should ignore it.
         GameMap map = TestMaps.floor5x5();
         Location centre = map.at(2, 2);
         ScrapSnatcher snatcher = new ScrapSnatcher();
@@ -75,6 +75,6 @@ class SnatchBehaviourTest {
 
         assertEquals(1, centre.getItems().size());
         Item remaining = centre.getItems().get(0);
-        assertFalse(remaining instanceof Sellable);
+        assertFalse(remaining instanceof Depositable);
     }
 }

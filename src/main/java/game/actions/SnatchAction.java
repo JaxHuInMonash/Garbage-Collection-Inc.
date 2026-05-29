@@ -5,16 +5,16 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.capabilities.Sellable;
+import game.capabilities.Depositable;
 
 import java.util.List;
 
 /**
- * An action where a Scrap Snatcher removes every {@link Sellable} item from
+ * An action where a Scrap Snatcher removes every {@link Depositable} item from
  * the tile it currently occupies. The resources are permanently taken — they
  * are not added to the actor's inventory.
  * <p>
- * Any item on the ground that implements {@link Sellable} counts as a
+ * Any item on the ground that implements {@link Depositable} counts as a
  * resource that can be deposited at the Supercomputer, which is exactly what
  * the Snatcher targets.
  *
@@ -22,17 +22,17 @@ import java.util.List;
  */
 public class SnatchAction extends Action {
 
-    private final List<Sellable> items;
+    private final List<Depositable> items;
 
     /**
-     * @param items the sellable items to snatch from the current tile
+     * @param items the depositable items to snatch from the current tile
      */
-    public SnatchAction(List<Sellable> items) {
+    public SnatchAction(List<Depositable> items) {
         this.items = items;
     }
 
     /**
-     * Removes all listed sellable items from the actor's current location.
+     * Removes all listed depositable items from the actor's current location.
      * The cast to {@link Item} is safe because anything resting on a tile
      * is always an {@link Item}.
      */
@@ -40,10 +40,10 @@ public class SnatchAction extends Action {
     public String execute(Actor actor, GameMap map) {
         Location location = map.locationOf(actor);
         StringBuilder sb = new StringBuilder();
-        for (Sellable sellable : items) {
-            location.removeItem((Item) sellable);
+        for (Depositable depositable : items) {
+            location.removeItem((Item) depositable);
             if (!sb.isEmpty()) sb.append(", ");
-            sb.append(sellable);
+            sb.append(depositable);
         }
         return actor + " snatches: " + sb + "!";
     }

@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.Location;
+import game.capabilities.Depositable;
 
 import java.util.List;
 import java.util.Random;
@@ -27,14 +28,14 @@ import java.util.function.Supplier;
  */
 public class ScrapSnatcherSpawnEffect implements SpawnEffect {
 
-    private final List<Supplier<Item>> resourcePool;
+    private final List<Supplier<? extends Depositable>> resourcePool;
     private final Random random = new Random();
 
     /**
      * @param resourcePool suppliers for every depositable resource type
      *                     that can appear in the loot explosion
      */
-    public ScrapSnatcherSpawnEffect(List<Supplier<Item>> resourcePool) {
+    public ScrapSnatcherSpawnEffect(List<Supplier<? extends Depositable>> resourcePool) {
         this.resourcePool = resourcePool;
     }
 
@@ -46,8 +47,8 @@ public class ScrapSnatcherSpawnEffect implements SpawnEffect {
         for (Exit exit : location.getExits()) {
             Location adjacent = exit.getDestination();
             if (adjacent.canActorEnter(creature)) {
-                Item resource = resourcePool.get(random.nextInt(resourcePool.size())).get();
-                adjacent.addItem(resource);
+                Depositable resource = resourcePool.get(random.nextInt(resourcePool.size())).get();
+                adjacent.addItem((Item) resource);
             }
         }
     }

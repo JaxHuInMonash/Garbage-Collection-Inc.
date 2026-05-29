@@ -1,13 +1,12 @@
 package game;
 
 import edu.monash.fit2099.engine.GameEngineException;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.ScrapSnatcher;
 import game.actors.Slime;
-import game.capabilities.Sellable;
+import game.capabilities.Depositable;
 import game.items.AlienArtifact;
 import game.items.AluminiumScrap;
 import game.items.IndustrialFan;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ScrapSnatcherSpawnEffectTest {
 
-    private static final List<Supplier<Item>> POOL = List.of(
+    private static final List<Supplier<? extends Depositable>> POOL = List.of(
             AluminiumScrap::new, IndustrialFan::new, AlienArtifact::new);
 
     @Test
@@ -40,7 +39,7 @@ class ScrapSnatcherSpawnEffectTest {
         for (Exit exit : centre.getExits()) {
             Location adj = exit.getDestination();
             assertEquals(1, adj.getItems().size());
-            assertTrue(adj.getItems().get(0) instanceof Sellable);
+            assertTrue(adj.getItems().get(0) instanceof Depositable);
         }
     }
 
