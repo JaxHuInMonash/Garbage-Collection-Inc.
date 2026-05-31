@@ -3,11 +3,15 @@ package game.grounds;
 import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
+import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.Parasite;
 import game.actors.Slime;
+import game.actors.Undead;
 import game.capabilities.Ability;
+import game.capabilities.Cuttable;
+import game.items.IndustrialFan;
 import game.spawning.SpawnEffectManager;
 import game.statuses.PoisonStatus;
 
@@ -26,12 +30,17 @@ import java.util.Random;
  * <p>
  * When inactive (no workers nearby), the vent does nothing.
  * Actors can walk over the vent tile.
+ * <p>
+ * The vent can also be cut by a Plasma Cutter ({@link Cuttable}):
+ * dropping an {@link IndustrialFan}, transforming into a {@link Floor},
+ * and spawning an {@link Undead} on the tile.
  *
  * @author Jax
+ * @author Mary
  */
-public class Vent extends Ground {
+public class Vent extends Ground implements Cuttable {
 
-    private static final int POISON_DAMAGE = 1;
+    private static final int POISON_DAMAGE   = 1;
     private static final int POISON_DURATION = 5;
 
     private final Random random;
@@ -57,11 +66,9 @@ public class Vent extends Ground {
             return;
         }
 
-        // Spawn a creature first; only poison if spawn was successful
         boolean spawned = spawnCreature(location);
 
         if (spawned) {
-            // Poison all adjacent actors (including the newly spawned creature)
             poisonAdjacentActors(location);
         }
     }
@@ -81,7 +88,6 @@ public class Vent extends Ground {
                 }
             }
         }
-
         return false;
     }
 
@@ -112,7 +118,6 @@ public class Vent extends Ground {
             SpawnEffectManager.getInstance().onCreatureSpawned(creature, spawnLocation);
             return true;
         } catch (GameEngineException e) {
-            // Spawn failed; skip
             return false;
         }
     }
@@ -130,5 +135,40 @@ public class Vent extends Ground {
                 adjacent.getActor().addStatus(new PoisonStatus(POISON_DAMAGE, POISON_DURATION));
             }
         }
+    }
+
+    /**
+     * Cuts the vent open with a Plasma Cutter:
+     * <ol>
+     *   <li>Drops an {@link IndustrialFan} on the tile.</li>
+     *   <li>Transforms this tile into a {@link Floor}.</li>
+     *   <li>Spawns an {@link Undead} on that exact tile.</li>
+     * </ol>
+     *
+     * @param actor          the actor performing the cut
+     * @param targetLocation the location of this vent
+     * @param map            the current game map
+     * @return a description of what happened
+     */
+    @Override
+    public String onCut(Actor actor, Location targetLocation, GameMap map) {
+        targetLocation.addItem(new IndustrialFan());
+        targetLocation.setGround(new Floor());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(actor).append(" cuts the Vent — an Industrial Fan falls out.");
+
+        try {
+            Undead undead = new Undead();
+            targetLocation.addActor(undead);
+            SpawnEffectManager.getInstance().onCreatureSpawned(undead, targetLocation);
+            sb.append(" An Undead claws its way out of the ductwork!");
+        } catch (GameEngineException e) {
+            sb.append(" (Undead spawn blocked — tile occupied)");
+        }
+
+        String msg = sb.toString();
+        System.out.println(msg);
+        return msg;
     }
 }
