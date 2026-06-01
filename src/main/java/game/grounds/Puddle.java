@@ -44,10 +44,14 @@ public class Puddle extends Ground implements Consumable, WeatherAffected {
      * no polling in {@code tick()}.
      */
     @Override
-    public void onWeatherChange(Location location, WeatherApiResponse weather) {
+    public boolean onWeatherChange(Location location, WeatherApiResponse weather) {
         if (weather.humidity() <= HUMIDITY_EVAPORATE_THRESHOLD) {
             location.setGround(new Dirt());
+
+            return true;
         }
+
+        return false;
     }
 
     @Override

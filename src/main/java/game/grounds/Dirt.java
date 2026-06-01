@@ -30,10 +30,14 @@ public class Dirt extends Ground implements WeatherAffected {
      * no polling in {@code tick()}.
      */
     @Override
-    public void onWeatherChange(Location location, WeatherApiResponse weather) {
+    public boolean onWeatherChange(Location location, WeatherApiResponse weather) {
         if (weather.humidity() >= HUMIDITY_FLOOD_THRESHOLD && isAdjacentToWater(location)) {
             location.setGround(new Puddle());
+
+            return true;
         }
+
+        return false;
     }
 
     private boolean isAdjacentToWater(Location location) {

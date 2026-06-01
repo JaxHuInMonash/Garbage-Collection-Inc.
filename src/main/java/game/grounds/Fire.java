@@ -55,11 +55,14 @@ public class Fire extends Ground implements WeatherAffected {
      * Extinguishes this fire in heavy rain, reverting to the original ground.
      */
     @Override
-    public void onWeatherChange(Location location, WeatherApiResponse weather) {
-        if (weather.humidity() >= EXTINGUISH_HUMIDITY
-                && weather.condition().hasAbility(Ability.EXTINGUISH)) {
+    public boolean onWeatherChange(Location location, WeatherApiResponse weather) {
+        if (weather.humidity() >= EXTINGUISH_HUMIDITY && weather.condition().hasAbility(Ability.EXTINGUISH)) {
             location.setGround(originalGround);
+
+            return true;
         }
+
+        return false;
     }
 
     /**

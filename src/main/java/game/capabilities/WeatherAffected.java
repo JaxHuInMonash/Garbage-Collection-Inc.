@@ -22,6 +22,7 @@ public interface WeatherAffected {
      *
      * @param location the location of this tile
      * @param weather  the latest weather data from the API
+     * @return Weather there was a change or not
      */
-    void onWeatherChange(Location location, WeatherApiResponse weather);
+    boolean onWeatherChange(Location location, WeatherApiResponse weather);
 }

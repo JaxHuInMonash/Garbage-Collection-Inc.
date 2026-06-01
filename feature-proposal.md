@@ -196,7 +196,7 @@ from the `OPENWEATHER_API_KEY` environment variable.
 #### Getting an API Key
 
 1. Go to https://openweathermap.org/appid and click **Sign Up** or **Get API Key**.
-2. Create a free account (valid email required).
+2. Create a free account.
 3. Once logged in, go to the **API Keys** tab in your account dashboard.
 4. A default key is generated automatically — copy it.
    - Free tier allows 60 calls/minute, more than enough for this game.
@@ -204,17 +204,7 @@ from the `OPENWEATHER_API_KEY` environment variable.
 
 #### Setting the Environment Variable
 
-**This method only lasts within the same terminal session**
-
-Run this **before** launching the game - (replacing `your_key_here` with your actual key):
-
-| Platform | Command |
-|----------|---------|
-| **Windows (CMD)** | `set OPENWEATHER_API_KEY=your_key_here` |
-| **macOS / Linux** | `export OPENWEATHER_API_KEY=your_key_here` |
-
-Alternatively, configure it permanently:
-
+To configure it permanently:
 - **Windows**: System Properties → Environment Variables → New User Variable
   `OPENWEATHER_API_KEY` = `your_key_here`
   → You must **fully restart IntelliJ** (exit the IDE and relaunch) after setting
