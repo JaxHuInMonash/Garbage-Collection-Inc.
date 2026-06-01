@@ -10,12 +10,11 @@ import edu.monash.fit2099.engine.positions.GameMap;
 /**
  * A minimal concrete {@link Actor} for tests, used when mocking {@code Actor}
  * isn't viable because {@link Actor#hasAbility(Enum)} is {@code final}
- * (see Applied Session PDF s4e — DummyObject pattern).
  */
 public class TestActor extends Actor {
 
     public TestActor() {
-        super("test", '@', 100, new Inventory());
+        super("test", '@', 100, new WeightLimitedInventory(50));
     }
 
     public TestActor(Inventory inventory) {
