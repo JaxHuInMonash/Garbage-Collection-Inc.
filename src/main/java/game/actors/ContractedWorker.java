@@ -16,11 +16,13 @@ import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.capabilities.Ability;
 import game.capabilities.Infectable;
+import game.capabilities.Progressable;
 import game.spawning.SpawnEffectManager;
 import game.statuses.InfectedStatus;
 import game.statuses.KineticLinkStatus;
 import game.statuses.ShieldStatus;
 import game.display.EventLog;
+import game.upgrades.WorkerProgression;
 import edu.monash.fit2099.engine.capabilities.Status;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import java.util.List;
  *
  * @author Jax
  */
-public class ContractedWorker extends Actor implements Infectable {
+public class ContractedWorker extends Actor implements Infectable, Progressable {
 
     private static final int MAX_CREDITS = 1000;
     private static final int INITIAL_CREDITS = 200;
@@ -47,6 +49,14 @@ public class ContractedWorker extends Actor implements Infectable {
 
     private boolean infected;
     private int infectionTurnCount;
+
+    /**
+     * REQ3 — worker progression state (path lock, current tier, installed upgrades).
+     * The Lab Stations discover this via {@link #asCapability(Class)}; the per-turn
+     * passive of every installed {@link game.upgrades.Upgrade} is driven from
+     * {@link #playTurn(ActionList, Action, GameMap, Display)}.
+     */
+    private final WorkerProgression progression = new WorkerProgression();
 
     /**
      * Constructor.
@@ -63,6 +73,16 @@ public class ContractedWorker extends Actor implements Infectable {
         this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
         this.infected = false;
         this.infectionTurnCount = 0;
+    }
+
+    /**
+     * Exposes this worker's upgrade-progression state to {@link game.upgrades.UpgradeStation}s
+     * (and tests). Implementation of the {@link Progressable} capability — looked up
+     * by stations via {@code actor.asCapability(Progressable.class)}.
+     */
+    @Override
+    public WorkerProgression getProgression() {
+        return progression;
     }
 
     /**
@@ -187,6 +207,9 @@ public class ContractedWorker extends Actor implements Infectable {
             this.unconscious(map);
             return new DoNothingAction();
         }
+
+        // REQ3 — drive per-turn passives of every installed upgrade.
+        progression.tick(this, map.locationOf(this));
 
         // Handle multi-turn Actions
         if (lastAction.getNextAction() != null) {
