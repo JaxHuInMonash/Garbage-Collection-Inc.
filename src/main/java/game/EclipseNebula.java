@@ -218,8 +218,17 @@ public class EclipseNebula extends World {
 //        SpawnEffectManager.getInstance().onCreatureSpawned(snatcher, dropZone);
 
         // test infection and rabid behaviours (change worker pos to 13, 3)
-        moon99DeprecatedMap.addActor(new ScrapSnatcher(), moon99DeprecatedMap.at(14, 3));
-        moon99DeprecatedMap.addActor(new Parasite(), moon99DeprecatedMap.at(15, 3));
+//        moon99DeprecatedMap.addActor(new ScrapSnatcher(), moon99DeprecatedMap.at(14, 3));
+//        moon99DeprecatedMap.addActor(new Parasite(), moon99DeprecatedMap.at(15, 3));
+
+        // test deprecated fleshy tree SPROUT ('y') spawns an Undead on an adjacent tile (worker pos 13, 3)
+        moon99DeprecatedMap.at(12, 3).setGround(new DeprecatedFleshyTreeSprout());
+
+        // test deprecated fleshy tree MATURE ('Y') spawns a ScrapSnatcher on an adjacent tile (worker pos 13, 3)
+        moon99DeprecatedMap.at(14, 3).setGround(new DeprecatedFleshyTreeMature());
+
+        // test fleshy monolith ('H') warps the adjacent worker to a random tile on the map (worker pos 13, 3)
+        moon99DeprecatedMap.at(16, 3).setGround(new FleshyMonolith());
 
     }
 
