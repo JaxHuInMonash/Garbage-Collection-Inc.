@@ -1,4 +1,4 @@
-package game.penalty;
+package game.behaviours;
 
 public class EnforcerBehaviour {
 }
