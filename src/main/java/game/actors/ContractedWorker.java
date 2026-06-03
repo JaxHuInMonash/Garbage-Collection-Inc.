@@ -14,12 +14,16 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
+import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
+import game.actions.AttackAction;
 import game.capabilities.Ability;
 import game.capabilities.Infectable;
+import game.capabilities.IntrinsicWeaponEquippable;
 import game.capabilities.Progressable;
 import game.spawning.SpawnEffectManager;
 import game.statuses.InfectedStatus;
 import game.statuses.KineticLinkStatus;
+import game.statuses.ReinforcedPlatesStatus;
 import game.statuses.ShieldStatus;
 import game.display.EventLog;
 import game.upgrades.WorkerProgression;
@@ -40,7 +44,7 @@ import java.util.List;
  *
  * @author Jax
  */
-public class ContractedWorker extends Actor implements Infectable, Progressable {
+public class ContractedWorker extends Actor implements Infectable, Progressable, IntrinsicWeaponEquippable {
 
     private static final int MAX_CREDITS = 1000;
     private static final int INITIAL_CREDITS = 200;
@@ -86,11 +90,26 @@ public class ContractedWorker extends Actor implements Infectable, Progressable 
     }
 
     /**
-     * Intercepts incoming damage through any active {@link ShieldStatus} and
-     * {@link KineticLinkStatus} before it reaches HP.
+     * Forwards to the engine's protected {@code setIntrinsicWeapon}. This is the
+     * only legitimate path for an external component (e.g. the Plasma Gauntlet
+     * upgrade) to install a weapon on a worker — discovery is via
+     * {@link #asCapability(Class)} on {@link IntrinsicWeaponEquippable}.
+     */
+    @Override
+    public void equipIntrinsicWeapon(IntrinsicWeapon weapon) {
+        setIntrinsicWeapon(weapon);
+    }
+
+    /**
+     * Intercepts incoming damage through the layered damage pipeline before it
+     * reaches HP. Order: <strong>Shield → Reinforced Plates → Kinetic Link → HP</strong>.
      * <p>
-     * Processing order: Shield absorbs first, then Kinetic Link splits the
-     * remainder with the linked Meeple. Only un-mitigated damage reaches HP.
+     * Shield is a flat absorption pool (Meeple GuardianState), Reinforced Plates
+     * is a percentage-based per-hit reduction with a periodic AoE discharge
+     * (Combat T2 upgrade), Kinetic Link splits residual damage with the bonded
+     * Meeple. Post-hit feedback ({@link game.statuses.PostHitFeedback}: reflection,
+     * retaliation, …) is applied <em>after</em> the weapon resolves and is
+     * driven from {@link game.actions.AttackAction}, not from here.
      *
      * @param damage the raw incoming damage
      */
@@ -98,7 +117,7 @@ public class ContractedWorker extends Actor implements Infectable, Progressable 
     public void hurt(int damage) {
         int remaining = damage;
 
-        // Shield absorbs first
+        // 1. Shield absorbs first
         List<ShieldStatus> shields = statusesOf(ShieldStatus.class);
         if (!shields.isEmpty()) {
             ShieldStatus shield = shields.get(0);
@@ -109,7 +128,16 @@ public class ContractedWorker extends Actor implements Infectable, Progressable 
             }
         }
 
-        // Kinetic Link splits remaining damage with the Meeple
+        // 2. Reinforced Plates reduce a percentage and tick toward AoE discharge
+        if (remaining > 0) {
+            List<ReinforcedPlatesStatus> plates = statusesOf(ReinforcedPlatesStatus.class);
+            if (!plates.isEmpty()) {
+                int absorbed = plates.get(0).absorb(remaining);
+                remaining -= absorbed;
+            }
+        }
+
+        // 3. Kinetic Link splits remaining damage with the Meeple
         if (remaining > 0) {
             List<KineticLinkStatus> links = statusesOf(KineticLinkStatus.class);
             if (!links.isEmpty()) {
@@ -211,6 +239,10 @@ public class ContractedWorker extends Actor implements Infectable, Progressable 
         // REQ3 — drive per-turn passives of every installed upgrade.
         progression.tick(this, map.locationOf(this));
 
+        // REQ3 — if the worker is armed (e.g. Plasma Gauntlet installed), offer
+        // attack options against any adjacent hostile.
+        addAttackOptions(actions, map);
+
         // Handle multi-turn Actions
         if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
@@ -225,6 +257,30 @@ public class ContractedWorker extends Actor implements Infectable, Progressable 
         // Display the menu and let the player choose
         Menu menu = new Menu(actions);
         return menu.showMenu(this, display);
+    }
+
+    /**
+     * Adds an {@link AttackAction} to the menu for every adjacent
+     * {@link Ability#HOSTILE_TO_WORKERS} actor — but only when the worker is
+     * actually armed (has an intrinsic weapon). A bare-handed worker simply
+     * cannot punch back, which matches the game's pre-A3 baseline; installing
+     * the Combat T3 Plasma Gauntlet upgrade is what enables this pathway.
+     *
+     * @param actions the action list to extend (in-place)
+     * @param map     the current game map
+     */
+    private void addAttackOptions(ActionList actions, GameMap map) {
+        if (this.getIntrinsicWeapon() == null) {
+            return;
+        }
+        Location here = map.locationOf(this);
+        for (Exit exit : here.getExits()) {
+            Location adjacent = exit.getDestination();
+            if (adjacent.containsAnActor()
+                    && adjacent.getActor().hasAbility(Ability.HOSTILE_TO_WORKERS)) {
+                actions.add(new AttackAction(adjacent.getActor()));
+            }
+        }
     }
 
     /**
