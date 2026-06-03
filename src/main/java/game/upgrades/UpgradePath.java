@@ -14,7 +14,7 @@ public enum UpgradePath {
     /** No specialisation yet — the worker may still choose any path. */
     NONE,
     /** Offensive enhancements (retaliation, armour shockwave, plasma weapon). */
-    COMBAT,
+    FIGHTER,
     /** Mobility and reconnaissance enhancements. */
     SURVEYOR,
     /** Support and restoration enhancements. */

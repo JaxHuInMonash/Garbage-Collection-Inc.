@@ -2,7 +2,7 @@
 
 **Team:** CL_AppliedSession21TeamD
 **Maintainer:** Jax
-**Last updated:** 26/05/2026
+**Last updated:** 03/06/2026
 
 ## REQ3 — Custom Feature #1
 
@@ -35,12 +35,12 @@ Implements `Upgrade`
 2. SurveyorOptics (NEW): On apply: each turn, applies a Revealed status to any Hole/Vent within 5 tiles; revealed spawners broadcast "spawn imminent" 1 turn before firing. (status × ground × spawner)
 3. HealerBioSync (NEW): On apply: each turn, all other workers within 2 tiles regenerate 2 HP; if none are adjacent, the healer drops a StasisDroplet item on its tile (free heal pickup). (AoE × inter-actor × item-spawn)  
 Implements `UpgradeStation`
-4. CombatStation (NEW): Ground tile that gates Combat-path upgrades; rejects workers already on Surveyor/Healer paths with a clear message
+4. FighterStation (NEW): Ground tile that gates Combat-path upgrades; rejects workers already on Surveyor/Healer paths with a clear message
 5. SurveyorStation (NEW): Same shape but only sells Surveyor upgrades
 6. HealerStation (NEW): Same shape but only sells Healer upgrades
 
 Per-upgrade list ↓  
-Combat path  
+Fighter path  
 Implements `Upgrade`  
 L1 CombatConditioning — see above (retaliation burn).  
 L2 ReinforcedPlates — armor that takes the next 5 incoming damage instances, but each absorbed hit converts to Heat, and at 5 stacks the worker emits an AoE shockwave damaging adjacent hostiles for 3. (state machine on the worker + AoE)  
@@ -57,6 +57,16 @@ Implements `Upgrade`
 L1 HealerBioSync — see above.  
 L2 CleanseField — immune to Poison and Burn; standing adjacent to Fire / ToxicWaste reverts those tiles to their original Ground over 2 turns. (status immunity + active terrain purification)  
 L3 ResurrectionProtocol — when this worker falls unconscious, they leave a StasisPod ground tile and are removed from play. Any other worker who steps on the pod consumes it and revives the original worker on that tile at 10 HP. The original worker keeps all upgrades but loses 30% of their company-credit balance. (inter-actor revive, terrain spawn, persistent state across death)  
+
+### 4. Design Decisions
+
+A few deliberate calls worth recording for the rationale writeup and TA discussion:
+
+- **No `Fighter` / `Surveyor` / `Healer` subclasses of `ContractedWorker`.** Specialisation is a *runtime, mutable* role — a worker starts un-specialised, locks a path at L1, then climbs tiers. Inheritance models *is-a* relationships fixed at construction; reclassing an existing instance is not a thing in Java. We therefore compose role via `WorkerProgression` (held by the worker) and `Upgrade` objects (which carry the behaviour). The three "roles" surface where they belong as real things in the world: as the three `UpgradeStation` concretes (`CombatStation`, `SurveyorStation`, `HealerStation`).
+- **No `Specialisation` strategy class wrapping each path.** We considered an abstract `Specialisation` with three subclasses owning their catalogues + a path identity. It would be a *parallel structure with no behaviour of its own* — a "Lazy Class" smell — because every path-specific behaviour already lives inside its individual `Upgrade` concretes. We'll revisit only if a path needs cross-tier shared state (e.g. "any Combat worker permanently resists fire regardless of tier").
+- **Stations discover the worker via `asCapability(Progressable.class)`, not `instanceof`.** This mirrors the engine's existing capability pattern (`getActorAs`, `Infectable`, etc.) and keeps `UpgradeStation` decoupled from the concrete `ContractedWorker` class — adding new "upgradable" actor types in the future requires zero changes to the station.
+- **`CompanyAccount` is an interface owned by REQ3 but implemented by REQ1.** Dependency Inversion: REQ3 depends on the abstraction `canAfford / deduct`; REQ1's quota class becomes the concrete. This lets the two requirements progress independently and stops REQ3 from coupling to a teammate's internals.
+- **`ApplyUpgradeAction` re-validates eligibility before charging anything.** Same "charge nothing unless all checks pass" discipline as the fixed `BuyAction` — no half-states, no lost credits on a failed install.
 
 ---
 

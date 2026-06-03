@@ -1,4 +1,4 @@
-package game.upgrades.combat;
+package game.upgrades.fighter;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
@@ -35,7 +35,7 @@ public class CombatConditioning implements Upgrade {
     private static final int BURN_DURATION = 3;
 
     @Override public String getName()              { return "Combat Conditioning"; }
-    @Override public UpgradePath getPath()         { return UpgradePath.COMBAT; }
+    @Override public UpgradePath getPath()         { return UpgradePath.FIGHTER; }
     @Override public int getTier()                 { return TIER; }
     @Override public int getWorkerCreditCost()     { return WORKER_COST; }
     @Override public int getCompanyCreditCost()    { return COMPANY_COST; }
