@@ -11,6 +11,7 @@ import game.alarm.AlarmManager;
 import game.items.ScrapPile;
 import game.grounds.*;
 import game.items.*;
+import game.quota.QuotaManager;
 import game.spawning.ParasiteSpawnEffect;
 import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
@@ -51,6 +52,9 @@ public class EclipseNebula extends World {
         // Reset singletons for a fresh game
         AlarmManager.resetInstance();
         SpawnEffectManager.resetInstance();
+        AlarmManager.resetInstance();
+        SpawnEffectManager.resetInstance();
+        QuotaManager.resetInstance();
 
         // Register spawn effects for each creature type
         SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
@@ -185,6 +189,22 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
         moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
 
+        // REQ1 A3: Place Vents on 99-Deprecated for cutting tests
+        moon99DeprecatedMap.at(21, 1).setGround(new Vent());
+        moon99DeprecatedMap.at(22, 1).setGround(new Vent());
+        // REQ1 A3: Place harvested resources directly for deposit/sell testing
+        moon99DeprecatedMap.at(5, 3).addItem(new AluminiumScrap());
+        moon99DeprecatedMap.at(6, 3).addItem(new IndustrialFan());
+        moon99DeprecatedMap.at(7, 3).addItem(new AlienArtifact());
+        // REQ1 A3: Place Vents on 20-Overflow for cutting tests
+        moon20OverflowMap.at(6, 2).setGround(new Vent());
+        moon20OverflowMap.at(7, 2).setGround(new Vent());
+
+        // REQ1 A3: Place harvested resources for deposit/sell testing
+        moon20OverflowMap.at(6, 3).addItem(new AluminiumScrap());
+        moon20OverflowMap.at(7, 3).addItem(new IndustrialFan());
+        moon20OverflowMap.at(8, 3).addItem(new AlienArtifact());
+
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
 
@@ -195,7 +215,7 @@ public class EclipseNebula extends World {
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-        this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
+        this.addPlayer(contractedWorker1, moon20OverflowMap.at(6, 4));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
