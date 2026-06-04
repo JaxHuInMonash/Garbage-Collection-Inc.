@@ -1,4 +1,5 @@
 package game.behaviours;
+
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
@@ -13,7 +14,7 @@ public class SurrenderDetectBehaviour extends EnforcerBehaviour {
     public Action operate(Actor bot, Location location) {
         GameMap map = location.map();
         if (!map.contains(target) || !target.isConscious())
-            return new ChaseAndFineAction.DespawnAction(bot);
+            return new ChaseAndFineAction.DespawnAction(bot, target);
         return null;
     }
 }

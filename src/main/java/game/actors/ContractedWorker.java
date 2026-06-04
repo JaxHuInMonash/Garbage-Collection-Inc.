@@ -22,7 +22,7 @@ import game.statuses.KineticLinkStatus;
 import game.statuses.ShieldStatus;
 import game.display.EventLog;
 import edu.monash.fit2099.engine.capabilities.Status;
-
+import game.statuses.LockedOutStatus;
 import java.util.List;
 
 /**
@@ -188,22 +188,21 @@ public class ContractedWorker extends Actor implements Infectable {
             return new DoNothingAction();
         }
 
-        // Handle multi-turn Actions
+        List<LockedOutStatus> locks = this.statusesOf(LockedOutStatus.class);
+        if (!locks.isEmpty()) {
+            display.println(this.name + " is locked out! (" + locks.get(0) + ")");
+            return new DoNothingAction();
+        }
+
         if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
         }
 
-        // Display event log (spawns, etc.) that occurred since last turn
         displayEventLog(display);
-
-        // Display active statuses on this worker
         displayActiveStatuses(display);
-
-        // Display the menu and let the player choose
         Menu menu = new Menu(actions);
         return menu.showMenu(this, display);
     }
-
     /**
      * Prints all queued event messages (e.g., creature spawns) that occurred
      * since the player's last turn, then clears the queue.

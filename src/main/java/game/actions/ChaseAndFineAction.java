@@ -1,13 +1,13 @@
 package game.actions;
 
 import edu.monash.fit2099.engine.actions.Action;
+import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ActorStatistics;
-import game.actors.EnforcerBot;
 import game.behaviours.EnforcerBehaviour;
 import game.penalty.InfractionManager;
 import game.statuses.LockedOutStatus;
@@ -22,14 +22,17 @@ public class ChaseAndFineAction extends EnforcerBehaviour {
     public Action operate(Actor bot, Location botLoc) {
         GameMap map = botLoc.map();
         if (!map.contains(target) || !target.isConscious())
-            return new DespawnAction(bot);
+            return new DespawnAction(bot, target);
 
         Location targetLoc = map.locationOf(target);
+        Action move = moveToward(bot, botLoc, targetLoc);
+
         for (Exit exit : botLoc.getExits())
             if (exit.getDestination().equals(targetLoc))
                 return new FineAction(bot, target, map);
 
-        return moveToward(bot, botLoc, targetLoc);
+        if (move == null) return new DoNothingAction();
+        return move;
     }
 
     private Action moveToward(Actor bot, Location from, Location to) {
@@ -56,16 +59,25 @@ public class ChaseAndFineAction extends EnforcerBehaviour {
             String msg = bot+" catches "+target+"! Fined "+fine+" credits (level "+level+").";
             if (level >= 3) { target.addStatus(new LockedOutStatus(LOCKOUT_TURNS));
                 msg += " Locked out for "+LOCKOUT_TURNS+" turns!"; }
-            mgr.reset(target); map.removeActor(bot); return msg;
+            mgr.reset(target);
+            mgr.clearTarget(target);
+            map.removeActor(bot);
+            return msg;
         }
         @Override public String menuDescription(Actor a) { return "Fine and despawn"; }
     }
 
     public static class DespawnAction extends Action {
         private final Actor bot;
-        public DespawnAction(Actor b) { bot=b; }
-        @Override public String execute(Actor a, GameMap m) {
-            m.removeActor(bot); return bot+" despawns."; }
-        @Override public String menuDescription(Actor a) { return "Despawn"; }
+        private final Actor target;
+        public DespawnAction(Actor b, Actor t) { bot=b; target=t; }
+        @Override
+        public String execute(Actor a, GameMap m) {
+            InfractionManager.getInstance().clearTarget(target);
+            m.removeActor(bot);
+            return bot+" despawns.";
+        }
+        @Override
+        public String menuDescription(Actor a) { return "Despawn"; }
     }
 }

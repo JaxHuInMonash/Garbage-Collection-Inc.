@@ -1,18 +1,23 @@
 package game.penalty;
+
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.EnforcerBot;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class InfractionManager {
     private static final int MAX_LEVEL = 3;
     private static InfractionManager instance;
     private final Map<Actor, Integer> infractionLevels = new HashMap<>();
+    private final Set<Actor> activeTargets = new HashSet<>();
 
-    private InfractionManager() {}
+    private InfractionManager() {
+    }
 
     public static InfractionManager getInstance() {
         if (instance == null) instance = new InfractionManager();
@@ -35,17 +40,32 @@ public class InfractionManager {
         infractionLevels.put(actor, 0);
     }
 
+    public void clearTarget(Actor violator) {
+        activeTargets.remove(violator);
+    }
+
     public void spawnEnforcer(Actor violator, GameMap map) {
+        if (activeTargets.contains(violator)) return;
+
         Location loc = map.locationOf(violator);
-        for (Exit exit : loc.getExits()) {
-            Location candidate = exit.getDestination();
-            EnforcerBot bot = new EnforcerBot(violator);
-            if (candidate.canActorEnter(bot) && !candidate.containsAnActor()) {
+        int[] offsets = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
+
+        for (int dx : offsets) {
+            for (int dy : offsets) {
+                if (dx == 0 && dy == 0) continue;
+                int dist = Math.abs(dx) + Math.abs(dy);
+                if (dist < 4 || dist > 5) continue;
                 try {
-                    candidate.addActor(bot);
-                    System.out.println("[INFRACTION] EnforcerBot deployed!");
-                } catch (Exception ignored) {}
-                return;
+                    Location candidate = map.at(loc.x() + dx, loc.y() + dy);
+                    EnforcerBot bot = new EnforcerBot(violator);
+                    if (candidate.canActorEnter(bot) && !candidate.containsAnActor()) {
+                        candidate.addActor(bot);
+                        activeTargets.add(violator);
+                        System.out.println("[INFRACTION] EnforcerBot deployed!");
+                        return;
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }
     }
