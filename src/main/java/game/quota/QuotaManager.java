@@ -21,16 +21,16 @@ package game.quota;
  */
 public class QuotaManager {
 
-    // ── Quota Cycle constants ────────────────────────────────────────────────
+    //Quota cycel constants
     private static final int INITIAL_QUOTA          = 100;
     private static final int INITIAL_TURN_LIMIT     = 200;
     private static final double QUOTA_GROWTH_RATE   = 0.05;   // +5 % each rank
     private static final double TIME_GROWTH_RATE    = 0.10;   // +10 % each rank
 
-    // ── Singleton ────────────────────────────────────────────────────────────
+    //Singleton manager
     private static QuotaManager instance;
 
-    // ── State ────────────────────────────────────────────────────────────────
+    //state
     private int companyRank;
     private int quotaTarget;
     private int turnLimit;
@@ -39,7 +39,7 @@ public class QuotaManager {
 
     private final java.util.List<QuotaListener> listeners = new java.util.ArrayList<>();
 
-    // ── Constructor ──────────────────────────────────────────────────────────
+    //constructor
     private QuotaManager() {
         reset();
     }
@@ -56,8 +56,6 @@ public class QuotaManager {
     public static void resetInstance() {
         instance = null;
     }
-
-    // ── Listener registration ────────────────────────────────────────────────
 
     /**
      * Registers a listener that will be notified of quota events.
@@ -82,8 +80,6 @@ public class QuotaManager {
         }
     }
 
-    // ── Company-credit deposit ───────────────────────────────────────────────
-
     /**
      * Adds {@code credits} to the running company-credit total and checks
      * whether the quota has now been met.
@@ -97,8 +93,6 @@ public class QuotaManager {
             advanceRank();
         }
     }
-
-    // ── Private helpers ──────────────────────────────────────────────────────
 
     /** Advances the company rank, scales the quota and time limit, and notifies listeners. */
     private void advanceRank() {
@@ -132,8 +126,6 @@ public class QuotaManager {
         companyCredits = 0;
         currentTurn    = 0;
     }
-
-    // ── Accessors (read-only for UI / toString) ──────────────────────────────
 
     public int getCompanyRank()    { return companyRank; }
     public int getQuotaTarget()    { return quotaTarget; }

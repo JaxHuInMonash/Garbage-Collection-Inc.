@@ -47,7 +47,7 @@ public class PlasmaCutter extends Item implements Buyable {
      */
     public PlasmaCutter() {
         super("Plasma Cutter", '>');
-        this.addNewStatistic(ItemStatistics.WEIGHT,    new BaseStatistic(WEIGHT));
+        this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_COST));
         this.makePortable();
     }

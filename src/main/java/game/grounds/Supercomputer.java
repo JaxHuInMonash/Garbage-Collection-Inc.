@@ -52,8 +52,9 @@ public class Supercomputer extends Ground implements QuotaListener {
         buyables.add(AccessCardLevel1::new);
         buyables.add(AccessCardLevel2::new);
         buyables.add(AccessCardLevel3::new);
+        //new buyables
         buyables.add(PlasmaCutter::new);
-        QuotaManager.getInstance().addListener(this);
+        QuotaManager.getInstance().addListener(this); // <- link to the singleton manager
     }
 
     /**
