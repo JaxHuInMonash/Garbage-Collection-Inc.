@@ -31,7 +31,6 @@ public class SurveyorStation extends UpgradeStation {
 
     @Override
     protected List<Upgrade> catalogue() {
-        // TODO(REQ3): add SurveyorOptics (T1), Magboots (T2), PhaseStabilizer (T3).
-        return List.of();
+        return List.of(new SurveyorOptics(), new Magboots(), new PhaseStabilizer());
     }
 }

@@ -243,6 +243,10 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
         // attack options against any adjacent hostile.
         addAttackOptions(actions, map);
 
+        // REQ3 — if the worker has a charged Phase Stabilizer, offer to phase
+        // through any adjacent wall.
+        addPhaseThroughWallOptions(actions, map);
+
         // Handle multi-turn Actions
         if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
@@ -279,6 +283,31 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
             if (adjacent.containsAnActor()
                     && adjacent.getActor().hasAbility(Ability.HOSTILE_TO_WORKERS)) {
                 actions.add(new AttackAction(adjacent.getActor()));
+            }
+        }
+    }
+
+    /**
+     * Adds a {@link game.actions.PhaseThroughWallAction} to the menu for every
+     * adjacent {@link Ability#IS_WALL IS_WALL} tile — but only when the worker
+     * has a charged {@link game.statuses.PhaseStabilizerStatus} (Surveyor T3).
+     * The action permanently converts the wall to floor and moves the worker
+     * through.
+     *
+     * @param actions the action list to extend (in-place)
+     * @param map     the current game map
+     */
+    private void addPhaseThroughWallOptions(ActionList actions, GameMap map) {
+        List<game.statuses.PhaseStabilizerStatus> statuses =
+                this.statusesOf(game.statuses.PhaseStabilizerStatus.class);
+        if (statuses.isEmpty() || !statuses.get(0).hasCharge()) {
+            return;
+        }
+        Location here = map.locationOf(this);
+        for (Exit exit : here.getExits()) {
+            Location adjacent = exit.getDestination();
+            if (adjacent.getGround().hasAbility(Ability.IS_WALL)) {
+                actions.add(new game.actions.PhaseThroughWallAction(adjacent, exit.getName()));
             }
         }
     }

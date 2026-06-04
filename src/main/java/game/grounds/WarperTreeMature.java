@@ -66,7 +66,17 @@ public class WarperTreeMature extends Ground {
 
             if (destination.containsAnActor()
                     && destination.getActor().hasAbility(Ability.ATTACKABLE_BY_CREATURES)) {
-                warpWorker(destination.getActor(), location);
+                Actor worker = destination.getActor();
+
+                // Surveyor T3 — phase-stabilised workers despawn warpers instead of being warped.
+                if (worker.hasStatus(game.statuses.PhaseStabilizerStatus.class)) {
+                    location.setGround(new Floor());
+                    game.display.EventLog.getInstance().log(
+                            worker + " phases through the warper tree's root field — it collapses into floor.");
+                    return;
+                }
+
+                warpWorker(worker, location);
                 return; // single-threaded flora rule — only one warp per turn
             }
         }
