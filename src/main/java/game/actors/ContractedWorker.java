@@ -247,6 +247,9 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
         // through any adjacent wall.
         addPhaseThroughWallOptions(actions, map);
 
+        // REQ3 — surface any pending phase-warp offers staged by adjacent Warper Trees.
+        addPendingWarpOptions(actions);
+
         // Handle multi-turn Actions
         if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
@@ -309,6 +312,21 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
             if (adjacent.getGround().hasAbility(Ability.IS_WALL)) {
                 actions.add(new game.actions.PhaseThroughWallAction(adjacent, exit.getName()));
             }
+        }
+    }
+
+    /**
+     * Surfaces an {@link game.actions.AcceptWarpAction} for every
+     * {@link game.statuses.PendingWarpStatus} currently staged on this worker
+     * (Surveyor T3 preview-then-confirm warp from {@link game.grounds.WarperTreeMature}).
+     * Each pending warp shows its destination coordinates in the menu so the
+     * player can decide before committing.
+     *
+     * @param actions the action list to extend (in-place)
+     */
+    private void addPendingWarpOptions(ActionList actions) {
+        for (game.statuses.PendingWarpStatus warp : this.statusesOf(game.statuses.PendingWarpStatus.class)) {
+            actions.add(new game.actions.AcceptWarpAction(warp));
         }
     }
 

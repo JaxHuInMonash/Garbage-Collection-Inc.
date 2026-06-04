@@ -50,7 +50,7 @@ Surveyor path
 Implements `Upgrade`  
 L1 SurveyorOptics — see above.  
 L2 Magboots — move +1 per turn; walking on a Puddle does not poison; instead the puddle "rides along" with the worker for 3 tiles before dissipating (terrain physically moves). Walking on ToxicWaste reverts that tile to Floor after the worker steps off. (terrain modification, terrain follows actor)  
-L3 PhaseStabilizer — once per 10 turns the worker may walk through a Wall; the wall converts to Floor permanently. WarperTreeMature and MagicCircle no longer affect the worker; instead, stepping on them de-spawns them. (permanent terrain modification)  
+L3 PhaseStabilizer — once per 10 turns the worker may walk through a Wall; the wall converts to Floor permanently. WarperTreeMature and MagicCircle no longer teleport the worker randomly; WarperTreeMature stages a pending warp the worker can accept or decline on their next turn (no longer forced). MagicCircle presents one destination choice per other circle on the map, letting the worker pick exactly where to land. (unique interaction on existing ground types)  
 
 Healer path  
 Implements `Upgrade`  

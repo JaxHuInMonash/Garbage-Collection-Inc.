@@ -9,18 +9,29 @@ import game.upgrades.UpgradePath;
  * Surveyor path, Tier 3 — <strong>Phase Stabilizer</strong>.
  * <p>
  * <strong>On apply (one-shot):</strong> installs a {@link PhaseStabilizerStatus}.
- * The status:
+ * The status drives three distinct cross-component effects:
  * <ul>
- *   <li>holds a regenerating phase-charge (every {@value PhaseStabilizerStatus#RECHARGE_TURNS} turns);</li>
- *   <li>is consulted by {@link game.actors.ContractedWorker#playTurn} to offer a
- *       {@link game.actions.PhaseThroughWallAction} on each adjacent wall when charged
- *       (the wall is permanently converted to floor);</li>
- *   <li>is consulted by {@link game.grounds.WarperTreeMature#tick} and
- *       {@link game.grounds.MagicCircle#tick} so those tiles <em>despawn</em>
- *       instead of warping the phase-stable worker.</li>
+ *   <li><strong>Wall phasing</strong> — holds a regenerating phase-charge
+ *       (every {@value PhaseStabilizerStatus#RECHARGE_TURNS} turns).
+ *       {@link game.actors.ContractedWorker#playTurn} offers a
+ *       {@link game.actions.PhaseThroughWallAction} for each adjacent wall
+ *       when charged; the wall is permanently converted to floor.</li>
+ *   <li><strong>Controlled warper</strong> — {@link game.grounds.WarperTreeMature}
+ *       no longer warps the worker on contact. Instead, it stages a
+ *       {@link game.statuses.PendingWarpStatus} carrying the candidate
+ *       destination; the worker may accept the warp via
+ *       {@link game.actions.AcceptWarpAction} on a later turn, or let it
+ *       expire. The tree is preserved for future use.</li>
+ *   <li><strong>Targeted circle</strong> — {@link game.grounds.MagicCircle}
+ *       no longer randomises the destination for the worker. Instead, the
+ *       menu shows one option per other circle on the map (via
+ *       {@link game.actions.UseMagicCircleTargetedAction}), so the worker
+ *       picks exactly where to land. Regular workers still get the original
+ *       random behaviour.</li>
  * </ul>
- * Cross-component: capability-marker × custom action × permanent terrain
- * modification × bypassing existing teleport mechanics with despawn semantics.
+ * The unifying theme: phase stability strips the randomness out of the moon's
+ * teleportation grid, giving the worker precise control over warps that would
+ * otherwise be forced or random.
  *
  * @author Jax
  */
