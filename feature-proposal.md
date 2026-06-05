@@ -74,7 +74,7 @@ L3 ResurrectionProtocol — when this worker falls unconscious, they leave a Sta
 - Certain in-game actions trigger an `InfractionTrigger`, incrementing the violating Worker's infraction level:
   - **ZoneTrespassTrigger**: stepping onto a `RestrictedGround` tile increments level by 1.
   - **FriendlyFireTrigger**: a Worker's attack hitting another Worker increments level by 1.
-  - **EquipmentTheftTrigger**: a Worker picking up an item that belongs to another Worker increments level by 1.
+  - **SabotageTrigger**: a Worker uses an AlienCube, corrupting surrounding tiles and incrementing their infraction level by 1.
 - When a Worker's infraction level reaches **Level 1 or above**, `InfractionManager` spawns an `EnforcerBot` onto the map near the violating Worker.
 - The `EnforcerBot` cycles through three behaviours each turn:
   - **PatrolBehaviour**: when no violator is nearby, the bot wanders the map randomly.
@@ -98,7 +98,7 @@ L3 ResurrectionProtocol — when this worker falls unconscious, they leave a Sta
 Implements `InfractionTrigger`
 1. ZoneTrespassTrigger (NEW): Fires when a Worker steps onto a RestrictedGround tile; increments the Worker's infraction level by 1 via InfractionManager, and triggers EnforcerBot spawn if level ≥ 1. (ground × actor-state × spawning)
 2. FriendlyFireTrigger (RETROFITTED): Attached to the existing AttackAction; checks whether the attack target is a fellow Worker and if so calls InfractionManager.increment(), then conditionally spawns an EnforcerBot. (action × actor-state × spawning)
-3. EquipmentTheftTrigger (NEW): Fires when a Worker picks up an item flagged as belonging to another Worker; increments the infraction level and triggers EnforcerBot spawn if level ≥ 1. (item × actor-state × spawning)
+3. SabotageTrigger (NEW): Fires when a Worker uses an AlienCube, corrupting the surrounding terrain into ToxicWaste. Increments the infraction level and triggers EnforcerBot spawn if level ≥ 1. (item × terrain × actor-state × spawning)
 
 Implements `EnforcerBehaviour`
 4. ChaseAndFineAction (NEW): Each turn, moves the EnforcerBot one step toward the target Worker via pathfinding. When adjacent, deducts Company Credits proportional to infraction level (L1: 50, L2: 150, L3: 300); at Level 3 also applies LockedOutStatus for 5 turns; then resets infraction level to 0 and removes the bot from the map. (actor-movement × currency × status × self-removal)
