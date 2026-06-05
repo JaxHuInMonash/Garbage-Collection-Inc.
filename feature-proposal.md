@@ -56,7 +56,7 @@ Healer path
 Implements `Upgrade`  
 L1 HealerBioSync — see above.  
 L2 CleanseField — immune to Poison and Burn; standing adjacent to Fire / ToxicWaste reverts those tiles to their original Ground over 2 turns. (status immunity + active terrain purification)  
-L3 ResurrectionProtocol — when this worker falls unconscious, they leave a StasisPod ground tile and are removed from play. Any other worker who steps on the pod consumes it and revives the original worker on that tile at 10 HP. The original worker keeps all upgrades but loses 30% of their company-credit balance. (inter-actor revive, terrain spawn, persistent state across death)  
+L3 ResurrectionProtocol — when this worker falls unconscious, they leave a StasisPod ground tile and are removed from play. Any other worker who steps on the pod consumes it and revives the original worker on that tile at 10 HP. The original worker keeps all upgrades but loses 30% of their worker-credit balance. (inter-actor revive, terrain spawn, persistent state across death)  
 
 ### 4. Design Decisions
 
