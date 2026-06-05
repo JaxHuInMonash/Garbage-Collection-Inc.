@@ -37,9 +37,9 @@ public abstract class SecuredDoor extends Ground {
 
     @Override
     public boolean canActorEnter(Actor actor) {
+        if (actor.hasAbility(Ability.CAN_PASS_DOORS)) return true;
         return isUnlocked;
     }
-
     /**
      * Defines the side effect that occurs when this door is unlocked.
      *

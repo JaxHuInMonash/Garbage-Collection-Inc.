@@ -23,6 +23,8 @@ import game.statuses.ShieldStatus;
 import game.display.EventLog;
 import edu.monash.fit2099.engine.capabilities.Status;
 import game.statuses.LockedOutStatus;
+import game.actions.AttackAction;
+import game.weapons.WorkerFist;
 import java.util.List;
 
 /**
@@ -61,6 +63,7 @@ public class ContractedWorker extends Actor implements Infectable {
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
         this.addNewStatistic(game.ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
         this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
+        this.setIntrinsicWeapon(new WorkerFist());
         this.infected = false;
         this.infectionTurnCount = 0;
     }
@@ -165,6 +168,14 @@ public class ContractedWorker extends Actor implements Infectable {
                 return;
             }
         }
+    }
+    @Override
+    public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
+        ActionList actions = super.allowableActions(otherActor, direction, map);
+        if (otherActor instanceof ContractedWorker) {
+            actions.add(new AttackAction(this));
+        }
+        return actions;
     }
 
     /**

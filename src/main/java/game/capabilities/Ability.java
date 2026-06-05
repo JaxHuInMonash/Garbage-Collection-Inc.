@@ -75,5 +75,6 @@ public enum Ability {
 
     /** Marks a ground tile as a Hole spawner. */
     IS_HOLE,
+    CAN_PASS_DOORS,
     OWNED,
 }

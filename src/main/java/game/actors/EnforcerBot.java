@@ -11,7 +11,7 @@ import game.BasicInventory;
 import game.actions.ChaseAndFineAction;
 import game.behaviours.PatrolBehaviour;
 import game.behaviours.SurrenderDetectBehaviour;
-
+import game.capabilities.Ability;
 public class EnforcerBot extends Actor {
     private final SurrenderDetectBehaviour surrenderDetect;
     private final ChaseAndFineAction chaseAndFine;
@@ -22,6 +22,7 @@ public class EnforcerBot extends Actor {
         this.surrenderDetect = new SurrenderDetectBehaviour(target);
         this.chaseAndFine = new ChaseAndFineAction(target);
         this.patrol = new PatrolBehaviour(target);
+        this.enableAbility(Ability.CAN_PASS_DOORS);
     }
 
     @Override

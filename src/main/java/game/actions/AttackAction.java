@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
 import game.statuses.ReflectionStatus;
-
+import game.penalty.FriendlyFireTrigger;
 import java.util.List;
 
 /**
@@ -42,7 +42,7 @@ public class AttackAction extends Action {
     public String execute(Actor actor, GameMap map) {
         IntrinsicWeapon weapon = actor.getIntrinsicWeapon();
         String result = weapon.attack(actor, target, map);
-
+        FriendlyFireTrigger.checkFriendlyFire(actor, target, map);
         // Reflection: if the target absorbed damage via ReflectionStatus,
         // deal the absorbed amount back to the attacker.
         result += applyReflection(actor);
