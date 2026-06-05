@@ -9,6 +9,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.grounds.ToxicWaste;
 import game.items.AlienCube;
 import game.capabilities.Ability;
+import game.penalty.SabotageTrigger;
 
 /**
  * An action that uses an {@link AlienCube} to teleport the actor to a
@@ -55,6 +56,7 @@ public class UseAlienCubeAction extends Action {
         Location source = map.locationOf(actor);
 
         corruptSurroundings(source);
+        new SabotageTrigger().checkAndApply(actor, map);
         map.moveActor(actor, target);
         actor.getInventory().remove(cube);
         return actor + " uses the Alien Cube! Source corrupted into Toxic Waste. Teleported to ("
