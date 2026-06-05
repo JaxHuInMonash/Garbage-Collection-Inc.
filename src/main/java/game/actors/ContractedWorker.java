@@ -22,12 +22,17 @@ import game.capabilities.IntrinsicWeaponEquippable;
 import game.capabilities.Progressable;
 import game.spawning.SpawnEffectManager;
 import game.statuses.InfectedStatus;
+import game.statuses.CleanseFieldStatus;
 import game.statuses.KineticLinkStatus;
 import game.statuses.ReinforcedPlatesStatus;
+import game.statuses.ResurrectionProtocolStatus;
 import game.statuses.ShieldStatus;
+import game.statuses.TimedDamageStatus;
 import game.display.EventLog;
+import game.grounds.StasisPod;
 import game.upgrades.WorkerProgression;
 import edu.monash.fit2099.engine.capabilities.Status;
+import edu.monash.fit2099.engine.positions.Ground;
 
 import java.util.List;
 
@@ -98,6 +103,66 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
     @Override
     public void equipIntrinsicWeapon(IntrinsicWeapon weapon) {
         setIntrinsicWeapon(weapon);
+    }
+
+    /**
+     * REQ3 — Healer T2 Cleanse Field immunity. A worker carrying a
+     * {@link CleanseFieldStatus} silently drops any incoming
+     * {@link TimedDamageStatus} (Poison, Burn) before it can attach.
+     * All other status types pass through unchanged.
+     *
+     * @param status the candidate status being applied
+     */
+    @Override
+    public void addStatus(Status status) {
+        if (status instanceof TimedDamageStatus && hasStatus(CleanseFieldStatus.class)) {
+            return;
+        }
+        super.addStatus(status);
+    }
+
+    /**
+     * REQ3 — Healer T3 Resurrection Protocol death intercept. A worker
+     * carrying a {@link ResurrectionProtocolStatus} drops a
+     * {@link StasisPod} on their current tile (capturing the original ground
+     * underneath plus a reference back to themselves) before deferring to the
+     * engine's normal removal. Another worker can later consume the pod to
+     * revive this one — see {@link StasisPod#tick}.
+     *
+     * @param map the map this worker is on
+     * @return a description suitable for the game log
+     */
+    @Override
+    public String unconscious(GameMap map) {
+        dropStasisPodIfEligible(map);
+        return super.unconscious(map);
+    }
+
+    /**
+     * Death-by-attacker variant of {@link #unconscious(GameMap)} — same
+     * Resurrection Protocol behaviour.
+     *
+     * @param otherActor the actor that killed this one
+     * @param map        the map this worker is on
+     * @return a description suitable for the game log
+     */
+    @Override
+    public String unconscious(Actor otherActor, GameMap map) {
+        dropStasisPodIfEligible(map);
+        return super.unconscious(otherActor, map);
+    }
+
+    /** Replaces this worker's tile with a {@link StasisPod} iff the protocol is installed. */
+    private void dropStasisPodIfEligible(GameMap map) {
+        if (!hasStatus(ResurrectionProtocolStatus.class)) {
+            return;
+        }
+        Location here = map.locationOf(this);
+        Ground originalGround = here.getGround();
+        here.setGround(new StasisPod(this, originalGround));
+        EventLog.getInstance().log(
+                this + " is preserved in a Stasis Pod at ("
+                        + here.x() + ", " + here.y() + "). Another worker can consume it to revive.");
     }
 
     /**

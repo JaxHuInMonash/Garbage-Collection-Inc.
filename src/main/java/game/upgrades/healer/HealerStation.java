@@ -15,10 +15,9 @@ import java.util.List;
 /**
  * Healer Lab Station — offers the Healer upgrade track. Displays as {@code ✚}.
  * <p>
- * Only the Healer-path catalogue is exposed; the base {@link UpgradeStation}
- * handles eligibility filtering and action creation. Currently the catalogue
- * holds the reference T1 upgrade only — T2 ({@code CleanseField}) and T3
- * ({@code ResurrectionProtocol}) are tracked as TODOs.
+ * Catalogue: Healer Bio-Sync (T1) → Cleanse Field (T2) → Resurrection
+ * Protocol (T3). Only the Healer-path catalogue is exposed; the base
+ * {@link UpgradeStation} handles eligibility filtering and action creation.
  * <p>
  * <strong>Ambient effect (cross-component — actor × status removal × AoE):</strong>
  * each turn, every worker within radius {@value #SANCTUARY_RADIUS} is healed for
@@ -50,8 +49,7 @@ public class HealerStation extends UpgradeStation {
 
     @Override
     protected List<Upgrade> catalogue() {
-        // Tier-ordered. TODO(REQ3): add CleanseField (T2) and ResurrectionProtocol (T3).
-        return List.of(new HealerBioSync());
+        return List.of(new HealerBioSync(), new CleanseField(), new ResurrectionProtocol());
     }
 
     /**
