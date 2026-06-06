@@ -14,7 +14,8 @@ import java.util.List;
  * The attacker's {@link IntrinsicWeapon} handles hit chance, damage calculation,
  * and the attack description. If the target becomes unconscious after the attack,
  * the target is removed from the map.
- *
+ *also checks for friendly fire
+ * {@link FriendlyFireTrigger} after each attack.
  * @author Jax
  */
 public class AttackAction extends Action {
@@ -33,7 +34,11 @@ public class AttackAction extends Action {
     /**
      * Executes the attack using the attacker's intrinsic weapon. If the
      * target becomes unconscious, they are removed from the map.
-     *
+     *after the attack resolves, calls
+     * {@link FriendlyFireTrigger#checkFriendlyFire(Actor, Actor, GameMap)} to
+     * check whether the attacker has committed friendly fire against a fellow
+     * {@link game.actors.ContractedWorker}, incrementing their infraction level
+     * if so and potentially spawning an {@link game.actors.EnforcerBot}.
      * @param actor the actor performing the attack
      * @param map   the game map the actor is on
      * @return a description of the attack result

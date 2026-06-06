@@ -23,7 +23,8 @@ import game.penalty.SabotageTrigger;
  * After teleportation, all adjacent ground tiles at the source location are
  * permanently corrupted into {@link ToxicWaste}, which deals 1 damage per
  * turn to any actor standing on it.
- *
+ * also triggers a {@link SabotageTrigger} infraction check
+ * after each use, since corrupting facility terrain is treated as deliberate sabotage.
  * @author zhengjun Yang
  * @author Jax
  */
@@ -46,7 +47,10 @@ public class UseAlienCubeAction extends Action {
     /**
      * Teleports the actor to the chosen destination and corrupts the source
      * location's adjacent tiles into ToxicWaste.
-     *
+     * after corrupting the surroundings, calls
+     * {@link SabotageTrigger#checkAndApply(Actor, GameMap)} to record the
+     * sabotage as an infraction, incrementing the Worker's infraction level
+     * and potentially spawning an {@link game.actors.EnforcerBot}.
      * @param actor the actor performing the action
      * @param map   the map the actor is currently on
      * @return a description of the result

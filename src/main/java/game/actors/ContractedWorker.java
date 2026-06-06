@@ -37,6 +37,10 @@ import java.util.List;
  * engine's {@link edu.monash.fit2099.engine.positions.World#run()} loop, which
  * delegates to Item and Ground allowableActions methods. This class focuses
  * solely on consciousness checking and menu display.
+ * equipped with a {@link game.weapons.WorkerFist} intrinsic weapon,
+ * allowing Workers to attack each other and trigger
+ * {@link game.penalty.FriendlyFireTrigger}. Also checks for
+ * {@link game.statuses.LockedOutStatus} each turn to enforce infraction lockouts.
  *
  * @author Jax
  */
@@ -169,6 +173,17 @@ public class ContractedWorker extends Actor implements Infectable {
             }
         }
     }
+    /**
+     * Provides an {@link AttackAction} targeting this Worker when another
+     * ContractedWorker is adjacent. This enables friendly fire between Workers,
+     * which triggers the {@link game.penalty.FriendlyFireTrigger} infraction check
+     * inside {@link AttackAction#execute(Actor, GameMap)}.
+     *
+     * @param otherActor the adjacent actor
+     * @param direction  the direction of the adjacent actor
+     * @param map        the current game map
+     * @return a list of allowable actions
+     */
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
         ActionList actions = super.allowableActions(otherActor, direction, map);
@@ -185,6 +200,8 @@ public class ContractedWorker extends Actor implements Infectable {
      * Otherwise, the engine-provided actions list (already populated by the World
      * with item, ground, and movement actions) is presented as a menu for the player.
      * Multi-turn actions are handled by checking for a continuation from the last action.
+     * if the Worker has an active {@link game.statuses.LockedOutStatus},
+     * skips the menu entirely and returns a DoNothingAction for the duration of the lockout.
      *
      * @param actions    collection of possible Actions for this Actor (populated by the engine)
      * @param lastAction the Action this Actor took last turn

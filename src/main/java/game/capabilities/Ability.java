@@ -75,6 +75,10 @@ public enum Ability {
 
     /** Marks a ground tile as a Hole spawner. */
     IS_HOLE,
+    /**
+     * Allows an actor to pass through {@link game.grounds.SecuredDoor} tiles
+     * regardless of lock state. Granted to {@link game.actors.EnforcerBot}.
+     */
     CAN_PASS_DOORS,
-    OWNED,
+
 }
