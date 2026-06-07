@@ -60,8 +60,6 @@ L3 ResurrectionProtocol — when this worker falls unconscious, they leave a Sta
 
 ### 4. Design Decisions
 
-A few deliberate calls worth recording for the rationale writeup and TA discussion:
-
 - **No `Fighter` / `Surveyor` / `Healer` subclasses of `ContractedWorker`.** Specialisation is a *runtime, mutable* role — a worker starts un-specialised, locks a path at L1, then climbs tiers. Inheritance models *is-a* relationships fixed at construction; reclassing an existing instance is not a thing in Java. We therefore compose role via `WorkerProgression` (held by the worker) and `Upgrade` objects (which carry the behaviour). The three "roles" surface where they belong as real things in the world: as the three `UpgradeStation` concretes (`CombatStation`, `SurveyorStation`, `HealerStation`).
 - **No `Specialisation` strategy class wrapping each path.** We considered an abstract `Specialisation` with three subclasses owning their catalogues + a path identity. It would be a *parallel structure with no behaviour of its own* — a "Lazy Class" smell — because every path-specific behaviour already lives inside its individual `Upgrade` concretes. We'll revisit only if a path needs cross-tier shared state (e.g. "any Combat worker permanently resists fire regardless of tier").
 - **Stations discover the worker via `asCapability(Progressable.class)`, not `instanceof`.** This mirrors the engine's existing capability pattern (`getActorAs`, `Infectable`, etc.) and keeps `UpgradeStation` decoupled from the concrete `ContractedWorker` class — adding new "upgradable" actor types in the future requires zero changes to the station.
@@ -72,24 +70,48 @@ A few deliberate calls worth recording for the rationale writeup and TA discussi
 
 ## REQ4 — Custom Feature #2
 
-**Owner:** Zhengjun
+**Owner:** Zhengjun Yang
 
 ### 1. The Pitch
-> _TODO_
+>  When a Worker commits a violation — such as trespassing into a restricted zone, attacking a teammate, or stealing equipment — the Infraction System records and escalates their infraction level (0–3). Once a Worker reaches Level 1, the Company remotely spawns an EnforcerBot onto the map to pursue them. EnforcerBots cycle through three behaviours: patrolling when idle, chasing when a violator is detected, and despawning when the target is gone. On capture, the bot deducts Company Credits and resets the infraction counter. Reaching Level 3 triggers an immediate fine and a temporary action lockout, forcing players to weigh risky shortcuts against financial and operational consequences.
+
 
 ### 2. The Mechanics
-- _TODO_
+- Every Worker has an **infraction level** tracked by the `InfractionManager` singleton (levels 0–3).
+- Certain in-game actions trigger an `InfractionTrigger`, incrementing the violating Worker's infraction level:
+  - **ZoneTrespassTrigger**: stepping onto a `RestrictedGround` tile increments level by 1.
+  - **FriendlyFireTrigger**: a Worker's attack hitting another Worker increments level by 1.
+  - **SabotageTrigger**: a Worker uses an AlienCube, corrupting surrounding tiles and incrementing their infraction level by 1.
+- When a Worker's infraction level reaches **Level 1 or above**, `InfractionManager` spawns an `EnforcerBot` onto the map near the violating Worker.
+- The `EnforcerBot` cycles through three behaviours each turn:
+  - **PatrolBehaviour**: when no violator is nearby, the bot wanders the map randomly.
+  - **ChaseAndFineAction**: when the violator is detected, the bot pathfinds toward the target one step per turn.
+  - **SurrenderDetectBehaviour**: checks each turn whether the target is unconscious or gone; if so, despawns the bot immediately.
+- When the `EnforcerBot` reaches the Worker (adjacent tile), it:
+  1. Deducts **Company Credits** proportional to infraction level (L1: 50, L2: 150, L3: 300).
+  2. At **Level 3**, also applies a `LockedOutStatus` to the Worker for 5 turns (cannot perform actions other than moving).
+  3. Resets the Worker's infraction level to 0 and removes itself from the map.
+
 
 ### 3. The Architecture
 
 **Abstractions**
-1. `<package>.<AbstractionName1>` — _one-line responsibility_
-2. `<package>.<AbstractionName2>` — _one-line responsibility_
+1. `game.penalty.InfractionTrigger` — Interface; any game event that can cause a violation implements `checkAndApply(Actor violator, GameMap map)`, which calls `InfractionManager` to increment the infraction level and conditionally spawn an `EnforcerBot`.
+2. `game.penalty.EnforcerBehaviour` — Abstract class extending `Behaviour`; defines the contract for all EnforcerBot actions, with subclasses implementing `operate(Actor bot, Location location)` to pursue, patrol, or despawn.
 
 **Concrete classes**
 
+Implements `InfractionTrigger`
+1. ZoneTrespassTrigger (NEW): Fires when a Worker steps onto a RestrictedGround tile; increments the Worker's infraction level by 1 via InfractionManager, and triggers EnforcerBot spawn if level ≥ 1. (ground × actor-state × spawning)
+2. FriendlyFireTrigger (RETROFITTED): Attached to the existing AttackAction; checks whether the attack target is a fellow Worker and if so calls InfractionManager.increment(), then conditionally spawns an EnforcerBot. (action × actor-state × spawning)
+3. SabotageTrigger (NEW): Fires when a Worker uses an AlienCube, corrupting the surrounding terrain into ToxicWaste. Increments the infraction level and triggers EnforcerBot spawn if level ≥ 1. (item × terrain × actor-state × spawning)
+
+Implements `EnforcerBehaviour`
+4. ChaseAndFineAction (NEW): Each turn, moves the EnforcerBot one step toward the target Worker via pathfinding. When adjacent, deducts Company Credits proportional to infraction level (L1: 50, L2: 150, L3: 300); at Level 3 also applies LockedOutStatus for 5 turns; then resets infraction level to 0 and removes the bot from the map. (actor-movement × currency × status × self-removal)
+5. PatrolBehaviour (NEW): When no violating Worker is nearby, moves the EnforcerBot randomly around the map each turn, keeping it active and visible as a deterrent. (actor-movement × wander)
+6. SurrenderDetectBehaviour (NEW): Each turn, checks whether the target Worker is unconscious or has left the map; if so, immediately removes the EnforcerBot from the map. (actor-state × self-removal)
+
 ---
-*(REQ 5 ONLY)*
 
 ## REQ5 — External API Integration (HD)
 

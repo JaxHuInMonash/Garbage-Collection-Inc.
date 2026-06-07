@@ -15,6 +15,9 @@ import game.capabilities.Ability;
  * <p>
  * This design centralises common door logic (clearance checking, unlock action)
  * in one place, following the DRY and Open/Closed principles.
+ * <p>
+ * actors with the {@link Ability#CAN_PASS_DOORS} capability
+ * can now bypass this door regardless of lock state.
  *
  * @author zhengjun Yang
  * @author Tommy
@@ -34,12 +37,22 @@ public abstract class SecuredDoor extends Ground {
 
         this.REQUIRED_CLEARANCE = requiredClearance;
     }
-
+    /**
+     * Returns true if the actor can enter this door.
+     * <p>
+     * actors carrying the {@link Ability#CAN_PASS_DOORS} capability
+     * (such as {@link game.actors.EnforcerBot}) can pass through regardless of
+     * lock state, allowing them to pursue violating Workers across the facility
+     * without being blocked by security doors.
+     *
+     * @param actor the actor attempting to enter
+     * @return true if the actor has CAN_PASS_DOORS ability or the door is unlocked
+     */
     @Override
     public boolean canActorEnter(Actor actor) {
+        if (actor.hasAbility(Ability.CAN_PASS_DOORS)) return true;
         return isUnlocked;
     }
-
     /**
      * Defines the side effect that occurs when this door is unlocked.
      *

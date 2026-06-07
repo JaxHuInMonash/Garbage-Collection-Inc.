@@ -57,6 +57,12 @@ public enum Ability {
     /** Marks an actor as one of the Meeple Clan. */
     IS_MEEPLE,
 
+    /**
+     * Allows an actor to pass through {@link game.grounds.SecuredDoor} tiles
+     * regardless of lock state. Granted to {@link game.actors.EnforcerBot}.
+     */
+    CAN_PASS_DOORS,
+
     // ──────────────────────────────────────────────────────────────────
     // Ground abilities (terrain markers)
     // ──────────────────────────────────────────────────────────────────
@@ -102,4 +108,5 @@ public enum Ability {
 
     /** Marks a weather condition that can extinguish fires (rain, drizzle, etc.). */
     EXTINGUISH,
+
 }

@@ -7,6 +7,9 @@ import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
 import game.statuses.PostHitFeedback;
 
 import java.util.ArrayList;
+import game.statuses.ReflectionStatus;
+import game.penalty.FriendlyFireTrigger;
+import java.util.List;
 
 /**
  * An action that allows one actor to attack another using their intrinsic weapon.
@@ -16,8 +19,13 @@ import java.util.ArrayList;
  * {@link game.statuses.ReflectionStatus} (Swarmling) and
  * {@link game.statuses.RetaliationStatus} (Combat L1 upgrade) compose without
  * this action knowing their concrete types.
- *
  * @author Jax
+ * The attacker's {@link IntrinsicWeapon} handles hit chance, damage calculation,
+ * and the attack description. If the target becomes unconscious after the attack,
+ * the target is removed from the map.
+ *also checks for friendly fire
+ * {@link FriendlyFireTrigger} after each attack.
+ * @author Zhengjun
  */
 public class AttackAction extends Action {
 
@@ -38,6 +46,13 @@ public class AttackAction extends Action {
      * own response to the attacker. If either combatant becomes unconscious,
      * they are removed via the engine's death lifecycle.
      *
+     * Executes the attack using the attacker's intrinsic weapon. If the
+     * target becomes unconscious, they are removed from the map.
+     *after the attack resolves, calls
+     * {@link FriendlyFireTrigger#checkFriendlyFire(Actor, Actor, GameMap)} to
+     * check whether the attacker has committed friendly fire against a fellow
+     * {@link game.actors.ContractedWorker}, incrementing their infraction level
+     * if so and potentially spawning an {@link game.actors.EnforcerBot}.
      * @param actor the actor performing the attack
      * @param map   the game map the actor is on
      * @return a description of the attack result
@@ -49,6 +64,10 @@ public class AttackAction extends Action {
 
         // Polymorphic post-hit feedback (Reflection, Retaliation, future effects…)
         result += applyPostHitFeedback(actor, map);
+        FriendlyFireTrigger.checkFriendlyFire(actor, target, map);
+        // Reflection: if the target absorbed damage via ReflectionStatus,
+        // deal the absorbed amount back to the attacker.
+        result += applyReflection(actor);
 
         if (!target.isConscious()) {
             result += "\n" + target.unconscious(actor, map);

@@ -105,6 +105,7 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('Y', FleshyTreeMature::new);
         groundCreator.registerGround('w', WarperTreeSapling::new);
         groundCreator.registerGround('W', WarperTreeMature::new);
+        groundCreator.registerGround('X', () -> new RestrictedGround("Restricted Zone"));
 
         // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
@@ -218,6 +219,10 @@ public class EclipseNebula extends World {
         // Meeples — support units, one per map
         moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
         moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
+        // 99-Deprecated: Server Room
+        moon99DeprecatedMap.at(45, 7).setGround(new RestrictedGround("Server Room"));
+        moon99DeprecatedMap.at(46, 7).setGround(new RestrictedGround("Server Room"));
+        moon99DeprecatedMap.at(47, 7).setGround(new RestrictedGround("Server Room"));
 
         // REQ1 A3: Place Vents on 99-Deprecated for cutting tests
         moon99DeprecatedMap.at(21, 1).setGround(new Vent());
@@ -235,6 +240,9 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(12, 3).setGround(new SurveyorStation(companyAccount));
         moon99DeprecatedMap.at(12, 5).setGround(new HealerStation(companyAccount));
 
+        // 20-Overflow: Toxic Lab
+        moon20OverflowMap.at(22, 14).setGround(new RestrictedGround("Toxic Lab"));
+        moon20OverflowMap.at(23, 14).setGround(new RestrictedGround("Toxic Lab"));
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
 

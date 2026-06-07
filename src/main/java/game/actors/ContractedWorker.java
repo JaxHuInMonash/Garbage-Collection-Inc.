@@ -34,6 +34,9 @@ import game.upgrades.WorkerProgression;
 import edu.monash.fit2099.engine.capabilities.Status;
 import edu.monash.fit2099.engine.positions.Ground;
 
+import game.statuses.LockedOutStatus;
+import game.actions.AttackAction;
+import game.weapons.WorkerFist;
 import java.util.List;
 
 /**
@@ -46,6 +49,10 @@ import java.util.List;
  * engine's {@link edu.monash.fit2099.engine.positions.World#run()} loop, which
  * delegates to Item and Ground allowableActions methods. This class focuses
  * solely on consciousness checking and menu display.
+ * equipped with a {@link game.weapons.WorkerFist} intrinsic weapon,
+ * allowing Workers to attack each other and trigger
+ * {@link game.penalty.FriendlyFireTrigger}. Also checks for
+ * {@link game.statuses.LockedOutStatus} each turn to enforce infraction lockouts.
  *
  * @author Jax
  */
@@ -80,6 +87,7 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
         this.addNewStatistic(game.ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
         this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
+        this.setIntrinsicWeapon(new WorkerFist());
         this.infected = false;
         this.infectionTurnCount = 0;
     }
@@ -279,6 +287,25 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
             }
         }
     }
+    /**
+     * Provides an {@link AttackAction} targeting this Worker when another
+     * ContractedWorker is adjacent. This enables friendly fire between Workers,
+     * which triggers the {@link game.penalty.FriendlyFireTrigger} infraction check
+     * inside {@link AttackAction#execute(Actor, GameMap)}.
+     *
+     * @param otherActor the adjacent actor
+     * @param direction  the direction of the adjacent actor
+     * @param map        the current game map
+     * @return a list of allowable actions
+     */
+    @Override
+    public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
+        ActionList actions = super.allowableActions(otherActor, direction, map);
+        if (otherActor instanceof ContractedWorker) {
+            actions.add(new AttackAction(this));
+        }
+        return actions;
+    }
 
     /**
      * Selects and returns an action for this worker to perform on the current turn.
@@ -287,6 +314,8 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
      * Otherwise, the engine-provided actions list (already populated by the World
      * with item, ground, and movement actions) is presented as a menu for the player.
      * Multi-turn actions are handled by checking for a continuation from the last action.
+     * if the Worker has an active {@link game.statuses.LockedOutStatus},
+     * skips the menu entirely and returns a DoNothingAction for the duration of the lockout.
      *
      * @param actions    collection of possible Actions for this Actor (populated by the engine)
      * @param lastAction the Action this Actor took last turn
@@ -316,6 +345,12 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
         addPendingWarpOptions(actions);
 
         // Handle multi-turn Actions
+        List<LockedOutStatus> locks = this.statusesOf(LockedOutStatus.class);
+        if (!locks.isEmpty()) {
+            display.println(this.name + " is locked out! (" + locks.get(0) + ")");
+            return new DoNothingAction();
+        }
+
         if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
         }
