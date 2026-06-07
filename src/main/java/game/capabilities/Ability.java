@@ -89,4 +89,17 @@ public enum Ability {
      * concrete {@code Wall} class.
      */
     IS_WALL,
+
+    /** Marks a ground tile that can be flooded by weather (e.g. Dirt). */
+    FLOODABLE,
+
+    /** Marks a ground tile that can evaporate in dry weather (e.g. Puddle). */
+    EVAPORATABLE,
+
+    // ──────────────────────────────────────────────────────────────────
+    // Weather condition abilities
+    // ──────────────────────────────────────────────────────────────────
+
+    /** Marks a weather condition that can extinguish fires (rain, drizzle, etc.). */
+    EXTINGUISH,
 }

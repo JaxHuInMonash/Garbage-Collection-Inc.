@@ -21,6 +21,12 @@ import game.upgrades.InMemoryCompanyAccount;
 import game.upgrades.fighter.FighterStation;
 import game.upgrades.healer.HealerStation;
 import game.upgrades.surveyor.SurveyorStation;
+import game.weather.alerts.ExtremeTemperatureAlert;
+import game.weather.alerts.HeavyRainAlert;
+import game.weather.alerts.HighWindAlert;
+import game.weather.effect.HealthEffect;
+import game.weather.effect.SpawnRateEffect;
+import game.weather.effect.TerrainEffect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -81,6 +87,13 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('Φ', Floor::new);
         groundCreator.registerGround('◈', Floor::new);
 
+        // REQ5: Environmental Terminal for weather API scanning
+        EnvironmentalTerminal terminal = new EnvironmentalTerminal(
+                List.of(new HealthEffect(), new SpawnRateEffect(), new TerrainEffect()),
+                List.of(new ExtremeTemperatureAlert(), new HighWindAlert(), new HeavyRainAlert())
+        );
+        groundCreator.registerGround('¶', () -> terminal);
+
         // Flora ground types (used by 20-Overflow map)
         groundCreator.registerGround('y', FleshyTreeSprout::new);
         groundCreator.registerGround('v', FleshyTreeSapling::new);
@@ -91,7 +104,7 @@ public class EclipseNebula extends World {
         // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
-                "...#######..........#__________________#___________________#",
+                "...#######..........#__________________¶___________________#",
                 "...#_____#..........=__________________=___________________#",
                 "...#Φ____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
@@ -119,7 +132,7 @@ public class EclipseNebula extends World {
         List<String> moon20Overflow = Arrays.asList(
                 ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
                 "...#######...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈##################≈≈≈≈≈≈≈",
-                "...#≡____#...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
+                "...#≡____#........¶..≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
                 "...#__Φ__=...........≈≈≈≈≈≈≈≈#######_______◈________#≈≈≈≈≈≈≈",
                 "...#_____#...........≈≈≈≈≈≈≈≈#_____N________________#≈≈≈≈≈≈≈",
                 "...#######...≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_◎___###########=######≈≈≈≈≈≈≈",
@@ -204,13 +217,13 @@ public class EclipseNebula extends World {
         registerDroneSpawnListener(moon99DeprecatedMap);
 
         // Create workers, each with their own WeightLimitedInventory(50) and a Flask
-//        ContractedWorker contractedWorker1 = createWorker("#1 Bob");
+        ContractedWorker contractedWorker1 = createWorker("#1 Bob");
 //        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
         ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-//        this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
+        this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
         this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(8, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
