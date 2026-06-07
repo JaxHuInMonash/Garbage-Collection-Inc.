@@ -42,6 +42,7 @@ public class Vent extends Ground {
     public Vent() {
         super('V', "Vent");
         this.random = new Random();
+        this.enableAbility(Ability.IS_SPAWNER);
     }
 
     /**

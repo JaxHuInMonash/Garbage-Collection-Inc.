@@ -113,8 +113,21 @@ public abstract class StatefulCreature extends Actor {
             currentState.onEnter(this, map);
         }
 
-        display.println(this + " [" + currentState.getStateName() + "]");
+        // The state name is appended via toString(), so the engine's per-turn
+        // menu description ("Swarmling (48/50) [Dormant] moves North-West")
+        // reads as a single line. No separate println needed.
         return currentState.getAction(this, location);
+    }
+
+    /**
+     * Appends the current state name to the default {@code Actor.toString()}.
+     * Every line the engine prints for this creature — movement, attacks,
+     * status events — will now show the state in square brackets:
+     * e.g. {@code "Swarmling (48/50) [Dormant] moves North-West"}.
+     */
+    @Override
+    public String toString() {
+        return super.toString() + " [" + currentState.getStateName() + "]";
     }
 
     /**

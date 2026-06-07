@@ -16,6 +16,11 @@ import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
 import game.display.EventLog;
+import game.upgrades.CompanyAccount;
+import game.upgrades.InMemoryCompanyAccount;
+import game.upgrades.fighter.FighterStation;
+import game.upgrades.healer.HealerStation;
+import game.upgrades.surveyor.SurveyorStation;
 import game.weather.alerts.ExtremeTemperatureAlert;
 import game.weather.alerts.HeavyRainAlert;
 import game.weather.alerts.HighWindAlert;
@@ -198,19 +203,29 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
         moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
 
+        // REQ3 — Lab Stations placed along the east wall of the 99-Deprecated ship.
+        // Workers stand on the adjacent floor tile (col 7) to interact with each station.
+        // All three share a single CompanyAccount; once REQ1's quota system lands,
+        // swap InMemoryCompanyAccount for the real QuotaManager (which will also
+        // implement CompanyAccount).
+        CompanyAccount companyAccount = new InMemoryCompanyAccount(500);
+        moon99DeprecatedMap.at(12, 1).setGround(new FighterStation(companyAccount));
+        moon99DeprecatedMap.at(12, 3).setGround(new SurveyorStation(companyAccount));
+        moon99DeprecatedMap.at(12, 5).setGround(new HealerStation(companyAccount));
+
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
 
         // Create workers, each with their own WeightLimitedInventory(50) and a Flask
         ContractedWorker contractedWorker1 = createWorker("#1 Bob");
 //        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
-//        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
+        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
         this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
-//        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
+        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(8, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
 //        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
     }
@@ -259,7 +274,6 @@ public class EclipseNebula extends World {
     private ContractedWorker createWorker(String name) {
         WeightLimitedInventory inventory = new WeightLimitedInventory(50);
         inventory.add(new Flask());
-        inventory.add(new AccessCardLevel3());
         return new ContractedWorker(name, 'ඞ', 20, inventory);
     }
 }
