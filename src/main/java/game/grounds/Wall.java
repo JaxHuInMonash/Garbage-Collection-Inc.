@@ -12,6 +12,7 @@ public class Wall extends Ground {
     public Wall() {
         super('#', "Wall");
         this.enableAbility(Ability.BLOCKS_ENTRY);
+        this.enableAbility(Ability.IS_WALL);
     }
 
     /**

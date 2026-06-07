@@ -50,6 +50,7 @@ public class Hole extends Ground {
         this.random = new Random();
         this.creatureSuppliers = new ArrayList<>(creatureSuppliers);
         this.enableAbility(Ability.IS_HOLE);
+        this.enableAbility(Ability.IS_SPAWNER);
     }
 
     /**
@@ -72,7 +73,18 @@ public class Hole extends Ground {
      */
     @Override
     public void tick(Location location) {
+        // Tick any statuses attached to this ground (e.g. SurveyorOptics' RevealedStatus).
+        this.tickStatuses(location);
+
         turnCounter++;
+
+        // Surveyor reveal: warn the player one turn before this hole next fires.
+        if (turnCounter == SPAWN_INTERVAL - 1
+                && this.hasStatus(game.statuses.RevealedStatus.class)) {
+            game.display.EventLog.getInstance().log(
+                    "Spawn imminent — Hole at (" + location.x() + ", " + location.y()
+                            + ") of " + location.map() + " will fire next turn.");
+        }
 
         if (turnCounter >= SPAWN_INTERVAL) {
             turnCounter = 0;
