@@ -9,6 +9,9 @@ import game.actions.ConsumeAction;
 import game.capabilities.Ability;
 import game.capabilities.Consumable;
 import game.statuses.PoisonStatus;
+import game.capabilities.WeatherAffected;
+import game.weather.WeatherApiResponse;
+import game.weather.effect.TerrainEffect;
 
 /**
  * A small, stationary body of mysterious liquid on the ground.
@@ -21,16 +24,34 @@ import game.statuses.PoisonStatus;
  *
  * @author Jax
  */
-public class Puddle extends Ground implements Consumable {
+public class Puddle extends Ground implements Consumable, WeatherAffected {
     private static final int CONSUMED_HEALING = 1;
     private static final int CONSUMED_POISON_DAMAGE_PER_TURN = 1;
     private static final int CONSUMED_POISON_DURATION = 3;
+    private static final int HUMIDITY_EVAPORATE_THRESHOLD = 30;
 
     /**
      * Constructor
      */
     public Puddle() {
         super('~', "Puddle");
+        this.enableAbility(Ability.EVAPORATABLE);
+    }
+
+    /**
+     * In low humidity, evaporates into Dirt.
+     * Called by {@link TerrainEffect} after a weather scan —
+     * no polling in {@code tick()}.
+     */
+    @Override
+    public boolean onWeatherChange(Location location, WeatherApiResponse weather) {
+        if (weather.humidity() <= HUMIDITY_EVAPORATE_THRESHOLD) {
+            location.setGround(new Dirt());
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override

@@ -8,14 +8,27 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
 import game.actors.*;
 import game.alarm.AlarmManager;
+import game.items.ScrapPile;
 import game.grounds.*;
 import game.items.*;
+import game.quota.QuotaManager;
 import game.spawning.ParasiteSpawnEffect;
 import game.spawning.ScrapSnatcherSpawnEffect;
 import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
 import game.display.EventLog;
+import game.upgrades.CompanyAccount;
+import game.upgrades.InMemoryCompanyAccount;
+import game.upgrades.fighter.FighterStation;
+import game.upgrades.healer.HealerStation;
+import game.upgrades.surveyor.SurveyorStation;
+import game.weather.alerts.ExtremeTemperatureAlert;
+import game.weather.alerts.HeavyRainAlert;
+import game.weather.alerts.HighWindAlert;
+import game.weather.effect.HealthEffect;
+import game.weather.effect.SpawnRateEffect;
+import game.weather.effect.TerrainEffect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +52,7 @@ public class EclipseNebula extends World {
      * Initialise maps, actors, items, grounds, and the alarm system.
      * <p>
      * Each worker gets their own {@link WeightLimitedInventory} with a 50-unit
-     * weight limit and a {@link Flask} already inside. The three special items
+     * weight limit and a {@link game.items.Flask} already inside. The three special items
      * (AccessCard, FirstAidKit, SterilisationBox) are placed once in the ship.
      * <p>
      * The alarm system is initialised with a drone-spawning listener that
@@ -51,6 +64,7 @@ public class EclipseNebula extends World {
         // Reset singletons for a fresh game
         AlarmManager.resetInstance();
         SpawnEffectManager.resetInstance();
+        QuotaManager.resetInstance();
 
         // Register spawn effects for each creature type
         SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
@@ -78,6 +92,13 @@ public class EclipseNebula extends World {
         groundCreator.registerGround('Φ', Floor::new);
         groundCreator.registerGround('◈', Floor::new);
 
+        // REQ5: Environmental Terminal for weather API scanning
+        EnvironmentalTerminal terminal = new EnvironmentalTerminal(
+                List.of(new HealthEffect(), new SpawnRateEffect(), new TerrainEffect()),
+                List.of(new ExtremeTemperatureAlert(), new HighWindAlert(), new HeavyRainAlert())
+        );
+        groundCreator.registerGround('¶', () -> terminal);
+
         // Flora ground types (used by 20-Overflow map)
         groundCreator.registerGround('y', FleshyTreeSprout::new);
         groundCreator.registerGround('v', FleshyTreeSapling::new);
@@ -88,7 +109,7 @@ public class EclipseNebula extends World {
         // 99-Deprecated
         List<String> moon99Deprecated = Arrays.asList(
                 "....................########################################",
-                "...#######..........#__________________#___________________#",
+                "...#######..........#__________________¶___________________#",
                 "...#_____#..........=__________________=___________________#",
                 "...#Φ____=...~......#__________________#___________________#",
                 "...#_____#..~~~.....########=#####=#####___#############___#",
@@ -116,7 +137,7 @@ public class EclipseNebula extends World {
         List<String> moon20Overflow = Arrays.asList(
                 ".....................≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
                 "...#######...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈##################≈≈≈≈≈≈≈",
-                "...#≡____#...........≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
+                "...#≡____#........¶..≈≈≈≈≈≈≈≈≈≈≈≈≈≈#________________#≈≈≈≈≈≈≈",
                 "...#__Φ__=...........≈≈≈≈≈≈≈≈#######_______◈________#≈≈≈≈≈≈≈",
                 "...#_____#...........≈≈≈≈≈≈≈≈#_____N________________#≈≈≈≈≈≈≈",
                 "...#######...≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈#_◎___###########=######≈≈≈≈≈≈≈",
@@ -190,19 +211,43 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(50, 3).addItem(new ScrapPile());
         moon20OverflowMap.at(30, 14).addItem(new ScrapPile());
 
+        // Swarmlings — thrive in toxic zones; place one on each map
+        moon99DeprecatedMap.addActor(new Swarmling(), moon99DeprecatedMap.at(34, 6));
+        moon20OverflowMap.addActor(new Swarmling(), moon20OverflowMap.at(18, 9));
+
+        // Meeples — support units, one per map
+        moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
+        moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
+
+        // REQ1 A3: Place Vents on 99-Deprecated for cutting tests
+        moon99DeprecatedMap.at(21, 1).setGround(new Vent());
+        moon20OverflowMap.at(39, 8).addItem(new AlienCube());
+        moon20OverflowMap.at(42, 3).setGround(new Vent());
+        moon20OverflowMap.at(38, 4).setGround(new Vent());
+
+        // REQ3 — Lab Stations placed along the east wall of the 99-Deprecated ship.
+        // Workers stand on the adjacent floor tile (col 7) to interact with each station.
+        // All three share a single CompanyAccount; once REQ1's quota system lands,
+        // swap InMemoryCompanyAccount for the real QuotaManager (which will also
+        // implement CompanyAccount).
+        CompanyAccount companyAccount = QuotaManager.getInstance();
+        moon99DeprecatedMap.at(12, 1).setGround(new FighterStation(companyAccount));
+        moon99DeprecatedMap.at(12, 3).setGround(new SurveyorStation(companyAccount));
+        moon99DeprecatedMap.at(12, 5).setGround(new HealerStation(companyAccount));
+
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
 
         // Create workers, each with their own WeightLimitedInventory(50) and a Flask
         ContractedWorker contractedWorker1 = createWorker("#1 Bob");
 //        ContractedWorker contractedWorker2 = createWorker("#2 Tom");
-//        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
+        ContractedWorker contractedWorker3 = createWorker("#3 Sarah");
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-        this.addPlayer(contractedWorker1, moon99DeprecatedMap.at(13, 3));
+        this.addPlayer(contractedWorker1, moon20OverflowMap.at(14, 3));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
-//        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
+        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(8, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
 //        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
 

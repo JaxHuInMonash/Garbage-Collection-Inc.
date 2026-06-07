@@ -25,7 +25,7 @@ import java.util.Random;
  *   <li>Side-effect logic lives entirely in {@link #onDeposited} (SRP).</li>
  * </ul>
  *
- * @author (your name)
+ * @author Mary
  */
 public class AluminiumScrap extends Item implements Depositable {
 

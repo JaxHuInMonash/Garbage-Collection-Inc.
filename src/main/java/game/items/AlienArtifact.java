@@ -24,7 +24,7 @@ import java.util.Random;
  *       teleported to a random valid location on the same map.</li>
  * </ul>
  *
- * @author (your name)
+ * @author Mary
  */
 public class AlienArtifact extends Item implements Sellable, Depositable {
 

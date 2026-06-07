@@ -16,8 +16,9 @@ import java.util.Arrays;
  * Each map is registered with a throwaway {@link World} so that
  * {@code map.addActor(...)} works — otherwise the map's internal
  * {@code actorLocations} field stays null and any actor placement NPEs.
+ * @author Mary
  */
-final class TestMaps {
+public final class TestMaps {
 
     private TestMaps() {}
 
@@ -27,7 +28,7 @@ final class TestMaps {
     }
 
     /** 5×5 map of all floor tiles. Centre is (2, 2). */
-    static GameMap floor5x5() {
+    public static GameMap floor5x5() {
         try {
             DefaultGroundCreator creator = new DefaultGroundCreator();
             creator.registerGround('_', Floor::new);
@@ -45,7 +46,7 @@ final class TestMaps {
     }
 
     /** 5×5 map: walls around the rim, floor inside. (1,1) is a corner. */
-    static GameMap walledRoom5x5() {
+    public static GameMap walledRoom5x5() {
         try {
             DefaultGroundCreator creator = new DefaultGroundCreator();
             creator.registerGround('_', Floor::new);

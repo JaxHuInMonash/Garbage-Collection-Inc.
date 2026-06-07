@@ -13,6 +13,7 @@ import game.ItemStatistics;
 import game.actors.Slime;
 import game.capabilities.Depositable;
 import game.capabilities.Sellable;
+import game.display.EventLog;
 import game.spawning.SpawnEffectManager;
 
 /**
@@ -31,7 +32,8 @@ import game.spawning.SpawnEffectManager;
  * each path calls {@code inventory.remove(this)} exactly once in its own
  * callback — no shared mutable flag needed).
  *
- * @author (your name)
+ * @author Mary
+ * @author Ethan
  */
 public class IndustrialFan extends Item implements Sellable, Depositable {
 
