@@ -33,6 +33,7 @@ import game.spawning.SpawnEffectManager;
  * callback — no shared mutable flag needed).
  *
  * @author Mary
+ * @author Ethan
  */
 public class IndustrialFan extends Item implements Sellable, Depositable {
 

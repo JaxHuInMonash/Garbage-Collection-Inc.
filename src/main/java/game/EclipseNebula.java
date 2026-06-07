@@ -13,6 +13,7 @@ import game.grounds.*;
 import game.items.*;
 import game.quota.QuotaManager;
 import game.spawning.ParasiteSpawnEffect;
+import game.spawning.ScrapSnatcherSpawnEffect;
 import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
 import game.spawning.UndeadSpawnEffect;
@@ -69,6 +70,8 @@ public class EclipseNebula extends World {
         SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
         SpawnEffectManager.getInstance().registerEffect(Slime.class, new SlimeSpawnEffect());
         SpawnEffectManager.getInstance().registerEffect(Parasite.class, new ParasiteSpawnEffect());
+        SpawnEffectManager.getInstance().registerEffect(ScrapSnatcher.class,
+                new ScrapSnatcherSpawnEffect(List.of(AluminiumScrap::new, IndustrialFan::new, AlienArtifact::new)));
 
         // Single ground creator shared across all maps
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
@@ -171,6 +174,17 @@ public class EclipseNebula extends World {
         moon99DeprecatedMap.at(4, 3).setGround(tube99);
         moon20OverflowMap.at(5, 3).setGround(tube20);
 
+        // 99-Deprecated: upgrade the two existing Holes to also spawn ScrapSnatchers.
+        // (Positions derived from the map string: 'o' at (48,7) and (49,17).)
+        moon99DeprecatedMap.at(48, 7).setGround(new Hole(List.of(Undead::new, Slime::new, ScrapSnatcher::new)));
+        moon99DeprecatedMap.at(49, 17).setGround(new Hole(List.of(Undead::new, Slime::new, ScrapSnatcher::new)));
+
+        // 99-Deprecated: add the deprecated Fleshy Tree Sprout at an open dirt tile.
+        moon99DeprecatedMap.at(10, 10).setGround(new DeprecatedFleshyTreeSprout());
+
+        // 20-Overflow: add a Vent that can spawn Parasite, Slime, or ScrapSnatcher
+        moon20OverflowMap.at(28, 8).setGround(new Vent(List.of(Parasite::new, Slime::new, ScrapSnatcher::new)));
+
         // Place the three unique ship items (only instantiated once)
         moon99DeprecatedMap.at(5, 2).addItem(new AccessCardLevel1());
         moon99DeprecatedMap.at(31, 10).addItem(new AccessCardLevel2());
@@ -216,7 +230,7 @@ public class EclipseNebula extends World {
         // All three share a single CompanyAccount; once REQ1's quota system lands,
         // swap InMemoryCompanyAccount for the real QuotaManager (which will also
         // implement CompanyAccount).
-        CompanyAccount companyAccount = new InMemoryCompanyAccount(500);
+        CompanyAccount companyAccount = QuotaManager.getInstance();
         moon99DeprecatedMap.at(12, 1).setGround(new FighterStation(companyAccount));
         moon99DeprecatedMap.at(12, 3).setGround(new SurveyorStation(companyAccount));
         moon99DeprecatedMap.at(12, 5).setGround(new HealerStation(companyAccount));
@@ -236,6 +250,31 @@ public class EclipseNebula extends World {
         this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(8, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
 //        this.addPlayer(contractedWorker5, moon99DeprecatedMap.at(30, 10));
+
+        //TESTING
+        // test scrapsnatcher snatches scrap (start with worker pos 8, 3 for safety)
+//        moon99DeprecatedMap.addActor(new ScrapSnatcher(), moon99DeprecatedMap.at(14, 3));
+//        moon99DeprecatedMap.at(14, 3).addItem(new AluminiumScrap());
+
+        // test spawn effect
+//        ScrapSnatcher snatcher = new ScrapSnatcher();
+//        Location dropZone = moon99DeprecatedMap.at(14, 3);
+//        moon99DeprecatedMap.addActor(snatcher, dropZone);
+//        SpawnEffectManager.getInstance().onCreatureSpawned(snatcher, dropZone);
+
+        // test infection and rabid behaviours (change worker pos to 13, 3)
+//        moon99DeprecatedMap.addActor(new ScrapSnatcher(), moon99DeprecatedMap.at(14, 3));
+//        moon99DeprecatedMap.addActor(new Parasite(), moon99DeprecatedMap.at(15, 3));
+
+        // test deprecated fleshy tree SPROUT ('y') spawns an Undead on an adjacent tile (worker pos 13, 3)
+        moon99DeprecatedMap.at(12, 3).setGround(new DeprecatedFleshyTreeSprout());
+
+        // test deprecated fleshy tree MATURE ('Y') spawns a ScrapSnatcher on an adjacent tile (worker pos 13, 3)
+        moon99DeprecatedMap.at(14, 3).setGround(new DeprecatedFleshyTreeMature());
+
+        // test fleshy monolith ('H') warps the adjacent worker to a random tile on the map (worker pos 13, 3)
+        moon99DeprecatedMap.at(16, 3).setGround(new FleshyMonolith());
+
     }
 
     /**
