@@ -63,7 +63,7 @@ L3 ResurrectionProtocol — when this worker falls unconscious, they leave a Sta
 
 ## REQ4 — Custom Feature #2
 
-**Owner:** Zhengjun
+**Owner:** Zhengjun Yang
 
 ### 1. The Pitch
 >  When a Worker commits a violation — such as trespassing into a restricted zone, attacking a teammate, or stealing equipment — the Infraction System records and escalates their infraction level (0–3). Once a Worker reaches Level 1, the Company remotely spawns an EnforcerBot onto the map to pursue them. EnforcerBots cycle through three behaviours: patrolling when idle, chasing when a violator is detected, and despawning when the target is gone. On capture, the bot deducts Company Credits and resets the infraction counter. Reaching Level 3 triggers an immediate fine and a temporary action lockout, forcing players to weigh risky shortcuts against financial and operational consequences.
