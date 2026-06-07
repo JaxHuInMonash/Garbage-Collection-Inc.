@@ -5,6 +5,8 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.capabilities.Ability;
 import game.statuses.BurnStatus;
+import game.capabilities.WeatherAffected;
+import game.weather.WeatherApiResponse;
 
 /**
  * A fire ground tile spawned by a leaking Lantern. Displays as {@code ^}.
@@ -12,14 +14,17 @@ import game.statuses.BurnStatus;
  * The fire lasts for a set number of turns (default 5). Any actor standing
  * on a fire tile receives a {@link BurnStatus} (1 damage per turn for 5 turns).
  * When the fire expires, the ground reverts to whatever was there before.
+ * In heavy rain, the fire is extinguished early.
  *
  * @author Jax
  */
-public class Fire extends Ground {
+public class Fire extends Ground implements WeatherAffected {
 
     private static final int FIRE_DURATION = 5;
     private static final int BURN_DAMAGE = 1;
     private static final int BURN_DURATION = 5;
+
+    private static final int EXTINGUISH_HUMIDITY = 85;
 
     private final Ground originalGround;
     private int remainingTurns;
@@ -44,6 +49,20 @@ public class Fire extends Ground {
         this.enableAbility(Ability.ON_FIRE);
         this.originalGround = originalGround;
         this.remainingTurns = duration;
+    }
+
+    /**
+     * Extinguishes this fire in heavy rain, reverting to the original ground.
+     */
+    @Override
+    public boolean onWeatherChange(Location location, WeatherApiResponse weather) {
+        if (weather.humidity() >= EXTINGUISH_HUMIDITY && weather.condition().hasAbility(Ability.EXTINGUISH)) {
+            location.setGround(originalGround);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

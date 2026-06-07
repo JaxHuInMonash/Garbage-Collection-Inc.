@@ -1,23 +1,27 @@
 package game.statuses;
 
 import edu.monash.fit2099.engine.GameEntity;
-import edu.monash.fit2099.engine.capabilities.Status;
+import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 
 /**
  * A damage-absorption shield that negates up to {@code maxAbsorption} total
- * incoming damage for the bearer.
+ * incoming damage for the bearer and reflects the absorbed amount back at the
+ * attacker.
  * <p>
  * Applied by the Swarmling's DormantState on entry. The Swarmling's
- * {@code hurt()} override checks for this status before forwarding damage,
- * consuming absorption points until exhausted.
+ * {@code hurt()} override calls {@link #absorb(int)} to consume incoming
+ * damage and stage the reflection; {@link game.actions.AttackAction} then
+ * delivers that staged amount back to the attacker via the
+ * {@link PostHitFeedback#onTargetHit(Actor, Actor, GameMap)} hook.
  *
  * @author Ethan
  * @author Mary
  * @author Jax
  * @author Thomas
  */
-public class ReflectionStatus implements Status {
+public class ReflectionStatus implements PostHitFeedback {
 
     private int remainingAbsorption;
     private int pendingReflection;
@@ -48,16 +52,19 @@ public class ReflectionStatus implements Status {
     }
 
     /**
-     * Returns and clears the pending reflected damage. Called by
-     * {@link game.actions.AttackAction} after the attack resolves, so the
-     * reflected damage can be applied to the attacker.
-     *
-     * @return the amount of damage to reflect back (0 if nothing pending)
+     * Delivers any pending reflected damage back to the attacker. Implements
+     * the {@link PostHitFeedback} contract so {@link game.actions.AttackAction}
+     * can apply this generically alongside other post-hit effects.
      */
-    public int consumePendingReflection() {
+    @Override
+    public String onTargetHit(Actor attacker, Actor victim, GameMap map) {
         int reflected = pendingReflection;
         pendingReflection = 0;
-        return reflected;
+        if (reflected <= 0) {
+            return "";
+        }
+        attacker.hurt(reflected);
+        return victim + " reflects " + reflected + " damage back at " + attacker + "!";
     }
 
     /** No per-turn effect — absorption happens synchronously in {@code hurt()}. */
@@ -69,7 +76,7 @@ public class ReflectionStatus implements Status {
      * Active while absorption remains, or while reflected damage has not yet
      * been applied back to the attacker. This prevents the status from being
      * removed in {@code hurt()} before {@link game.actions.AttackAction} can
-     * consume the pending reflection.
+     * deliver the pending reflection.
      */
     @Override
     public boolean isStatusActive() {

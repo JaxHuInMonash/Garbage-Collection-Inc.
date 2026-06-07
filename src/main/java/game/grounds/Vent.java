@@ -51,6 +51,7 @@ public class Vent extends Ground implements Cuttable {
     public Vent() {
         super('V', "Vent");
         this.random = new Random();
+        this.enableAbility(Ability.IS_SPAWNER);
     }
 
     /**

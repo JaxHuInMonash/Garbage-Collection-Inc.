@@ -75,4 +75,31 @@ public enum Ability {
 
     /** Marks a ground tile as a Hole spawner. */
     IS_HOLE,
+
+    /**
+     * Marks a ground tile as a creature spawner (Hole or Vent). Used by the
+     * Surveyor Optics upgrade to detect what to reveal, without coupling to
+     * the concrete spawner classes.
+     */
+    IS_SPAWNER,
+
+    /**
+     * Marks a ground tile as a Wall. Used by the Phase Stabilizer upgrade to
+     * locate walls the worker may phase through, without coupling to the
+     * concrete {@code Wall} class.
+     */
+    IS_WALL,
+
+    /** Marks a ground tile that can be flooded by weather (e.g. Dirt). */
+    FLOODABLE,
+
+    /** Marks a ground tile that can evaporate in dry weather (e.g. Puddle). */
+    EVAPORATABLE,
+
+    // ──────────────────────────────────────────────────────────────────
+    // Weather condition abilities
+    // ──────────────────────────────────────────────────────────────────
+
+    /** Marks a weather condition that can extinguish fires (rain, drizzle, etc.). */
+    EXTINGUISH,
 }
