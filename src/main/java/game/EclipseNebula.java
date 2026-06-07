@@ -191,19 +191,10 @@ public class EclipseNebula extends World {
 
         // REQ1 A3: Place Vents on 99-Deprecated for cutting tests
         moon99DeprecatedMap.at(21, 1).setGround(new Vent());
-        moon99DeprecatedMap.at(22, 1).setGround(new Vent());
-        // REQ1 A3: Place harvested resources directly for deposit/sell testing
-        moon99DeprecatedMap.at(5, 3).addItem(new AluminiumScrap());
-        moon99DeprecatedMap.at(6, 3).addItem(new IndustrialFan());
-        moon99DeprecatedMap.at(7, 3).addItem(new AlienArtifact());
-        // REQ1 A3: Place Vents on 20-Overflow for cutting tests
-        moon20OverflowMap.at(6, 2).setGround(new Vent());
         moon20OverflowMap.at(7, 2).setGround(new Vent());
-
-        // REQ1 A3: Place harvested resources for deposit/sell testing
-        moon20OverflowMap.at(6, 3).addItem(new AluminiumScrap());
-        moon20OverflowMap.at(7, 3).addItem(new IndustrialFan());
-        moon20OverflowMap.at(8, 3).addItem(new AlienArtifact());
+        moon20OverflowMap.at(39, 8).addItem(new AlienCube());
+        moon20OverflowMap.at(42, 3).setGround(new Vent());
+        moon20OverflowMap.at(38, 4).setGround(new Vent());
 
         // Register alarm consequence: spawn Security Drones at predefined locations
         registerDroneSpawnListener(moon99DeprecatedMap);
@@ -215,7 +206,7 @@ public class EclipseNebula extends World {
 //        ContractedWorker contractedWorker4 = createWorker("#4 Julie");
 //        ContractedWorker contractedWorker5 = createWorker("#5 Rick");
 
-        this.addPlayer(contractedWorker1, moon20OverflowMap.at(6, 4));
+        this.addPlayer(contractedWorker1, moon20OverflowMap.at(6, 3));
 //        this.addPlayer(contractedWorker2, moon20OverflowMap.at(5, 3));
 //        this.addPlayer(contractedWorker3, moon99DeprecatedMap.at(6, 3));
 //        this.addPlayer(contractedWorker4, moon99DeprecatedMap.at(7, 3));
