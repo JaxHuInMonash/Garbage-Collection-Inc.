@@ -9,6 +9,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
+import game.actions.CutAlienCubeAction;
 import game.actions.UseAlienCubeAction;
 import game.actors.Undead;
 import game.capabilities.Ability;
@@ -108,8 +109,17 @@ public class AlienCube extends Item implements Sellable {
         for (Location dest : pickRandomDestinations(map, DESTINATION_CHOICES)) {
             actions.add(new UseAlienCubeAction(this, dest));
         }
+
+        boolean hasCutter = owner.getInventory().getItems().stream()
+                .anyMatch(i -> i instanceof PlasmaCutter);
+        if (hasCutter) {
+            actions.add(new CutAlienCubeAction(this));
+        }
+
         return actions;
     }
+
+
 
     /**
      * Collects every passable, unoccupied tile on the given map and returns

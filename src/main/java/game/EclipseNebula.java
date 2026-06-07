@@ -11,6 +11,7 @@ import game.alarm.AlarmManager;
 import game.items.ScrapPile;
 import game.grounds.*;
 import game.items.*;
+import game.quota.QuotaManager;
 import game.spawning.ParasiteSpawnEffect;
 import game.spawning.SlimeSpawnEffect;
 import game.spawning.SpawnEffectManager;
@@ -62,6 +63,7 @@ public class EclipseNebula extends World {
         // Reset singletons for a fresh game
         AlarmManager.resetInstance();
         SpawnEffectManager.resetInstance();
+        QuotaManager.resetInstance();
 
         // Register spawn effects for each creature type
         SpawnEffectManager.getInstance().registerEffect(Undead.class, new UndeadSpawnEffect());
@@ -202,6 +204,12 @@ public class EclipseNebula extends World {
         // Meeples — support units, one per map
         moon99DeprecatedMap.addActor(new Meeple(), moon99DeprecatedMap.at(44, 11));
         moon20OverflowMap.addActor(new Meeple(), moon20OverflowMap.at(22, 9));
+
+        // REQ1 A3: Place Vents on 99-Deprecated for cutting tests
+        moon99DeprecatedMap.at(21, 1).setGround(new Vent());
+        moon20OverflowMap.at(39, 8).addItem(new AlienCube());
+        moon20OverflowMap.at(42, 3).setGround(new Vent());
+        moon20OverflowMap.at(38, 4).setGround(new Vent());
 
         // REQ3 — Lab Stations placed along the east wall of the 99-Deprecated ship.
         // Workers stand on the adjacent floor tile (col 7) to interact with each station.

@@ -1,19 +1,27 @@
 package game.upgrades;
 
 /**
- * Integration seam for the Company Credit pool introduced in <strong>A3 REQ1
- * (Quota)</strong>.
+ * Integration seam between REQ3 (Worker Progression / Upgrade System) and
+ * REQ1 (Quota Cycle).
  * <p>
- * REQ3 only needs to know that <em>something</em> holds the company's shared
- * credits and can be charged. It depends on this narrow interface rather than
- * REQ1's concrete quota class, so the two requirements stay decoupled
- * (Dependency Inversion). REQ1's quota manager is expected to implement this
- * interface and be handed to each {@link UpgradeStation} at world set-up.
+ * REQ3 needs to debit the company-credit pool when a worker purchases an
+ * upgrade at a Lab Station. Instead of depending directly on REQ1's
+ * {@link game.quota.QuotaManager} singleton — a high-level → low-level
+ * coupling that would invert the Dependency Inversion Principle — REQ3
+ * depends on this narrow capability interface. REQ1's quota manager
+ * implements it; if REQ1 ever swaps its ledger implementation, REQ3 is
+ * unaffected.
  * <p>
- * <strong>Coordination note (manager):</strong> the REQ1 owner should make their
- * quota/ledger class {@code implements CompanyAccount}. If REQ1 lands after this
- * sketch, a temporary no-op implementation can be injected so the upgrade
- * stations remain functional during development.
+ * Method contract:
+ * <ul>
+ *   <li>{@link #canAfford(int)} reports whether the pool currently holds at
+ *       least the requested amount of credits.</li>
+ *   <li>{@link #deduct(int)} removes the given amount from the pool. Callers
+ *       must check {@link #canAfford(int)} first; the implementation may
+ *       throw if invoked while underfunded.</li>
+ * </ul>
+ * Owned by REQ3 (the consumer); fulfilled by REQ1's
+ * {@link game.quota.QuotaManager} (the implementer).
  *
  * @author Jax
  */
