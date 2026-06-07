@@ -91,7 +91,7 @@ L3 ResurrectionProtocol — when this worker falls unconscious, they leave a Sta
 
 **Abstractions**
 1. `game.penalty.InfractionTrigger` — Interface; any game event that can cause a violation implements `checkAndApply(Actor violator, GameMap map)`, which calls `InfractionManager` to increment the infraction level and conditionally spawn an `EnforcerBot`.
-2. `game.penalty.EnforcerBehaviour` — Abstract class extending `Behaviour`; defines the contract for all EnforcerBot AI actions, with subclasses implementing `operate(Actor bot, Location location)` to pursue, patrol, or despawn.
+2. `game.penalty.EnforcerBehaviour` — Abstract class extending `Behaviour`; defines the contract for all EnforcerBot actions, with subclasses implementing `operate(Actor bot, Location location)` to pursue, patrol, or despawn.
 
 **Concrete classes**
 
