@@ -4,27 +4,30 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
+import game.penalty.FriendlyFireTrigger;
 import game.statuses.PostHitFeedback;
 
 import java.util.ArrayList;
-import game.statuses.ReflectionStatus;
-import game.penalty.FriendlyFireTrigger;
-import java.util.List;
 
 /**
  * An action that allows one actor to attack another using their intrinsic weapon.
  * <p>
- * After the weapon resolves, every {@link PostHitFeedback} status on the target
- * is queried polymorphically — this is what lets effects like
- * {@link game.statuses.ReflectionStatus} (Swarmling) and
- * {@link game.statuses.RetaliationStatus} (Combat L1 upgrade) compose without
- * this action knowing their concrete types.
- * @author Jax
  * The attacker's {@link IntrinsicWeapon} handles hit chance, damage calculation,
- * and the attack description. If the target becomes unconscious after the attack,
- * the target is removed from the map.
- *also checks for friendly fire
- * {@link FriendlyFireTrigger} after each attack.
+ * and the attack description. After the weapon resolves:
+ * <ol>
+ *   <li>Every {@link PostHitFeedback} status on the target is queried
+ *       polymorphically — this is what lets {@link game.statuses.ReflectionStatus}
+ *       (Swarmling) and {@link game.statuses.RetaliationStatus} (Fighter T1
+ *       upgrade) compose without this action knowing their concrete types.</li>
+ *   <li>{@link FriendlyFireTrigger#checkFriendlyFire(Actor, Actor, GameMap)}
+ *       (REQ4) checks whether the attacker has just committed friendly fire
+ *       against another worker — incrementing infraction level if so and
+ *       potentially spawning an {@link game.actors.EnforcerBot}.</li>
+ *   <li>If either combatant becomes unconscious, they are removed via the
+ *       engine's death lifecycle.</li>
+ * </ol>
+ *
+ * @author Jax
  * @author Zhengjun
  */
 public class AttackAction extends Action {
@@ -62,12 +65,13 @@ public class AttackAction extends Action {
         IntrinsicWeapon weapon = actor.getIntrinsicWeapon();
         String result = weapon.attack(actor, target, map);
 
-        // Polymorphic post-hit feedback (Reflection, Retaliation, future effects…)
+        // Polymorphic post-hit feedback (ReflectionStatus, RetaliationStatus, future effects).
+        // ReflectionStatus already implements PostHitFeedback, so the old hand-rolled
+        // applyReflection() it was paired with at A2 time has been removed.
         result += applyPostHitFeedback(actor, map);
+
+        // REQ4 — worker-on-worker attacks bump the attacker's infraction level.
         FriendlyFireTrigger.checkFriendlyFire(actor, target, map);
-        // Reflection: if the target absorbed damage via ReflectionStatus,
-        // deal the absorbed amount back to the attacker.
-        result += applyReflection(actor);
 
         if (!target.isConscious()) {
             result += "\n" + target.unconscious(actor, map);

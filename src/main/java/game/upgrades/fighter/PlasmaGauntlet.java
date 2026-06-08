@@ -9,10 +9,15 @@ import game.weapons.PlasmaGauntletWeapon;
 /**
  * Combat path, Tier 3 — <strong>Plasma Gauntlet</strong>.
  * <p>
- * <strong>On apply (one-shot):</strong> swaps the worker's intrinsic weapon for
- * a {@link PlasmaGauntletWeapon}. The weapon itself encapsulates every per-attack
- * effect (tile ignition, on-kill AoE burn) so this upgrade class stays trivially
- * thin — all complexity lives where the cross-component interaction happens.
+ * <strong>On apply (one-shot):</strong> replaces the worker's existing
+ * intrinsic weapon (their default {@link game.weapons.WorkerFist}) with a
+ * {@link PlasmaGauntletWeapon}. This is a <em>weapon upgrade</em>, not an
+ * attack unlock — workers can already attack hostiles bare-fisted from turn 1
+ * (used by REQ4's friendly-fire mechanic); the gauntlet just makes that
+ * pathway considerably more dangerous. The weapon itself encapsulates every
+ * per-attack effect (tile ignition, on-kill AoE burn) so this upgrade class
+ * stays trivially thin — all complexity lives where the cross-component
+ * interaction happens.
  * <p>
  * The weapon swap is performed through the
  * {@link IntrinsicWeaponEquippable} capability (discovered via

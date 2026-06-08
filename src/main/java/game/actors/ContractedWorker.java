@@ -21,13 +21,13 @@ import game.capabilities.Infectable;
 import game.capabilities.IntrinsicWeaponEquippable;
 import game.capabilities.Progressable;
 import game.spawning.SpawnEffectManager;
+import game.statuses.Cleansable;
 import game.statuses.InfectedStatus;
 import game.statuses.CleanseFieldStatus;
 import game.statuses.KineticLinkStatus;
 import game.statuses.ReinforcedPlatesStatus;
 import game.statuses.ResurrectionProtocolStatus;
 import game.statuses.ShieldStatus;
-import game.statuses.TimedDamageStatus;
 import game.display.EventLog;
 import game.grounds.StasisPod;
 import game.upgrades.WorkerProgression;
@@ -35,7 +35,6 @@ import edu.monash.fit2099.engine.capabilities.Status;
 import edu.monash.fit2099.engine.positions.Ground;
 
 import game.statuses.LockedOutStatus;
-import game.actions.AttackAction;
 import game.weapons.WorkerFist;
 import java.util.List;
 
@@ -85,6 +84,7 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
     public ContractedWorker(String name, char displayChar, int hitPoints, Inventory inventory) {
         super(name, displayChar, hitPoints, inventory);
         this.enableAbility(Ability.ATTACKABLE_BY_CREATURES);
+        this.enableAbility(Ability.IS_WORKER);
         this.addNewStatistic(game.ActorStatistics.CREDITS, new BaseStatistic(MAX_CREDITS));
         this.modifyStatistic(game.ActorStatistics.CREDITS, StatisticOperations.UPDATE, INITIAL_CREDITS);
         this.setIntrinsicWeapon(new WorkerFist());
@@ -116,14 +116,18 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
     /**
      * REQ3 — Healer T2 Cleanse Field immunity. A worker carrying a
      * {@link CleanseFieldStatus} silently drops any incoming
-     * {@link TimedDamageStatus} (Poison, Burn) before it can attach.
-     * All other status types pass through unchanged.
+     * {@link Cleansable} status (Poison, Burn, future cleansables) before
+     * it can attach. All other status types pass through unchanged.
+     * <p>
+     * Cleansability is dispatched via the {@link Cleansable} marker interface
+     * rather than the concrete {@code TimedDamageStatus} class — future
+     * cleansable status types just implement the marker (OCP).
      *
      * @param status the candidate status being applied
      */
     @Override
     public void addStatus(Status status) {
-        if (status instanceof TimedDamageStatus && hasStatus(CleanseFieldStatus.class)) {
+        if (status instanceof Cleansable && hasStatus(CleanseFieldStatus.class)) {
             return;
         }
         super.addStatus(status);
@@ -301,7 +305,7 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
         ActionList actions = super.allowableActions(otherActor, direction, map);
-        if (otherActor instanceof ContractedWorker) {
+        if (otherActor.hasAbility(Ability.IS_WORKER)) {
             actions.add(new AttackAction(this));
         }
         return actions;
@@ -333,8 +337,9 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
         // REQ3 — drive per-turn passives of every installed upgrade.
         progression.tick(this, map.locationOf(this));
 
-        // REQ3 — if the worker is armed (e.g. Plasma Gauntlet installed), offer
-        // attack options against any adjacent hostile.
+        // REQ3 — offer attack options against any adjacent hostile.
+        // Every worker has a WorkerFist from construction (REQ4 friendly-fire mechanic);
+        // installing the Plasma Gauntlet (Combat T3) replaces it with a stronger weapon.
         addAttackOptions(actions, map);
 
         // REQ3 — if the worker has a charged Phase Stabilizer, offer to phase
@@ -368,10 +373,13 @@ public class ContractedWorker extends Actor implements Infectable, Progressable,
 
     /**
      * Adds an {@link AttackAction} to the menu for every adjacent
-     * {@link Ability#HOSTILE_TO_WORKERS} actor — but only when the worker is
-     * actually armed (has an intrinsic weapon). A bare-handed worker simply
-     * cannot punch back, which matches the game's pre-A3 baseline; installing
-     * the Combat T3 Plasma Gauntlet upgrade is what enables this pathway.
+     * {@link Ability#HOSTILE_TO_WORKERS} actor. Every worker is equipped with
+     * a {@link WorkerFist} from construction (used by REQ4's friendly-fire
+     * mechanic), so this pathway is available immediately — the Combat T3
+     * Plasma Gauntlet upgrade <em>replaces</em> the fist with a much stronger
+     * {@link game.weapons.PlasmaGauntletWeapon}, but it is not the unlock.
+     * The null-guard remains as defensive code for any future actor type that
+     * deliberately ships without an intrinsic weapon.
      *
      * @param actions the action list to extend (in-place)
      * @param map     the current game map

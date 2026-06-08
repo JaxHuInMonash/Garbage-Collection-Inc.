@@ -275,13 +275,16 @@ public class EclipseNebula extends World {
 //        moon99DeprecatedMap.addActor(new Parasite(), moon99DeprecatedMap.at(15, 3));
 
         // test deprecated fleshy tree SPROUT ('y') spawns an Undead on an adjacent tile (worker pos 13, 3)
-        moon99DeprecatedMap.at(12, 3).setGround(new DeprecatedFleshyTreeSprout());
+        // NOTE (Jax): commented out — (12, 3) is the SurveyorStation tile.
+        // Leaving this live overwrote the station and made the Surveyor path unreachable.
+        // Re-enable on a separate branch / different coordinate when actually testing the sprout.
+        moon99DeprecatedMap.at(14, 3).setGround(new DeprecatedFleshyTreeSprout());
 
         // test deprecated fleshy tree MATURE ('Y') spawns a ScrapSnatcher on an adjacent tile (worker pos 13, 3)
-        moon99DeprecatedMap.at(14, 3).setGround(new DeprecatedFleshyTreeMature());
+        moon99DeprecatedMap.at(16, 3).setGround(new DeprecatedFleshyTreeMature());
 
         // test fleshy monolith ('H') warps the adjacent worker to a random tile on the map (worker pos 13, 3)
-        moon99DeprecatedMap.at(16, 3).setGround(new FleshyMonolith());
+        moon99DeprecatedMap.at(18, 3).setGround(new FleshyMonolith());
 
     }
 
