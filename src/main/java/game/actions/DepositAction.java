@@ -48,9 +48,7 @@ public class DepositAction extends Action {
     public String execute(Actor actor, GameMap map) {
         int value = depositable.getDepositValue();
         QuotaManager.getInstance().addCompanyCredits(value);
-        String result = depositable.onDeposited(actor, map);
-        System.out.println(result);
-        return result;
+        return depositable.onDeposited(actor, map);
     }
 
     /**

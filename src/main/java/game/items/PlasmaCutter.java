@@ -9,6 +9,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.ItemStatistics;
 import game.actions.CutAction;
+import game.capabilities.Ability;
 import game.capabilities.Buyable;
 import game.capabilities.Cuttable;
 import game.statuses.BurnStatus;
@@ -47,6 +48,7 @@ public class PlasmaCutter extends Item implements Buyable {
      */
     public PlasmaCutter() {
         super("Plasma Cutter", '>');
+        this.enableAbility(Ability.CAN_CUT);
         this.addNewStatistic(ItemStatistics.WEIGHT, new BaseStatistic(WEIGHT));
         this.addNewStatistic(ItemStatistics.BUY_VALUE, new BaseStatistic(BUY_COST));
         this.makePortable();
@@ -76,11 +78,9 @@ public class PlasmaCutter extends Item implements Buyable {
     public String onBought(Actor actor, GameMap map) {
         actor.hurt(PURCHASE_DAMAGE);
         actor.addStatus(new BurnStatus(BURN_DAMAGE, BURN_DURATION));
-        String msg = actor + " purchased the Plasma Cutter for " + BUY_COST
+        return actor + " purchased the Plasma Cutter for " + BUY_COST
                 + " credits. The searing-hot tool deals " + PURCHASE_DAMAGE
                 + " damage and burns for " + BURN_DURATION + " turns!";
-        System.out.println(msg);
-        return msg;
     }
 
     @Override
@@ -103,9 +103,9 @@ public class PlasmaCutter extends Item implements Buyable {
 
         for (Exit exit : ownerLocation.getExits()) {
             Location adjacent = exit.getDestination();
-            if (adjacent.getGround() instanceof Cuttable cuttable) {
-                actions.add(new CutAction(cuttable, adjacent));
-            }
+            adjacent.getGround()
+                    .asCapability(Cuttable.class)
+                    .ifPresent(cuttable -> actions.add(new CutAction(cuttable, adjacent)));
         }
 
         return actions;

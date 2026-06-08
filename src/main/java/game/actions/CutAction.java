@@ -43,9 +43,7 @@ public class CutAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        String result = target.onCut(actor, targetLocation, map);
-        System.out.println(result);
-        return result;
+        return target.onCut(actor, targetLocation, map);
     }
 
     @Override

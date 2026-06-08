@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.EnforcerBot;
+import game.display.EventLog;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class InfractionManager {
         int current = infractionLevels.getOrDefault(violator, 0);
         int newLevel = Math.min(current + 1, MAX_LEVEL);
         infractionLevels.put(violator, newLevel);
-        System.out.println("[INFRACTION] " + violator + " level now " + newLevel);
+        EventLog.getInstance().log("[INFRACTION] " + violator + " level now " + newLevel);
         if (newLevel >= 1) spawnEnforcer(violator, map);
     }
     /**
@@ -104,7 +105,7 @@ public class InfractionManager {
                     if (candidate.canActorEnter(bot) && !candidate.containsAnActor()) {
                         candidate.addActor(bot);
                         activeTargets.add(violator);
-                        System.out.println("[INFRACTION] EnforcerBot deployed!");
+                        EventLog.getInstance().log("[INFRACTION] EnforcerBot deployed!");
                         return;
                     }
                 } catch (Exception ignored) {

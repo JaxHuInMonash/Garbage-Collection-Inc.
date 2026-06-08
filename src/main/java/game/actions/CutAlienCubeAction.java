@@ -59,10 +59,8 @@ public class CutAlienCubeAction extends Action {
         // 3. Inflict Poison
         actor.addStatus(new PoisonStatus(POISON_DAMAGE, POISON_DURATION));
 
-        String msg = actor + " cuts the Alien Cube with the Plasma Cutter — "
+        return actor + " cuts the Alien Cube with the Plasma Cutter — "
                 + "an Alien Artifact is extracted! " + actor + " is poisoned by the toxic residue!";
-        System.out.println(msg);
-        return msg;
     }
 
     @Override

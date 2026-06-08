@@ -59,9 +59,7 @@ public class AluminiumScrap extends Item implements Depositable {
                     .append(CUT_DAMAGE).append(" damage!");
         }
 
-        String msg = sb.toString();
-        System.out.println(msg);
-        return msg;
+        return sb.toString();
     }
 
     @Override

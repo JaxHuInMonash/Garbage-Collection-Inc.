@@ -11,9 +11,9 @@ import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.ItemStatistics;
 import game.actors.Slime;
+import game.capabilities.Ability;
 import game.capabilities.Depositable;
 import game.capabilities.Sellable;
-import game.display.EventLog;
 import game.spawning.SpawnEffectManager;
 
 /**
@@ -62,10 +62,8 @@ public class IndustrialFan extends Item implements Sellable, Depositable {
     public String onSold(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
         spawnSlimeAdjacentToSupercomputer(map);
-        String msg = actor + " sold the Industrial Fan for " + SELL_VALUE
+        return actor + " sold the Industrial Fan for " + SELL_VALUE
                 + " worker credits — a Slime spawns near the Supercomputer!";
-        System.out.println(msg);
-        return msg;
     }
 
     @Override
@@ -82,10 +80,8 @@ public class IndustrialFan extends Item implements Sellable, Depositable {
     public String onDeposited(Actor actor, GameMap map) {
         actor.getInventory().remove(this);
         actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.INCREASE, HEAL_AMOUNT);
-        String msg = actor + " deposited the Industrial Fan for " + DEPOSIT_VALUE
+        return actor + " deposited the Industrial Fan for " + DEPOSIT_VALUE
                 + " company credits. Fresh oxygen heals " + actor + " for " + HEAL_AMOUNT + " HP!";
-        System.out.println(msg);
-        return msg;
     }
 
     @Override
@@ -103,7 +99,7 @@ public class IndustrialFan extends Item implements Sellable, Depositable {
         for (int x = map.getXRange().min(); x <= map.getXRange().max(); x++) {
             for (int y = map.getYRange().min(); y <= map.getYRange().max(); y++) {
                 Location loc = map.at(x, y);
-                if (loc.getGround() instanceof game.grounds.Supercomputer) {
+                if (loc.getGround().hasAbility(Ability.IS_SUPERCOMPUTER)) {
                     trySpawnSlimeAdjacent(loc);
                     return;
                 }

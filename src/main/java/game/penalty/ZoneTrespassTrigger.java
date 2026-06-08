@@ -3,6 +3,8 @@ package game.penalty;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actors.ContractedWorker;
+import game.capabilities.Ability;
+import game.display.EventLog;
 /**
  * Implements {@link InfractionTrigger}.
  * <p>
@@ -30,8 +32,8 @@ public class ZoneTrespassTrigger implements InfractionTrigger {
      */
     @Override
     public void checkAndApply(Actor violator, GameMap map) {
-        if (!(violator instanceof ContractedWorker)) return;
-        System.out.println("[INFRACTION] " + violator + " trespassed into: " + zoneName);
+        if (!violator.hasAbility(Ability.IS_WORKER)) return;
+        EventLog.getInstance().log("[INFRACTION] " + violator + " trespassed into: " + zoneName);
         InfractionManager.getInstance().increment(violator, map);
     }
 }

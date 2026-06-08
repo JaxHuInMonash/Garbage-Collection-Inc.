@@ -2,7 +2,6 @@ package game.statuses;
 
 import edu.monash.fit2099.engine.GameEntity;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
-import edu.monash.fit2099.engine.capabilities.Status;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 
@@ -10,10 +9,15 @@ import edu.monash.fit2099.engine.statistics.StatisticOperations;
  * Abstract base for status effects that deal a fixed amount of damage each
  * turn for a limited duration. Subclasses only need to call {@code super}
  * with the appropriate parameters.
+ * <p>
+ * Implements {@link Cleansable} so any subclass (Poison, Burn, …) is
+ * automatically removed in flight by a worker carrying a
+ * {@link CleanseFieldStatus} (Healer T2) — see
+ * {@link game.actors.ContractedWorker#addStatus}.
  *
  * @author Jax
  */
-public abstract class TimedDamageStatus implements Status {
+public abstract class TimedDamageStatus implements Cleansable {
 
     private final int damagePerTurn;
     private int remainingTurns;

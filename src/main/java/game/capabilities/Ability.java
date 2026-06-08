@@ -54,6 +54,15 @@ public enum Ability {
      */
     HOSTILE_TO_WORKERS,
 
+    /**
+     * Marks an actor as a {@link game.actors.ContractedWorker} (or future
+     * worker subclass). Used by the penalty system and worker-on-worker
+     * action plumbing to detect "this is a company worker" without using
+     * {@code instanceof}, so any future worker subclass automatically
+     * participates (OCP).
+     */
+    IS_WORKER,
+
     /** Marks an actor as one of the Meeple Clan. */
     IS_MEEPLE,
 
@@ -69,6 +78,21 @@ public enum Ability {
 
     /** Marks a ground tile as impassable (e.g., walls, locked doors). */
     BLOCKS_ENTRY,
+
+    /**
+     * Marks a ground tile as the Supercomputer. Used by ground-aware items
+     * (e.g. Industrial Fan side-effects) to locate the Supercomputer without
+     * coupling to the concrete class.
+     */
+    IS_SUPERCOMPUTER,
+
+    /**
+     * Marks an item as a cutter (e.g. Plasma Cutter). Used to detect that
+     * the holder is carrying a cutting tool without coupling to the concrete
+     * class — the {@link game.capabilities.Cuttable} ground tile or item
+     * stays decoupled from any specific cutter implementation.
+     */
+    CAN_CUT,
 
     /** Marks a ground tile as a Magic Circle teleportation point. */
     IS_MAGIC_CIRCLE,

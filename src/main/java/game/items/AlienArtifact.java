@@ -60,9 +60,7 @@ public class AlienArtifact extends Item implements Sellable, Depositable {
             sb.append(" The unstable artifact poisons ").append(actor).append("!");
         }
 
-        String msg = sb.toString();
-        System.out.println(msg);
-        return msg;
+        return sb.toString();
     }
 
     @Override
@@ -90,21 +88,16 @@ public class AlienArtifact extends Item implements Sellable, Depositable {
             }
         }
 
-        String msg;
         if (!candidates.isEmpty()) {
             edu.monash.fit2099.engine.positions.Location dest =
                     candidates.get(RANDOM.nextInt(candidates.size()));
             map.moveActor(actor, dest);
-            msg = actor + " deposited the Alien Artifact for " + DEPOSIT_VALUE
+            return actor + " deposited the Alien Artifact for " + DEPOSIT_VALUE
                     + " company credits. " + actor + " is teleported to ("
                     + dest.x() + ", " + dest.y() + ")!";
-        } else {
-            msg = actor + " deposited the Alien Artifact for " + DEPOSIT_VALUE
-                    + " company credits. No valid teleport destination found.";
         }
-
-        System.out.println(msg);
-        return msg;
+        return actor + " deposited the Alien Artifact for " + DEPOSIT_VALUE
+                + " company credits. No valid teleport destination found.";
     }
 
     @Override

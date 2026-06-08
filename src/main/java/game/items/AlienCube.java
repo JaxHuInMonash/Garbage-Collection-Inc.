@@ -111,7 +111,7 @@ public class AlienCube extends Item implements Sellable {
         }
 
         boolean hasCutter = owner.getInventory().getItems().stream()
-                .anyMatch(i -> i instanceof PlasmaCutter);
+                .anyMatch(i -> i.hasAbility(Ability.CAN_CUT));
         if (hasCutter) {
             actions.add(new CutAlienCubeAction(this));
         }

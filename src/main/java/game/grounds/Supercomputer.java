@@ -45,6 +45,7 @@ public class Supercomputer extends Ground implements QuotaListener {
      */
     public Supercomputer() {
         super('≡', "Supercomputer");
+        this.enableAbility(Ability.IS_SUPERCOMPUTER);
 
         // Existing buyables — unchanged
         buyables.add(FirstAidKit::new);
@@ -78,7 +79,6 @@ public class Supercomputer extends Ground implements QuotaListener {
     public void tick(Location location) {
         super.tick(location);
         QuotaManager.getInstance().tick();
-        System.out.println("[QUOTA STATUS] " + QuotaManager.getInstance());
 
         if (deadlineActive) {
             fireAdjacentWorkers(location);
@@ -119,13 +119,11 @@ public class Supercomputer extends Ground implements QuotaListener {
     @Override
     public void onQuotaMet(int newRank, int newTarget, int newTurnLimit, String message) {
         EventLog.getInstance().log(message);
-        System.out.println(message);
     }
 
     @Override
     public void onDeadlineMissed(String message) {
         EventLog.getInstance().log(message);
-        System.out.println(message);
         deadlineActive = true;
     }
 
@@ -140,10 +138,8 @@ public class Supercomputer extends Ground implements QuotaListener {
                 Actor worker = adjacent.getActor();
                 if (worker.hasAbility(Ability.ATTACKABLE_BY_CREATURES)) {
                     worker.unconscious(location.map());
-                    String msg = "[FIRED] The Supercomputer fires " + worker
-                            + " — they collapse, unconscious!";
-                    EventLog.getInstance().log(msg);
-                    System.out.println(msg);
+                    EventLog.getInstance().log("[FIRED] The Supercomputer fires " + worker
+                            + " — they collapse, unconscious!");
                 }
             }
         }

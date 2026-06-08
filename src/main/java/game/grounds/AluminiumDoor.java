@@ -89,8 +89,6 @@ public class AluminiumDoor extends SecuredDoor implements Cuttable {
             }
         }
 
-        String msg = sb.toString();
-        System.out.println(msg);
-        return msg;
+        return sb.toString();
     }
 }
